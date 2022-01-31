@@ -1,5 +1,8 @@
+import getpass
+
 login = input("Informe o usuário: ")
-senha = input("Informe a senha: ")
+senha = getpass.getpass("Informe a senha: ")
+
 if login == "joao" and senha == "abc123":
     print("Você está logado.")
 
