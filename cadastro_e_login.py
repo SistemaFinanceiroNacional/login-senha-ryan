@@ -14,13 +14,17 @@ def main(contas,userIO):
     elif choose == "2":
         pass
 
-class contas:
+class contas():
+    def __init__(self,file=open("contas.txt","r")):
+        self.archive = file
+
     def hashpassword(self,password):
         hash_password = hashlib.sha512(password.encode("utf-8"))
         return hash_password.hexdigest()
 
     def authentication(self,login,password):
-        with open("C:/Users/Ryan.py/login-senha-ryan/contas.txt","r") as archive:
+        password = self.hashpassword(password)
+        with self.archive as archive:
             for line in archive.readlines():
                 line = line[:-1]
                 logindoc,passworddoc = line.split(":")
@@ -28,7 +32,7 @@ class contas:
                     return True
             return False
 
-class inputIO:
+class inputIO():
     def input(self,prompt):
         return input(prompt)
 
