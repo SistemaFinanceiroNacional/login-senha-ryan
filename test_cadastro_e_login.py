@@ -1,6 +1,6 @@
 import io
 import cadastro_e_login
-import pytest
+
 
 class inputfake():
     def __init__(self):
@@ -34,16 +34,19 @@ class contasfake():
     def authentication(self,login,password):
         return login == "pedro" and password == "abc123"
 
+class add_accountfake():
+    def add_account(self,new_login,new_password):
+        return new_login == "pedro" and new_password == "abc123"
 
 def test_main():
     c = contasfake()
-    i = inputfake2()
+    i = inputfake()
     cadastro_e_login.main(c,i)
     assert i.outputlist[0] == "Você está logado!"
 
 def test_main_choose_2_already_exist():
-    c = contasfake()
-    i = inputfake()
+    i = inputfake2()
+    c = add_accountfake()
     cadastro_e_login.main(c,i)
     assert i.outputlist[0] == "Conta criada com sucesso!"
 
@@ -81,3 +84,24 @@ def test_authentication():
     s = "text"
     x = cadastro_e_login.contas(archive).authentication(l,s)
     assert x == True
+
+def test_verify_correct_content():
+    archive = io.StringIO("")
+    y = inputfake2()
+    x = cadastro_e_login.contas(archive)
+    cadastro_e_login.main(x,y)
+    assert archive.getvalue() == "pedro:c70b5dd9ebfb6f51d09d4132b7170c9d20750a7852f00680f65658f0310e810056e6763c34c9a00b0e940076f54495c169fc2302cceb312039271c43469507dc\n"
+
+def test_verify_correct_content_using_different_password():
+    archive = io.StringIO("pedro:eaf2c12742cb8c161bcbd84b032b9bb98999a23282542672ca01cc6edd268f7dce9987ad6b2bc79305634f89d90b90102bcd59a57e7135b8e3ceb93c0597117b\n")
+    y = inputfake2()
+    x = cadastro_e_login.contas(archive)
+    cadastro_e_login.main(x,y)
+    assert y.outputlist[0] == "Conta já existe. Tente outro usuário e senha."
+
+def test_verify_content_from_last_test():
+    archive = io.StringIO("pedro:eaf2c12742cb8c161bcbd84b032b9bb98999a23282542672ca01cc6edd268f7dce9987ad6b2bc79305634f89d90b90102bcd59a57e7135b8e3ceb93c0597117b\n")
+    y = inputfake2()
+    x = cadastro_e_login.contas(archive)
+    cadastro_e_login.main(x, y)
+    assert archive.getvalue() == "pedro:eaf2c12742cb8c161bcbd84b032b9bb98999a23282542672ca01cc6edd268f7dce9987ad6b2bc79305634f89d90b90102bcd59a57e7135b8e3ceb93c0597117b\n"

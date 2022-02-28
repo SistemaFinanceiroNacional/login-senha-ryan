@@ -1,35 +1,41 @@
 import getpass
 import hashlib
 
+def repl(userIO):
+    comando = ""
+    while comando != "sair":
+        comando = userIO.input("->")
+        if comando == "saldo":
+            userIO.print("0")
+
+
 def main(contas,userIO):
     choose = userIO.input("Deseja fazer login (1) ou cadastro (2)?")
     if choose == "1":
         login = userIO.input("Informe o usuário: ")
         password = userIO.inputoccult("Informe a senha: ")
         if contas.authentication(login,password):
-            userIO.print("Você está logado!")
+            repl(userIO)
         else:
             userIO.print("Você não está logado!")
 
     elif choose == "2":
         login = userIO.input("Informe o seu novo usuário: ")
-        if contas.add_account():
-            password = userIO.inputoccult("Informe a sua nova senha: ")
-            contas.add_account()
+        password = userIO.inputoccult("Informe a sua nova senha: ")
+        if contas.add_account(login,password):
+            userIO.print("Conta criada com sucesso!")
         else:
+            userIO.print("Conta já existe. Tente outro usuário e senha.")
             pass
 
 class contas():
     def __init__(self,file=open("contas.txt","r+")):
-        print("__init__")
         self.archive = file
 
     def __enter__(self):
-        print("__enter__")
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        print("__exit__")
         self.archive.close()
 
     def find_login(self,login):
@@ -46,7 +52,13 @@ class contas():
         return False
 
     def add_account(self,new_login,new_password):
-        x = self.authentication(new_login,new_password)
+        x = self.find_login(new_login)
+        new_password = self.hashpassword(new_password)
+        fstr = f"{new_login}:{new_password}\n"
+        if not x:
+            self.archive.seek(0,2)
+            self.archive.write(fstr)
+
         return not x
 
     def hashpassword(self,password):
