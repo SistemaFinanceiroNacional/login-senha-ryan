@@ -1,36 +1,25 @@
 import maybe
 import account
+import cursor
 
 class contas():
-    def __init__(self,file=open("contas.txt","r+")):
-        self.archive = file
+    def __init__(self,archive=cursor.linearCursor("contas.txt")):
+        self.archive = archive
 
     def __enter__(self):
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.archive.close()
-
-    def find_login(self,login):
-        self.archive.seek(0)
-        for line in self.archive:
-            line = line[:-1]
-            logindoc,passworddoc,saldo = line.split(":")
-            if login == logindoc:
-                return (logindoc,passworddoc,saldo)
-        return ()
-
     def add_account(self,new_login,new_password):
-        x = self.find_login(new_login)
-        fstr = f"{new_login}:{new_password}:0\n"
+        x = self.archive.select(columns=["*"], fromTable="contas", where=condition.equal(condition.literal(new_login),condition.columnname("login")))
+
         if not x:
-            self.archive.seek(0,2)
-            self.archive.write(fstr)
+            self.archive.insert(values={"login":new_login,"password":new_password}, into="contas")
+
         return not x
 
     def authentication(self,login,password):
-        findLoginValue = self.find_login(login)
+        findLoginValue = self.archive.select(columns=["*"], fromTable="contas", where=condition.and(condition.equal(condition.literal(login),condition.columnname("login")),condition.equal(condition.literal(password), condition.columnname("password"))))
         if findLoginValue:
-            if str(password) == findLoginValue[1]:
-                return maybe.just(account.account(findLoginValue[0],findLoginValue[1],findLoginValue[2]))
+            if str(password) == findLoginValue["password"]:
+                return maybe.just(account.account(findLoginValue["login"],findLoginValue["password"],findLoginValue["saldo"]))
         return maybe.nothing()

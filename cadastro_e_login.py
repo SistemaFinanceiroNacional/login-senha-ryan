@@ -29,5 +29,5 @@ def main(contas,userIO):
 
 
 if __name__ == "__main__":
-    with contas.contas() as c:
+    with contas.contas(cursor("contas.txt")) as c:
         main(c,inputIO.inputIO())
