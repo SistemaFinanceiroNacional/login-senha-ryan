@@ -1,7 +1,18 @@
 import contas
+import cursor
 import filemock
 import io
 import password
+
+
+class fakeCursor():
+    def __init__(self,cursor, dicio):
+        self.cursor = cursor
+        self.dicio = dicio
+
+    def select(self):
+
+    def insert(self):
 
 def test_add_account():
     archive = filemock.empty_archive()
@@ -19,12 +30,6 @@ def test_add_existing_account():
     y = x.add_account(new_login, new_password)
     assert not y
 
-def test_find_login():
-    archive = io.StringIO("ask:ask:1\na:a:2000\nb:b:45\nc:c:230\n")
-    login = "a"
-    x = contas.contas(archive).find_login(login)
-    assert x
-
 def test_hashpassword():
     x = password.password("1")
     y = str(x)
@@ -40,10 +45,10 @@ def test_authentication_just_or_nothing():
 
 def test_authentication_on_second_account():
     archive = io.StringIO("ryan:35ca097a8dab8ede4d632f41c909a3516a259e3b954f55b081f76e627d8a85cb81e91504a8fafc25e3a9074657550f6649029dca4b8c4253a67254b57b04131c:17\npedro:c70b5dd9ebfb6f51d09d4132b7170c9d20750a7852f00680f65658f0310e810056e6763c34c9a00b0e940076f54495c169fc2302cceb312039271c43469507dc:1400\n")
-    c = contas.contas(archive).authentication("pedro","abc123")
+    c = contas.contas(cursor.linearCursor()).authentication("pedro","abc123")
     assert c
 
 def test_authentication_on_second_account_with_real_archive():
     with open("testbug.txt","r") as archive:
-        c = contas.contas(archive).authentication("pedro","abc123")
+        c = contas.contas(fakeCursor.linearCursor()).authentication("pedro","abc123")
         assert c
