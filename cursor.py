@@ -1,3 +1,6 @@
+import condition
+
+
 class linearCursor():
 
     def insert(self,values,into):
@@ -20,7 +23,8 @@ class linearCursor():
             for line in archive:
                 line = line[:-1]
                 logindoc, passworddoc, saldo = line.split(":")
-                if login == logindoc:
-                    listRegister.append({"login":logindoc,"password":passworddoc, "saldo":saldo})
-                    break
+                register = {"login":logindoc,"password":passworddoc, "saldo":saldo}
+                if where.match(register):
+                    listRegister.append(condition.projectioncolumns(columns).proj(register))
+
         return listRegister

@@ -1,9 +1,9 @@
 import maybe
 import account
-import cursor
+import condition
 
 class contas():
-    def __init__(self,archive=cursor.linearCursor("contas.txt")):
+    def __init__(self,archive):
         self.archive = archive
 
     def __enter__(self):
@@ -18,7 +18,7 @@ class contas():
         return not x
 
     def authentication(self,login,password):
-        findLoginValue = self.archive.select(columns=["*"], fromTable="contas", where=condition.and(condition.equal(condition.literal(login),condition.columnname("login")),condition.equal(condition.literal(password), condition.columnname("password"))))
+        findLoginValue = self.archive.select(columns=["*"], fromTable="contas", where=condition.andCondition(condition.equal(condition.literal(login),condition.columnname("login")),condition.equal(condition.literal(password), condition.columnname("password"))))
         if findLoginValue:
             if str(password) == findLoginValue["password"]:
                 return maybe.just(account.account(findLoginValue["login"],findLoginValue["password"],findLoginValue["saldo"]))
