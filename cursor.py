@@ -28,3 +28,7 @@ class linearCursor():
                     listRegister.append(condition.projectioncolumns(columns).proj(register))
 
         return listRegister
+
+class catalog:
+    def __init__(self):
+        pass
