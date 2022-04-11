@@ -45,20 +45,20 @@ class literal(projection):
     def proj(self,dicio):
         return self.string
 
-class columnname(projection):
-    def __init__(self, string):
-        self.string = string
-
-    def __str__(self):
-        return f"\"{self.string}\""
-
-    def proj(self,dicio):
-        return dicio[self.string]
-
+def columnname(x):
+    return projectioncolumns([x])
 
 class projectioncolumns(projection):
     def __init__(self,columns):
         self.columns = columns
+
+    def __str__(self):
+        def putQuotes(str):
+            return f'"{str}"'
+
+        listColumns = map(putQuotes,self.columns)
+        x = ",".join(listColumns)
+        return x
 
     def proj(self,dicio):
         returnDict = {}
