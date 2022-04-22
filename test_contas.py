@@ -11,8 +11,10 @@ class fakeCursor():
         self.dicio = dicio
 
     def select(self):
+        pass
 
     def insert(self):
+        pass
 
 def test_add_account():
     archive = filemock.empty_archive()
