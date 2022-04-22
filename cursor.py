@@ -1,6 +1,5 @@
 import condition
 
-
 class linearCursor():
 
     def insert(self,values,into):
@@ -18,17 +17,35 @@ class linearCursor():
 
     def select(self,columns,fromTable,where):
         listRegister = []
-        with open(f"{fromTable}.txt") as archive:
+        with open(f"{fromTable}.txt") as archive,catalog(fromTable) as cat:
             archive.seek(0)
             for line in archive:
                 line = line[:-1]
-                logindoc, passworddoc, saldo = line.split(":")
-                register = {"login":logindoc,"password":passworddoc, "saldo":saldo}
+                attributes = line.split(":")
+                register = cat.render(attributes)
                 if where.match(register):
                     listRegister.append(condition.projectioncolumns(columns).proj(register))
 
         return listRegister
 
 class catalog:
-    def __init__(self):
-        pass
+    def __init__(self,table):
+        self.cat = open(f"{table}.cat")
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.cat.close()
+
+    def render(self,listAttributes):
+        row = {}
+        zipped = zip(listAttributes,self.cat.readlines())
+        for (attributeValue,attributeDescription) in zipped:
+            name,hasDefault,defaultValue = attributeDescription.split(":")
+            if hasDefault == "true" and attributeValue == "":
+                row[name] = defaultValue
+
+            else:
+                row[name] = attributeValue
+        return row
