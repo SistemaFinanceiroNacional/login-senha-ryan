@@ -4,11 +4,9 @@ class linearCursor():
 
     def insert(self,values,into):
         listRegister = []
-        with open(f"{into}.txt") as archive:
-            register = {"saldo":0}
-            fstr = f'{values["login"]}:{values["password"]}:0\n'
+        with open(f"{into}.txt") as archive, catalog(into) as cat:
             archive.seek(0, 2)
-            archive.write(fstr)
+            archive.write()
             register.update(values)
             listRegister = [register]
         return listRegister
@@ -38,14 +36,23 @@ class catalog:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.cat.close()
 
-    def render(self,listAttributes):
-        row = {}
-        zipped = zip(listAttributes,self.cat.readlines())
-        for (attributeValue,attributeDescription) in zipped:
-            name,hasDefault,defaultValue = attributeDescription.split(":")
-            if hasDefault == "true" and attributeValue == "":
-                row[name] = defaultValue
+    def render(self,dicioAttributes):
+
+        class column:
+            def __init__(self, listSplited):
+                self.name, self.hasDefault, self.defaultValue, self.type = listSplited
+
+            def validate(self, value):
+                pass
+
+        row = []
+        lineRead = map(lambda l: column(l.split(":")),self.cat.readlines())
+
+        for i in lineRead:
+            if i.validate(dicioAttributes):
+                row.append((i.type, dicioAttributes[i.name]))
 
             else:
-                row[name] = attributeValue
+                return []
+
         return row
