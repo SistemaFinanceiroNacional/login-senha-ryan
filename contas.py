@@ -3,8 +3,8 @@ import account
 import condition
 
 class contas():
-    def __init__(self,archive):
-        self.archive = archive
+    def __init__(self,archiveCursor):
+        self.archive = archiveCursor
 
     def __enter__(self):
         return self
@@ -18,8 +18,9 @@ class contas():
         return not x
 
     def authentication(self,login,password):
-        findLoginValue = self.archive.select(columns=["*"], fromTable="contas", where=condition.andCondition(condition.equal(condition.literal(login),condition.columnname("login")),condition.equal(condition.literal(password), condition.columnname("password"))))
-        if findLoginValue:
+        findLoginList = self.archive.select(columns=["*"], fromTable="contas", where=condition.andCondition(condition.equal(condition.literal(login),condition.columnname("login")),condition.equal(condition.literal(password), condition.columnname("password"))))
+        if len(findLoginList) == 1:
+            findLoginValue = findLoginList[0]
             if str(password) == findLoginValue["password"]:
                 return maybe.just(account.account(findLoginValue["login"],findLoginValue["password"],findLoginValue["saldo"]))
         return maybe.nothing()

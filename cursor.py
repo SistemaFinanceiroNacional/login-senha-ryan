@@ -6,7 +6,7 @@ class linearCursor():
         listRegister = []
         with open(f"{into}.txt") as archive, catalog(into) as cat:
             archive.seek(0, 2)
-            archive.write()
+            archive.write(values)
             register.update(values)
             listRegister = [register]
         return listRegister
