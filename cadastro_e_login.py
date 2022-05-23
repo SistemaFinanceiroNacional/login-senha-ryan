@@ -1,7 +1,6 @@
 import contas
 import inputIO
 import password
-import cursor
 import psycopg2
 
 def repl(userIO,acc):
@@ -31,5 +30,5 @@ def main(contas,userIO):
 
 
 if __name__ == "__main__":
-    with psycopg2.connect("dbname=ryanbanco user=postgres") as connection, connection.cursor() as cursor, contas.contas(cursor) as c:
+    with psycopg2.connect("dbname=ryanbanco user=ryanbanco password=abc123") as connection, connection.cursor() as cursor, contas.contas(cursor) as c:
         main(c,inputIO.inputIO())
