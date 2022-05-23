@@ -1,29 +1,21 @@
+import psycopg2
 import contas
-import cursor
 import filemock
 import io
 import password
 
 # example of listoflistofdict = [[{"login":"pedro","password":"abc123"}]]
 
-class fakeCursor():
-    def __init__(self,listSelect, listInsert):
-        self.listSelect = listSelect
-        self.listInsert = listInsert
-
-    def select(self, columns, fromTable, where):
-        return self.listSelect.pop()
-
-    def insert(self, values, into):
-        return self.listInsert.pop()
-
 def test_add_account():
-    archiveList = [[]]
-    archiveList2 = [[]]
+    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123")
+    cursor = conn.cursor()
     new_login = "new_login"
     new_password = "new_password"
-    x = contas.contas(fakeCursor(archiveList,archiveList2))
+    x = contas.contas(cursor)
     y = x.add_account(new_login,new_password)
+    cursor.close()
+    conn.rollback()
+    conn.close()
     assert y
 
 def test_add_existing_account():

@@ -9,18 +9,20 @@ class contas():
     def __enter__(self):
         return self
 
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        pass
+
     def add_account(self,new_login,new_password):
-        x = self.archive.select(columns=["*"], fromTable="contas", where=condition.equal(condition.literal(new_login),condition.columnname("login")))
+        x = self.archive.execute("SELECT * FROM account WHERE login=%s",(new_login,))
 
         if not x:
-            self.archive.insert(values={"login":new_login,"password":new_password}, into="contas")
+            self.archive.execute("INSERT INTO account (login,password,balance) VALUES (%s,%s,%s)", (new_login,new_password,0))
 
         return not x
 
     def authentication(self,login,password):
-        findLoginList = self.archive.select(columns=["*"], fromTable="contas", where=condition.andCondition(condition.equal(condition.literal(login),condition.columnname("login")),condition.equal(condition.literal(password), condition.columnname("password"))))
-        if len(findLoginList) == 1:
-            findLoginValue = findLoginList[0]
-            if str(password) == findLoginValue["password"]:
-                return maybe.just(account.account(findLoginValue["login"],findLoginValue["password"],findLoginValue["saldo"]))
+        self.archive.execute("SELECT * FROM account WHERE login=%s AND password=%s", (login, str(password)))
+        findLoginList = self.archive.fetchone()
+        if findLoginList is not None:
+            return maybe.just(account.account(findLoginList[1],findLoginList[2],findLoginList[3]))
         return maybe.nothing()

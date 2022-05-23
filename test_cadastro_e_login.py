@@ -41,6 +41,9 @@ class fakeCursor():
         self.listSelect = listSelect
         self.listInsert = listInsert
 
+    def execute(self,function,arguments):
+        pass
+
     def select(self, columns, fromTable, where):
         return self.listSelect.pop()
 
