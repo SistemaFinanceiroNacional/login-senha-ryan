@@ -13,10 +13,12 @@ class contas():
         pass
 
     def add_account(self,new_login,new_password):
-        x = self.archive.execute("SELECT * FROM account WHERE login=%s",(new_login,))
+        self.archive.execute("SELECT * FROM account WHERE login = %s ",(new_login,))
+        x = self.archive.fetchone()
+
 
         if not x:
-            self.archive.execute("INSERT INTO account (login,password,balance) VALUES (%s,%s,%s)", (new_login,new_password,0))
+            self.archive.execute("INSERT INTO account (login,password,balance) VALUES (%s,%s,%s)", (new_login,str(new_password),0))
 
         return not x
 
