@@ -3,6 +3,7 @@ import maybe
 import account
 import contas
 import password
+import psycopg2
 
 class inputfake():
     def __init__(self,lista):
@@ -36,21 +37,6 @@ class contasfake():
         return new_login in self.newAccounts and str(hashsenha) == str(new_password)
 
 
-class fakeCursor():
-    def __init__(self,listSelect, listInsert):
-        self.listSelect = listSelect
-        self.listInsert = listInsert
-
-    def execute(self,function,arguments):
-        pass
-
-    def select(self, columns, fromTable, where):
-        return self.listSelect.pop()
-
-    def insert(self, values, into):
-        return self.listInsert.pop()
-
-
 def conta_do_pedro_existente():
     return contasfake(actualAccounts={"pedro":("abc123","400")})
 
@@ -70,30 +56,19 @@ def test_main_choose_2_already_exist():
     cadastro_e_login.main(c,i)
     assert i.outputlist[0] == "Conta criada com sucesso!"
 
-
-def test_verify_correct_content():
-    archive1 = [[]]
-    archive2 = [[{"login":"pedro","password":"c70b5dd9ebfb6f51d09d4132b7170c9d20750a7852f00680f65658f0310e810056e6763c34c9a00b0e940076f54495c169fc2302cceb312039271c43469507dc","saldo":0}],[]]
-    y = inputfake(["abc123","pedro","2"])
-    x = contas.contas(fakeCursor(archive1,archive2))
-    cadastro_e_login.main(x,y)
-    assert archive2.pop().pop() == {"login":"pedro","password":"c70b5dd9ebfb6f51d09d4132b7170c9d20750a7852f00680f65658f0310e810056e6763c34c9a00b0e940076f54495c169fc2302cceb312039271c43469507dc","saldo":0}
-
 def test_verify_correct_content_using_different_password():
-    archive1 = [[{}]]
-    archive2 = [[{"login":"pedro","password":"eaf2c12742cb8c161bcbd84b032b9bb98999a23282542672ca01cc6edd268f7dce9987ad6b2bc79305634f89d90b90102bcd59a57e7135b8e3ceb93c0597117b","saldo":0}]]
+    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123")
+    cursor = conn.cursor()
+    x = contas.contas(cursor)
+    new_login = "pedro"
+    new_password = password.password("ab123")
+    x.add_account(new_login,new_password)
     y = inputfake(["abc123","pedro","2"])
-    x = contas.contas(fakeCursor(archive1,archive2))
     cadastro_e_login.main(x,y)
+    cursor.close()
+    conn.rollback()
+    conn.close()
     assert y.outputlist[0] == "Conta já existe. Tente outro usuário e senha."
-
-def test_verify_content_from_last_test():
-    archive1 = [[{"login":"pedro","password":"eaf2c12742cb8c161bcbd84b032b9bb98999a23282542672ca01cc6edd268f7dce9987ad6b2bc79305634f89d90b90102bcd59a57e7135b8e3ceb93c0597117b","saldo":0}]]
-    archive2 = [[{"login":"pedro","password":"eaf2c12742cb8c161bcbd84b032b9bb98999a23282542672ca01cc6edd268f7dce9987ad6b2bc79305634f89d90b90102bcd59a57e7135b8e3ceb93c0597117b","saldo":0}]]
-    y = inputfake(["abc123","pedro","1"])
-    x = contas.contas(fakeCursor(archive1,archive2))
-    cadastro_e_login.main(x, y)
-    assert archive2.pop().pop() == {"login":"pedro","password":"eaf2c12742cb8c161bcbd84b032b9bb98999a23282542672ca01cc6edd268f7dce9987ad6b2bc79305634f89d90b90102bcd59a57e7135b8e3ceb93c0597117b","saldo":0}
 
 if __name__ == "__main__":
     test_verify_correct_content()

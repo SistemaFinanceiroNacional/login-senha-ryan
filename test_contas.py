@@ -19,12 +19,18 @@ def test_add_account():
     assert y
 
 def test_add_existing_account():
-    archiveList = [[{"login":"new_login","password":"new_password","saldo":0}]]
-    archiveList2 = [[{"login":"new_login","password":"new_password","saldo":0}]]
-    new_login = "new_login"
-    new_password = "new_password"
-    x = contas.contas(fakeCursor(archiveList,archiveList2))
+    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123")
+    cursor = conn.cursor()
+    x = contas.contas(cursor)
+    existing_login = "same_login"
+    existing_password = "same_password"
+    firstAdd = x.add_account(existing_login,existing_password)
+    new_login = "same_login"
+    new_password = "same_password"
     y = x.add_account(new_login, new_password)
+    cursor.close()
+    conn.rollback()
+    conn.close()
     assert not y
 
 def test_hashpassword():
@@ -33,21 +39,34 @@ def test_hashpassword():
     assert y == "4dff4ea340f0a823f15d3f4f01ab62eae0e5da579ccb851f8db9dfe84c58b2b37b89903a740e1ee172da793a6e79d560e5f7f9bd058a12a280433ed6fa46510a"
 
 def test_authentication_just_or_nothing():################
-    archiveList = [[{"login":"initial","password":"text","saldo":0}]]
+    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123")
+    cursor = conn.cursor()
+    x = contas.contas(cursor)
     l = "initial"
-    s = "text"
-    x = contas.contas(fakeCursor(archiveList,archiveList)).authentication(l,s)
-    assert x.map(lambda _: True).orElse(lambda _:False) == True
+    s = password.password("text")
+    x.add_account(l,s)
+    y = x.authentication(l,s)
+    cursor.close()
+    conn.rollback()
+    conn.close()
+    assert y.map(lambda _: True).orElse(lambda : False) == True
 
 def test_authentication_on_second_account():
     archiveList = [[{"login":"ryan","password":"ab123","saldo":0},{"login":"pedro","password":"abc123","saldo":17}]]
-    c = contas.contas(fakeCursor(archiveList,archiveList)).authentication("pedro","abc123")
-    assert c
-
-
-def test_authentication_on_second_account_with_real_archive():
-    c = contas.contas(fakeCursor([[{"login":"pedro","password":"abc123","saldo":0}]],[[{"login":"pedro","password":"abc123","saldo":0}]])).authentication("pedro","abc123")
-    assert c
+    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123")
+    cursor = conn.cursor()
+    x = contas.contas(cursor)
+    login1 = "ryan"
+    senha1 = password.password("ab123")
+    x.add_account(login1, senha1)
+    login2 = "pedro"
+    senha2 = password.password("abc123")
+    x.add_account(login2,senha2)
+    c = x.authentication(login2, senha2)
+    cursor.close()
+    conn.rollback()
+    conn.close()
+    assert c.map(lambda _: True).orElse(lambda : False) == True
 
 if __name__ == "__main__":
     test_add_account()
