@@ -1,7 +1,7 @@
-import cadastro_e_login
+import login_and_registration
 import maybe
-import account
-import contas
+import internalAccount
+import accounts
 import password
 import psycopg2
 
@@ -28,7 +28,7 @@ class contasfake():
     def authentication(self,login,user_password):
         hashsenha = password.password(self.actualAccounts[login][0])
         if login in self.actualAccounts and str(hashsenha) == str(user_password):
-            return maybe.just(account.account(login,user_password,self.actualAccounts[login][1]))
+            return maybe.just(internalAccount.internalAccount(login, user_password, self.actualAccounts[login][1]))
         else:
             return maybe.nothing()
 
@@ -46,30 +46,30 @@ def conta_esperando_pedro():
 
 def test_main_with_repl():
     c = conta_do_pedro_existente()
-    i = inputfake(["sair","saldo","abc123","pedro","1"])
-    cadastro_e_login.main(c,i)
+    i = inputfake(["logout","balance","abc123","pedro","1"])
+    login_and_registration.main(c,i)
     assert i.outputlist[0] == "400"
 
 def test_main_choose_2_already_exist():
     i = inputfake(["abc123","pedro","2"])
     c = conta_esperando_pedro()
-    cadastro_e_login.main(c,i)
-    assert i.outputlist[0] == "Conta criada com sucesso!"
+    login_and_registration.main(c,i)
+    assert i.outputlist[0] == "Your account has been successfully created!"
 
 def test_verify_correct_content_using_different_password():
     conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123")
     cursor = conn.cursor()
-    x = contas.contas(cursor)
+    x = accounts.accounts(cursor)
     new_login = "pedro"
     new_password = password.password("ab123")
     x.add_account(new_login,new_password)
     y = inputfake(["abc123","pedro","2"])
-    cadastro_e_login.main(x,y)
+    login_and_registration.main(x,y)
     cursor.close()
     conn.rollback()
     conn.close()
-    assert y.outputlist[0] == "Conta já existe. Tente outro usuário e senha."
+    assert y.outputlist[0] == "Account already exists. Try another username and password."
 
 if __name__ == "__main__":
-    test_verify_correct_content()
+    test_verify_correct_content_using_different_password()
 

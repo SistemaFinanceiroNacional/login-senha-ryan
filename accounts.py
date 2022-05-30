@@ -1,8 +1,7 @@
 import maybe
-import account
-import condition
+import internalAccount
 
-class contas():
+class accounts():
     def __init__(self,archiveCursor):
         self.archive = archiveCursor
 
@@ -26,5 +25,5 @@ class contas():
         self.archive.execute("SELECT * FROM account WHERE login=%s AND password=%s", (login, str(password)))
         findLoginList = self.archive.fetchone()
         if findLoginList is not None:
-            return maybe.just(account.account(findLoginList[1],findLoginList[2],findLoginList[3]))
+            return maybe.just(internalAccount.internalAccount(findLoginList[1], findLoginList[2], findLoginList[3]))
         return maybe.nothing()
