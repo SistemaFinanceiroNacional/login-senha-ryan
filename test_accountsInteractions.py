@@ -1,5 +1,5 @@
 import psycopg2
-import contas
+import accounts
 import filemock
 import io
 import password
@@ -11,7 +11,7 @@ def test_add_account():
     cursor = conn.cursor()
     new_login = "new_login"
     new_password = "new_password"
-    x = contas.contas(cursor)
+    x = accounts.accounts(cursor)
     y = x.add_account(new_login,new_password)
     cursor.close()
     conn.rollback()
@@ -21,7 +21,7 @@ def test_add_account():
 def test_add_existing_account():
     conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123")
     cursor = conn.cursor()
-    x = contas.contas(cursor)
+    x = accounts.accounts(cursor)
     existing_login = "same_login"
     existing_password = "same_password"
     firstAdd = x.add_account(existing_login,existing_password)
@@ -41,7 +41,7 @@ def test_hashpassword():
 def test_authentication_just_or_nothing():################
     conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123")
     cursor = conn.cursor()
-    x = contas.contas(cursor)
+    x = accounts.accounts(cursor)
     l = "initial"
     s = password.password("text")
     x.add_account(l,s)
@@ -52,10 +52,9 @@ def test_authentication_just_or_nothing():################
     assert y.map(lambda _: True).orElse(lambda : False) == True
 
 def test_authentication_on_second_account():
-    archiveList = [[{"login":"ryan","password":"ab123","saldo":0},{"login":"pedro","password":"abc123","saldo":17}]]
     conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123")
     cursor = conn.cursor()
-    x = contas.contas(cursor)
+    x = accounts.accounts(cursor)
     login1 = "ryan"
     senha1 = password.password("ab123")
     x.add_account(login1, senha1)
