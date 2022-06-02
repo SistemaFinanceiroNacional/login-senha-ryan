@@ -32,7 +32,7 @@ def main(accounts,externalAccount,userIO):
         login = userIO.input("Enter your username: ")
         senha = password.password(userIO.inputoccult("Enter your password: "))
         possible_account = accounts.authentication(login, senha)
-        possible_account.map(lambda acc: repl(userIO,acc,extC)).orElse(lambda : userIO.print("You are not logged in!"))
+        possible_account.map(lambda acc: repl(userIO,acc,externalAccount)).orElse(lambda : userIO.print("You are not logged in!"))
 
 
     elif choose == "2":
