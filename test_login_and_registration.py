@@ -1,3 +1,4 @@
+import externalAccountsInteractions
 import login_and_registration
 import maybe
 import internalAccount
@@ -45,15 +46,21 @@ def conta_esperando_pedro():
 
 
 def test_main_with_repl():
+    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123")
+    cursor = conn.cursor()
     c = conta_do_pedro_existente()
     i = inputfake(["logout","balance","abc123","pedro","1"])
-    login_and_registration.main(c,i)
+    z = externalAccountsInteractions.externalAccountsInteractions(cursor)
+    login_and_registration.main(c,z,i)
     assert i.outputlist[0] == "400"
 
 def test_main_choose_2_already_exist():
+    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123")
+    cursor = conn.cursor()
     i = inputfake(["abc123","pedro","2"])
     c = conta_esperando_pedro()
-    login_and_registration.main(c,i)
+    z = externalAccountsInteractions.externalAccountsInteractions(cursor)
+    login_and_registration.main(c,z,i)
     assert i.outputlist[0] == "Your account has been successfully created!"
 
 def test_verify_correct_content_using_different_password():
@@ -64,7 +71,8 @@ def test_verify_correct_content_using_different_password():
     new_password = password.password("ab123")
     x.add_account(new_login,new_password)
     y = inputfake(["abc123","pedro","2"])
-    login_and_registration.main(x,y)
+    z = externalAccountsInteractions.externalAccountsInteractions(cursor)
+    login_and_registration.main(x,z,y)
     cursor.close()
     conn.rollback()
     conn.close()
