@@ -38,17 +38,17 @@ class contasfake():
         return new_login in self.newAccounts and str(hashsenha) == str(new_password)
 
 
-def conta_do_pedro_existente():
+def existing_pedros_account():
     return contasfake(actualAccounts={"pedro":("abc123","400")})
 
-def conta_esperando_pedro():
+def waiting_pedro_account():
     return contasfake(newAccounts={"pedro":"abc123"})
 
 
 def test_main_with_repl():
     conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123")
     cursor = conn.cursor()
-    c = conta_do_pedro_existente()
+    c = existing_pedros_account()
     i = inputfake(["logout","balance","abc123","pedro","1"])
     z = externalAccountsInteractions.externalAccountsInteractions(cursor)
     login_and_registration.main(c,z,i)
@@ -58,7 +58,7 @@ def test_main_choose_2_already_exist():
     conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123")
     cursor = conn.cursor()
     i = inputfake(["abc123","pedro","2"])
-    c = conta_esperando_pedro()
+    c = waiting_pedro_account()
     z = externalAccountsInteractions.externalAccountsInteractions(cursor)
     login_and_registration.main(c,z,i)
     assert i.outputlist[0] == "Your account has been successfully created!"
