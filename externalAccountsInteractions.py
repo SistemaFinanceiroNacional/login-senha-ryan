@@ -1,7 +1,6 @@
 import externalAccount
 import maybe
 
-
 class externalAccountsInteractions:
     def __init__(self, cursor):
         self.cursor = cursor
@@ -20,3 +19,6 @@ class externalAccountsInteractions:
 
         else:
             return maybe.nothing()
+
+    def update(self,login,incrementBalance):
+        self.cursor.execute("UPDATE account SET balance=balance+%s WHERE login=%s",(incrementBalance,login))

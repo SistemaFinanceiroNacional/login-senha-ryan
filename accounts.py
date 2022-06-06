@@ -27,3 +27,6 @@ class accounts():
         if findLoginList is not None:
             return maybe.just(internalAccount.internalAccount(findLoginList[1], findLoginList[2], findLoginList[3]))
         return maybe.nothing()
+
+    def updateBalance(self,login,new_balance):
+        self.archive.execute("UPDATE account SET balance=%s WHERE login=%s",(new_balance,login))
