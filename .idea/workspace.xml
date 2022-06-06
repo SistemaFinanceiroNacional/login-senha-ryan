@@ -4,7 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0b2f7905-0594-4d6a-addc-6e04e1849d5e" name="Changes" comment="" />
+    <list default="true" id="0b2f7905-0594-4d6a-addc-6e04e1849d5e" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/accounts.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/externalAccountsInteractions.py" beforeDir="false" afterPath="$PROJECT_DIR$/externalAccountsInteractions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/login_and_registration.py" beforeDir="false" afterPath="$PROJECT_DIR$/login_and_registration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_accountsInteractions.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_accountsInteractions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_externalAccountsInteractions.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_externalAccountsInteractions.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -19,6 +25,9 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/test_login_and_registration.py" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -59,7 +68,7 @@
       <recent name="$PROJECT_DIR$/migrate" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.server">
+  <component name="RunManager" selected="Python tests.Python tests for test_HttpRequest.test_http_request_1">
     <configuration name="server" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="login-senha-ryan" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -79,6 +88,20 @@
       <option name="MODULE_MODE" value="false" />
       <option name="REDIRECT_INPUT" value="false" />
       <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests for test_HttpRequest.test_http_request_1" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="login-senha-ryan" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Web" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;test_HttpRequest.test_http_request_1&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
     <configuration name="Python tests for test_HttpRequest.test_http_request_getBody" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
@@ -123,27 +146,13 @@
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
-    <configuration name="Python tests for test_HttpRequest.test_http_request_getBody_noContentLenght" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
-      <module name="login-senha-ryan" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Web" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;test_HttpRequest.test_http_request_getBody_noContentLenght&quot;" />
-      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
-      <method v="2" />
-    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python tests.Python tests for test_HttpRequest.test_http_request_1" />
         <item itemvalue="Python.server" />
         <item itemvalue="Python tests.Python tests for test_HttpRequest.test_http_request_getBody3" />
         <item itemvalue="Python tests.Python tests for test_HttpRequest.test_http_request_getBody" />
         <item itemvalue="Python tests.Python tests for test_HttpRequest.test_http_request_getBody2" />
-        <item itemvalue="Python tests.Python tests for test_HttpRequest.test_http_request_getBody_noContentLenght" />
       </list>
     </recent_temporary>
   </component>

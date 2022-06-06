@@ -4,7 +4,6 @@ import filemock
 import io
 import password
 
-# example of listoflistofdict = [[{"login":"pedro","password":"abc123"}]]
 
 def test_add_account():
     conn = psycopg2.connect(dbname="test", user="ryanbanco", password="abc123", host="localhost", port="5432")
@@ -68,7 +67,7 @@ def test_authentication_on_second_account():
     assert c.map(lambda _: True).orElse(lambda : False) == True
 
 def test_updateBalancec_from_an_internalAccount():
-    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123 host=localhost")
+    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123")
     cursor = conn.cursor()
     x = accounts.accounts(cursor)
     loginUpdate = "loginUpdate"
