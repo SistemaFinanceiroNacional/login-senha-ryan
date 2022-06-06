@@ -6,7 +6,7 @@ import internalAccount
 import password
 import psycopg2
 
-def repl(userIO,acc,extC):
+def repl(userIO,acc,accounts,extC):
     comando = ""
     while comando != "logout":
         comando = userIO.input("->")
@@ -16,10 +16,13 @@ def repl(userIO,acc,extC):
             destinationAccount = userIO.input("Enter the destination account: ")
             value = int(userIO.input("How much do you want to transfer? "))
             possibleLogin = extC.getByLogin(destinationAccount)
-            isJust = possibleLogin.map(lambda : True).orElse(lambda : False)
+            isJust = possibleLogin.map(lambda _: True).orElse(lambda: False)
             if isJust:
                 try:
-                   acc.transfer(possibleLogin.orElse(lambda x: False),value)
+                   acc.transfer(possibleLogin.value,value)
+                   accounts.updateBalance(acc.m_login,acc.m_balance)
+                   extC.update(possibleLogin.value.login,possibleLogin.value.balanceIncrement)
+                   userIO.print("Transaction Succesful!")
                 except internalAccount.insufficientFundsException:
                    userIO.print("Insufficient funds.")
             else:
@@ -32,7 +35,7 @@ def main(accounts,externalAccount,userIO):
         login = userIO.input("Enter your username: ")
         senha = password.password(userIO.inputoccult("Enter your password: "))
         possible_account = accounts.authentication(login, senha)
-        possible_account.map(lambda acc: repl(userIO,acc,externalAccount)).orElse(lambda : userIO.print("You are not logged in!"))
+        possible_account.map(lambda acc: repl(userIO,acc,accounts,externalAccount)).orElse(lambda : userIO.print("You are not logged in!"))
 
 
     elif choose == "2":

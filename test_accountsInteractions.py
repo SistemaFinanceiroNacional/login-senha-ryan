@@ -67,5 +67,20 @@ def test_authentication_on_second_account():
     conn.close()
     assert c.map(lambda _: True).orElse(lambda : False) == True
 
+def test_updateBalancec_from_an_internalAccount():
+    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123")
+    cursor = conn.cursor()
+    x = accounts.accounts(cursor)
+    loginUpdate = "loginUpdate"
+    passwordUpdate = "passwordUpdate"
+    x.add_account(loginUpdate,passwordUpdate)
+    x.updateBalance(loginUpdate, 500)
+    internalAccount1 = x.authentication(loginUpdate,passwordUpdate).value
+    cursor.close()
+    conn.rollback()
+    conn.close()
+    assert internalAccount1.balance() == 500
+
+
 if __name__ == "__main__":
     test_add_account()
