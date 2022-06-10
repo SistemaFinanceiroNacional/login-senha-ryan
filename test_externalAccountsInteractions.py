@@ -17,7 +17,7 @@ def test_update1():
     externalAccounts1 = externalAccountsInteractions.externalAccountsInteractions(cursor)
     accountToUpdate = externalAccounts1.getByLogin(loginUpdate).value
     accountToUpdate.incrementBalance(100)
-    externalAccounts1.update(loginUpdate,accountToUpdate.getIncrementBalance())
+    accountToUpdate.update(externalAccounts1)
 
     loggedAccount = x.authentication(loginUpdate,passwordUpdate).value
     cursor.close()
