@@ -1,4 +1,8 @@
 import psycopg2
+<<<<<<< HEAD
+=======
+
+>>>>>>> The transfer on transferFundsBetweenAccounts now can receive a destinyLogin and transform it into an externalAccount. We also initiated our web implementation.
 import accounts
 import externalAccountsInteractions
 import internalAccount
@@ -6,9 +10,14 @@ from ApplicationService import transferFundsBetweenAccounts
 
 
 def test_transfer_correct():
+<<<<<<< HEAD
     conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123 host=localhost")
     cursor = conn.cursor()
     cursor.execute("CREATE TABLE IF NOT EXISTS accounts (login text, password text, balance int);")
+=======
+    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123")
+    cursor = conn.cursor()
+>>>>>>> The transfer on transferFundsBetweenAccounts now can receive a destinyLogin and transform it into an externalAccount. We also initiated our web implementation.
     loginOrigin = "login"
     passwordOrigin = "password"
     x = accounts.accounts(cursor)
@@ -36,10 +45,15 @@ def test_transfer_correct():
 
 
 def test_transfer_correct2():
+<<<<<<< HEAD
     conn = psycopg2.connect("dbname=test user=ryanbanco password='abc123' host=localhost")
     cursor = conn.cursor()
     cursor.execute("CREATE TABLE IF NOT EXISTS accounts (login text, password text, balance integer);")
     conn.commit()
+=======
+    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123")
+    cursor = conn.cursor()
+>>>>>>> The transfer on transferFundsBetweenAccounts now can receive a destinyLogin and transform it into an externalAccount. We also initiated our web implementation.
     loginOrigin = "login"
     passwordOrigin = "password"
     x = accounts.accounts(cursor)
@@ -67,7 +81,11 @@ def test_transfer_correct2():
 
 
 def test_transfer_zero_amout():
+<<<<<<< HEAD
     conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123 host=localhost")
+=======
+    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123")
+>>>>>>> The transfer on transferFundsBetweenAccounts now can receive a destinyLogin and transform it into an externalAccount. We also initiated our web implementation.
     cursor = conn.cursor()
     loginOrigin = "login"
     passwordOrigin = "password"
@@ -94,7 +112,11 @@ def test_transfer_zero_amout():
 
 
 def test_transfer_negative_amout():
+<<<<<<< HEAD
     conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123 host=localhost")
+=======
+    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123")
+>>>>>>> The transfer on transferFundsBetweenAccounts now can receive a destinyLogin and transform it into an externalAccount. We also initiated our web implementation.
     cursor = conn.cursor()
     loginOrigin = "login"
     passwordOrigin = "password"
@@ -121,9 +143,14 @@ def test_transfer_negative_amout():
 
 
 def test_transfer_not_existing_login_destiny():
+<<<<<<< HEAD
     conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123 host=localhost")
     cursor = conn.cursor()
     cursor.execute("CREATE TABLE IF NOT EXISTS accounts (login text, password text, balance int)")
+=======
+    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123")
+    cursor = conn.cursor()
+>>>>>>> The transfer on transferFundsBetweenAccounts now can receive a destinyLogin and transform it into an externalAccount. We also initiated our web implementation.
     loginOrigin = "login"
     passwordOrigin = "password"
     x = accounts.accounts(cursor)
@@ -143,7 +170,10 @@ def test_transfer_not_existing_login_destiny():
     cursor.close()
     conn.rollback()
     conn.close()
+<<<<<<< HEAD
 
 
 if __name__ == "__main__":
     test_transfer_correct2()
+=======
+>>>>>>> The transfer on transferFundsBetweenAccounts now can receive a destinyLogin and transform it into an externalAccount. We also initiated our web implementation.
