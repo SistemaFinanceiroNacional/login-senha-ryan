@@ -5,6 +5,8 @@ class maybe():
     def orElse(self,default):
         raise NotImplementedError
 
+    def orElseThrow(self, value):
+        raise NotImplementedError
 
 class just(maybe):
     def __init__(self,value):
@@ -16,6 +18,8 @@ class just(maybe):
     def orElse(self,default):
         return self.value
 
+    def orElseThrow(self, value):
+        return self.value
 
 class nothing(maybe):
 
@@ -24,3 +28,6 @@ class nothing(maybe):
 
     def orElse(self,default):
         return default()
+
+    def orElseThrow(self, value):
+        raise value

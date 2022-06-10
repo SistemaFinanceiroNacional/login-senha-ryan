@@ -12,6 +12,12 @@ class externalAccount:
     def getIncrementBalance(self):
         return self.balanceIncrement
 
+    def update(self,repository):
+        repository.update(self.login, self.balanceIncrement)
+
+    def login(self):
+        return self.login
+
 class negativeIncrementException(Exception):
     def __init__(self,value):
         self.value = value
