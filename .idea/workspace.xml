@@ -5,10 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0b2f7905-0594-4d6a-addc-6e04e1849d5e" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/accounts.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/externalAccountsInteractions.py" beforeDir="false" afterPath="$PROJECT_DIR$/externalAccountsInteractions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ApplicationService/test_transferFundsBetweenAccounts.py" beforeDir="false" afterPath="$PROJECT_DIR$/ApplicationService/test_transferFundsBetweenAccounts.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ApplicationService/transferFundsBetweenAccounts.py" beforeDir="false" afterPath="$PROJECT_DIR$/ApplicationService/transferFundsBetweenAccounts.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/server.py" beforeDir="false" afterPath="$PROJECT_DIR$/Web/server.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/login_and_registration.py" beforeDir="false" afterPath="$PROJECT_DIR$/login_and_registration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_accountsInteractions.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_accountsInteractions.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test_externalAccountsInteractions.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_externalAccountsInteractions.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

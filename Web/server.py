@@ -1,3 +1,4 @@
+
 import httpConnection
 import bankApplication
 
@@ -11,6 +12,7 @@ def main():
     serverSocket.bind(("127.0.0.1", 8080))
     serverSocket.listen()
     clientSocket, addr = serverSocket.accept()
+
     logging.debug(f"Client connected on IP {clientSocket.getpeername()}")
 
     connection = httpConnection.httpConnection(clientSocket)
@@ -21,4 +23,5 @@ def main():
 
 
 if __name__ == "__main__":
+
     main()
