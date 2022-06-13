@@ -1,5 +1,4 @@
 
-
 import IncompleteHttpRequest
 
 import logging
@@ -167,4 +166,3 @@ def getBody(socket, headers):
             howManyBytes = len(body)
 
     return body
-
