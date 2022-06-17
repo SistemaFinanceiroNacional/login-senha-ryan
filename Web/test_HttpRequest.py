@@ -1,3 +1,4 @@
+
 import pytest
 from Web import httpRequest
 from Web import IncompleteHttpRequest
@@ -20,7 +21,6 @@ class fakeSocket:
 
 
 def test_http_request_1():
-
     noTagsHeader = fakeSocket(b'GET /bank/Main-page HTTP/1.1\r\n\r\n')
     request = httpRequest.getNextHttpRequest(noTagsHeader)
     assert len(request.getHeader()) == 0
@@ -95,3 +95,4 @@ def test_http_request_getBody_noContentLength():
     socket = fakeSocket(b'a'*15)
     body = httpRequest.getBody(socket, oneTagHeader)
     assert body == b''
+
