@@ -183,19 +183,30 @@ def getBody(socket, headers):
         ValueOfHeaderWithSpace = 4
         ValueOfHeader = 5
         ValueOfHeaderWithCarriageReturn = 6
-        FinalState = 7
+        NewNameOfHeader = 7
+        MaybeFinalState = 9
+        FinalState = 10
         state = FirstLine
+
+        headerName = b''
+        headerValue = b''
 
         while state != FinalState:
             nextByte = self.socket.recv(1)
-            headerName = b''
-            headerValue = b''
+            print(nextByte)
+            print(state)
+
+            if nextByte == b'':
+                raise 42
 
             if nextByte == b'\r' and state == FirstLine:
                 state = FirstLineWithCarriageReturn
 
             elif nextByte == b'\n' and state == FirstLineWithCarriageReturn:
                 state = NameOfHeader
+
+            elif nextByte == b'\r' and state == NameOfHeader:
+                state = FinalState
 
             elif nextByte != b':' and state == NameOfHeader:
                 headerName += nextByte
@@ -219,8 +230,20 @@ def getBody(socket, headers):
                 state = ValueOfHeaderWithCarriageReturn
 
             elif nextByte == b'\n' and state == ValueOfHeaderWithCarriageReturn:
+                state = NewNameOfHeader
+                header[headerName] = headerValue
+                headerName = b''
+                headerValue = b''
+
+            elif nextByte == b'\r' and state == NewNameOfHeader:
+                state = MaybeFinalState
+
+            elif nextByte == b'\n' and state == MaybeFinalState:
                 state = FinalState
 
+            elif nextByte != b':' and state == NewNameOfHeader:
+                headerName += nextByte
+                state = NameOfHeader
 
         return header
 

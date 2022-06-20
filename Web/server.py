@@ -7,6 +7,7 @@ import logging
 
 logging.basicConfig(filename='server.log', level=logging.DEBUG)
 
+
 def main():
     serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     serverSocket.bind(("127.0.0.1", 8080))
@@ -23,5 +24,4 @@ def main():
 
 
 if __name__ == "__main__":
-
     main()
