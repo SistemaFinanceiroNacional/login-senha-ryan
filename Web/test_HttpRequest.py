@@ -26,10 +26,12 @@ def test_http_request_1():
     assert len(request.getHeader()) == 0
 
 
+
 def test_http_request_host():
     oneTagsHeader = fakeSocket(b'GET /bank/Main-page HTTP/1.1\r\nHost: www.ryanbanco.com.br\r\n\r\n')
     request = httpRequest.getNextHttpRequest(oneTagsHeader)
     assert len(request.getHeader()) == 1
+
 
 def test_http_request_calling_host():
     oneTagsHeader = fakeSocket(b'GET /bank/Main-page HTTP/1.1\r\nHost: www.ryanbanco.com.br\r\n\r\n')
