@@ -6,11 +6,12 @@ class transferFundsBetweenAccountsClass:
         self.internalRepository = internalRepository
         self.externalRepository = externalRepository
 
-    def execute(self,internalAccount,destinyLogin,amount):
+    def execute(self, internalAccount, destinyLogin, amount):
         extAccount = self.externalRepository.getByLogin(destinyLogin).orElseThrow(accountDoesNotExists(destinyLogin))
-        internalAccount.transfer(extAccount,amount)
+        internalAccount.transfer(extAccount, amount)
         internalAccount.update(self.internalRepository)
         extAccount.update(self.externalRepository)
+
 
 class accountDoesNotExists(Exception):
     def __init__(self,destinyLogin):

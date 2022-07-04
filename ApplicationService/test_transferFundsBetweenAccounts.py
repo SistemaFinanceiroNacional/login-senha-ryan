@@ -7,7 +7,7 @@ from ApplicationService import transferFundsBetweenAccounts
 
 
 def test_transfer_correct():
-    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123")
+    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123 host=localhost")
     cursor = conn.cursor()
     loginOrigin = "login"
     passwordOrigin = "password"
@@ -36,7 +36,7 @@ def test_transfer_correct():
 
 
 def test_transfer_correct2():
-    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123")
+    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123 host=localhost")
     cursor = conn.cursor()
     loginOrigin = "login"
     passwordOrigin = "password"
@@ -65,7 +65,7 @@ def test_transfer_correct2():
 
 
 def test_transfer_zero_amout():
-    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123")
+    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123 host=localhost")
     cursor = conn.cursor()
     loginOrigin = "login"
     passwordOrigin = "password"
@@ -92,7 +92,7 @@ def test_transfer_zero_amout():
 
 
 def test_transfer_negative_amout():
-    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123")
+    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123 host=localhost")
     cursor = conn.cursor()
     loginOrigin = "login"
     passwordOrigin = "password"
@@ -119,7 +119,7 @@ def test_transfer_negative_amout():
 
 
 def test_transfer_not_existing_login_destiny():
-    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123")
+    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123 host=localhost")
     cursor = conn.cursor()
     loginOrigin = "login"
     passwordOrigin = "password"

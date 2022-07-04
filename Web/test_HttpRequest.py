@@ -41,8 +41,7 @@ def test_http_request_double_head_call():
     oneTagsHeader = fakeSocket(
         b'GET /bank/Main-page HTTP/1.1\r\nHost: www.ryanbanco.com.br\r\nUser-Agent: Mozilla 5.0\r\nAccept-Language: en-US\r\n\r\n')
     request = httpRequest.httpRequest(oneTagsHeader)
-    request2 = httpRequest.httpRequest(oneTagsHeader)
 
     head1 = request.head()
-    head2 = request2.head()
+    head2 = request.head()
     assert head1 == head2
