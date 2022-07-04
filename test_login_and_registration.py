@@ -46,7 +46,7 @@ def waiting_pedro_account():
 
 
 def test_main_with_repl():
-    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123")
+    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123 host=localhost")
     cursor = conn.cursor()
     c = existing_pedros_account()
     i = inputfake(["logout","balance","abc123","pedro","1"])
@@ -55,7 +55,7 @@ def test_main_with_repl():
     assert i.outputlist[0] == "400"
 
 def test_main_choose_2_already_exist():
-    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123")
+    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123 host=localhost")
     cursor = conn.cursor()
     i = inputfake(["abc123","pedro","2"])
     c = waiting_pedro_account()
@@ -64,7 +64,7 @@ def test_main_choose_2_already_exist():
     assert i.outputlist[0] == "Your account has been successfully created!"
 
 def test_verify_correct_content_using_different_password():
-    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123")
+    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123 host=localhost")
     cursor = conn.cursor()
     x = accounts.accounts(cursor)
     new_login = "pedro"

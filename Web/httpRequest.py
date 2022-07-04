@@ -1,8 +1,21 @@
+def cache(func_f):
+    cachedValues = {}
+
+    def wrapper(*args, **kwargs):
+        key = str((args, kwargs))
+        if key in cachedValues:
+            return cachedValues[key]
+        else:
+            cachedValues[key] = func_f(*args, **kwargs)
+            return cachedValues[key]
+    return wrapper
+
 
 class httpRequest:
     def __init__(self, socket):
         self.socket = socket
 
+    @cache
     def head(self):
         header = {}
         FirstLine = 0
@@ -22,8 +35,6 @@ class httpRequest:
 
         while state != FinalState:
             nextByte = self.socket.recv(1)
-            print(nextByte)
-            print(state)
 
             if nextByte == b'':
                 raise 42
