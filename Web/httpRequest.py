@@ -1,3 +1,15 @@
+def cache(func_f):
+    cachedValues = {}
+
+    def wrapper(*args, **kwargs):
+        key = str((args, kwargs))
+        if key in cachedValues:
+            return cachedValues[key]
+        else:
+            cachedValues[key] = func_f(*args, **kwargs)
+            return cachedValues[key]
+    return wrapper
+
 
 import IncompleteHttpRequest
 

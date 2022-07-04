@@ -1,0 +1,1 @@
+CREATE TABLE account (login text, password text, balance int);

@@ -94,7 +94,6 @@ def test_transfer_zero_amout():
 
 
 def test_transfer_negative_amout():
-
     conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123 host=localhost")
 
     cursor = conn.cursor()
