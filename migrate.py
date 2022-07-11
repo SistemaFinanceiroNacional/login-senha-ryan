@@ -1,37 +1,36 @@
 #!/usr/bin/python3
 
 import sys
+import inputIO
+import argparse
 
-def main(args):
+def main(args, userIO):
     i = 1
     while i < len(args):
 
         if args[i] == "--folder":
-            if i+1 < len(args):
-                if args[i+1].startswith("--"):
-                    print("Empty Folder")
-                    return(1)
+            if i + 1 < len(args):
+                if args[i + 1].startswith("--"):
+                    userIO.print("Empty Folder")
+                    return (1)
 
                 else:
-                    print(f"folder : {args[i + 1]}")
+                    userIO.print(f"folder : {args[i + 1]}")
 
             else:
-                print("Empty Folder")
-                return(2)
+                userIO.print("Empty Folder")
+                return (2)
 
         elif args[i] == "up":
-            print("up")
-            return(0)
+            userIO.print("up")
+            return (0)
 
         elif args[i] == "down":
-            print("down")
-            return(0)
+            userIO.print("down")
+            return (0)
 
         i += 1
 
 
-
-
-
 if __name__ == "__main__":
-    sys.exit(main(sys.argv))
+    sys.exit(main(sys.argv, inputIO.inputIO()))
