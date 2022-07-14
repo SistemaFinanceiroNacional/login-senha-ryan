@@ -4,6 +4,7 @@ import sys
 import inputIO
 import argparse
 import psycopg2
+from pathlib import Path
 
 def main(args, userIO):
     parser = argparse.ArgumentParser()
@@ -19,11 +20,18 @@ def main(args, userIO):
     if not args.password:
         args.password = userIO.inputoccult("password:")
 
+    p = Path(f'{args.folder}')
+    list(p.glob(f'*_{args.action}.sql'))
+
     with psycopg2.connect(f"dbname={args.dbname[0]} user={args.user[0]} password={args.password} host={args.host} port={args.port}") as conn, conn.cursor() as cursor:
+        cursor.execute("CREATE TABLE IF NOT EXISTS migrations_applied(id INT NOT NULL PRIMARY KEY, version CHAR(8)")
         cursor.execute("CREATE TABLE atesttable (login text, password text, balance int)")
         cursor.execute("INSERT INTO atesttable VALUES (%s, %s, %s)", ("loginTest", "passwordTest", 100))
         cursor.execute("SELECT * FROM atesttable")
         print(cursor.fetchone())
+
+
+
 
 
 if __name__ == "__main__":
