@@ -27,15 +27,17 @@ def main(args, userIO):
 
     with psycopg2.connect(
             f"dbname={args.dbname[0]} user={args.user[0]} password={args.password} host={args.host} port={args.port}") as conn, conn.cursor() as cursor:
-        cursor.execute("CREATE TABLE IF NOT EXISTS migrations_applied(id INT NOT NULL PRIMARY KEY, version CHAR(8)")
-        cursor.execute("SELECT version FROM migrations_applied ORDER BY version asc")
-        comparableList = cursor.fetchall()
+        cursor.execute("CREATE TABLE IF NOT EXISTS migrations_applied(id SERIAL PRIMARY KEY, version CHAR(8)")
+
         if args.action == "up":
+            cursor.execute("SELECT version FROM migrations_applied ORDER BY version asc")
+            comparableList = cursor.fetchall()
             m = actions.unappliedMigrations(folderKids, comparableList)
             actions.actionExecute(cursor, m)
 
         elif args.action == "down":
-            pass
+            cursor.execute("SELECT version FROM migrations_applied ORDER BY version desc")
+            comparableList = cursor.fetchall()
 
 
 if __name__ == "__main__":
