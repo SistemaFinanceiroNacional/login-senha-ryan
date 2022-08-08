@@ -4,7 +4,7 @@ def unappliedMigrations(allMigrationsFromArgsFolder, allMigrationsApplied):
     unappliedMigrationsList = []
     allMigrationsFromArgsFolder.sort()
     for i in allMigrationsFromArgsFolder:
-        if i.name[0:9] not in allMigrationsApplied:
+        if i.name[0:8] not in allMigrationsApplied:
             unappliedMigrationsList.append(i)
 
     return unappliedMigrationsList
