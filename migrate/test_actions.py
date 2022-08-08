@@ -35,5 +35,22 @@ def test_actionExecute_1():
     actions.actionExecute(cursor, paths)
     assert cursor.outputList[0] == "CREATE TABLE test_sql_archive (login text);" and cursor.outputList[1] == "DROP TABLE test_sql_archive;"
 
+
+def test_appliedMigrations_1():
+    fMigrations = [pathlib.Path("20220708_update_account_table_up.sql"), pathlib.Path("20220612_insert_values_into_account_table_up.sql"), pathlib.Path("20220512_create_account_table_up.sql")]
+    DBMigrations = [pathlib.Path("20220512_create_account_table_up.sql"), pathlib.Path("20220708_update_account_table_up.sql")]
+    downMigrations = actions.appliedMigrations(fMigrations,DBMigrations)
+    assert downMigrations == [pathlib.Path("20220512_drop_account_table_down.sql"), pathlib.Path("20220708_do_not_update_account_table_down.sql")]
+
+def test_i_am_dumb_unappliedMigrations():
+    fMigrations = [pathlib.Path("20220708_update_account_table_up.sql")]
+    DBMigrations = [pathlib.Path("20220708_update_account_table_up.sql")]
+    notUsedMigrations = actions.unappliedMigrations(fMigrations, DBMigrations)
+    assert notUsedMigrations == pathlib.Path("20220708")
+
+
+
+
+
 if __name__ == "__main__":
     test_actionExecute_1()
