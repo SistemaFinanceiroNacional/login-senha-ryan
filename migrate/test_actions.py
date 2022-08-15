@@ -42,13 +42,11 @@ def test_appliedMigrations_1():
     downMigrations = actions.appliedMigrations(fMigrations,DBMigrations)
     assert downMigrations == [pathlib.Path("20220512_drop_account_table_down.sql"), pathlib.Path("20220708_do_not_update_account_table_down.sql")]
 
-def test_i_am_dumb_unappliedMigrations():
+def test_unappliedMigrations_4():
     fMigrations = [pathlib.Path("20220708_update_account_table_up.sql")]
     DBMigrations = [pathlib.Path("20220708_update_account_table_up.sql")]
     notUsedMigrations = actions.unappliedMigrations(fMigrations, DBMigrations)
     assert notUsedMigrations == pathlib.Path("20220708")
-
-
 
 
 
