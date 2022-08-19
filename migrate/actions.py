@@ -1,11 +1,10 @@
 from pathlib import Path
 import typing
 import psycopg2
+from collections import Iterable
 
-
-def unappliedMigrations(allMigrationsFromArgsFolder: typing.List[Path], allMigrationsApplied: typing.List[Path]) -> typing.List[Path]:
+def unappliedMigrations(allMigrationsFromArgsFolder: Iterable[Path], allMigrationsApplied: Iterable[Path]) -> typing.List[Path]:
     unappliedMigrationsList: typing.List[Path] = []
-    allMigrationsFromArgsFolder.sort()
     for i in allMigrationsFromArgsFolder:
         if i.name[0:8] not in allMigrationsApplied:
             unappliedMigrationsList.append(i)
