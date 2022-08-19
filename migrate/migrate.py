@@ -6,6 +6,7 @@ import argparse
 import psycopg2
 from pathlib import Path
 import actions
+from collections.abc import Iterable
 
 
 def main(args, userIO):
@@ -31,8 +32,9 @@ def main(args, userIO):
 
         if args.action == "up":
             cursor.execute("SELECT version FROM migrations_applied ORDER BY version asc")
-            comparableList = cursor.fetchall()
-            m = actions.unappliedMigrations(folderKids, comparableList)
+            comparablePaths: Iterable[Path] = map(lambda x: Path(x[0]), cursor.fetchall())
+
+            m = actions.unappliedMigrations(folderKids, comparablePaths)
             actions.actionExecute(cursor, m)
 
         elif args.action == "down":
