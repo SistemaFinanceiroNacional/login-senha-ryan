@@ -1,17 +1,19 @@
+import pathlib
 from pathlib import Path
 import typing
-import psycopg2
-from collections import Iterable
+from collections.abc import Iterable
+from genericCursor import genericCursor
 
-def unappliedMigrations(allMigrationsFromArgsFolder: Iterable[Path], allMigrationsApplied: Iterable[Path]) -> typing.List[Path]:
+def unappliedMigrations(allMigrationsFromArgsFolder: typing.List[Path], allMigrationsApplied: typing.List[str]) -> typing.List[Path]:
     unappliedMigrationsList: typing.List[Path] = []
     for i in allMigrationsFromArgsFolder:
-        if i.name[0:8] not in allMigrationsApplied:
+        version = i.name.split("_")
+        if version[0] not in allMigrationsApplied:
             unappliedMigrationsList.append(i)
 
     return unappliedMigrationsList
 
-def actionExecute(cursor: psycopg2.cursor, migrationsToUse: typing.List[Path]) -> None:
+def actionExecute(cursor: genericCursor, migrationsToUse: typing.List[Path]) -> None:
     for i in migrationsToUse:
         with i.open() as file:
             cursor.execute(file.read())
@@ -21,3 +23,4 @@ def appliedMigrations(allMigrationsFromArgsFolder, allMigrationsApplied):
     for i in allMigrationsApplied:
         if i in allMigrationsFromArgsFolder:
             appliedMigrationsList.append(i)
+    return appliedMigrationsList
