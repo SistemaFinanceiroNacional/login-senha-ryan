@@ -32,7 +32,7 @@ def main(args, userIO):
 
         if args.action == "up":
             cursor.execute("SELECT version FROM migrations_applied ORDER BY version asc")
-            comparablePaths: Iterable[Path] = map(lambda x: Path(x[0]), cursor.fetchall())
+            comparablePaths: Iterable[str] = map(lambda x: x[0], cursor.fetchall())
 
             m = actions.unappliedMigrations(folderKids, comparablePaths)
             actions.actionExecute(cursor, m)
