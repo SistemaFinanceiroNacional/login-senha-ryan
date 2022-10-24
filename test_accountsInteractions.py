@@ -7,12 +7,12 @@ import password
 # example of listoflistofdict = [[{"login":"pedro","password":"abc123"}]]
 
 def test_add_account():
-    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123")
+    conn = psycopg2.connect(dbname="test", user="ryanbanco", password="abc123", host="localhost", port="5432")
     cursor = conn.cursor()
     new_login = "new_login"
     new_password = "new_password"
     x = accounts.accounts(cursor)
-    y = x.add_account(new_login,new_password)
+    y = x.add_account(new_login, new_password)
     cursor.close()
     conn.rollback()
     conn.close()
