@@ -1,12 +1,15 @@
 #!/usr/bin/python3
 
 import sys
+sys.path.append("../inputIO")
+
 import inputIO
 import argparse
 import psycopg2
 from pathlib import Path
 import actions
 from collections.abc import Iterable
+
 
 
 def main(args, userIO):
@@ -43,4 +46,4 @@ def main(args, userIO):
 
 
 if __name__ == "__main__":
-    sys.exit(main(sys.argv, inputIO.inputIO()))
+    sys.exit(main(sys.argv, inputIO))
