@@ -28,3 +28,4 @@ class accounts:
 
     def updateBalance(self, login, new_balance):
         self.archive.execute("UPDATE accounts SET balance=%s WHERE login=%s", (new_balance, login))
+
