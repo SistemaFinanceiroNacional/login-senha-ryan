@@ -67,6 +67,7 @@ def test_verify_correct_content_using_different_password():
     conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123 host=localhost")
     cursor = conn.cursor()
     cursor.execute("CREATE TABLE IF NOT EXISTS accounts (login text, password text, balance int)")
+
     x = accounts.accounts(cursor)
     new_login = "pedro"
     new_password = password.password("ab123")
