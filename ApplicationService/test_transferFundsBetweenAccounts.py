@@ -148,4 +148,3 @@ def test_transfer_not_existing_login_destiny():
 
 if __name__ == "__main__":
     test_transfer_correct2()
-
