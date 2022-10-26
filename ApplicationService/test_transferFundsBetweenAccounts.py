@@ -8,7 +8,7 @@ from ApplicationService import transferFundsBetweenAccounts
 def test_transfer_correct():
     conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123 host=localhost")
     cursor = conn.cursor()
-    cursor.execute("CREATE TABLE IF NOT EXISTS account(login text, password text, balance int);")
+    cursor.execute("CREATE TABLE IF NOT EXISTS accounts (login text, password text, balance int);")
     loginOrigin = "login"
     passwordOrigin = "password"
     x = accounts.accounts(cursor)
@@ -38,7 +38,7 @@ def test_transfer_correct():
 def test_transfer_correct2():
     conn = psycopg2.connect("dbname=test user=ryanbanco password='abc123' host=localhost")
     cursor = conn.cursor()
-    cursor.execute("CREATE TABLE IF NOT EXISTS account (login text, password text, balance integer);")
+    cursor.execute("CREATE TABLE IF NOT EXISTS accounts (login text, password text, balance integer);")
     conn.commit()
     loginOrigin = "login"
     passwordOrigin = "password"
@@ -123,7 +123,7 @@ def test_transfer_negative_amout():
 def test_transfer_not_existing_login_destiny():
     conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123 host=localhost")
     cursor = conn.cursor()
-    cursor.execute("CREATE TABLE IF NOT EXISTS account(login text, password text, balance int)")
+    cursor.execute("CREATE TABLE IF NOT EXISTS accounts (login text, password text, balance int)")
     loginOrigin = "login"
     passwordOrigin = "password"
     x = accounts.accounts(cursor)
