@@ -12,7 +12,7 @@ class externalAccountsInteractions:
         pass
 
     def getByLogin(self,login):
-        self.cursor.execute("SELECT login FROM account WHERE login=%s",(login,))
+        self.cursor.execute("SELECT login FROM accounts WHERE login=%s",(login,))
         possibleLogin = self.cursor.fetchone()
         if possibleLogin is not None:
             return maybe.just(externalAccount.externalAccount(possibleLogin[0]))
@@ -21,4 +21,4 @@ class externalAccountsInteractions:
             return maybe.nothing()
 
     def update(self,login,incrementBalance):
-        self.cursor.execute("UPDATE account SET balance=balance+%s WHERE login=%s",(incrementBalance,login))
+        self.cursor.execute("UPDATE accounts SET balance=balance+%s WHERE login=%s",(incrementBalance,login))
