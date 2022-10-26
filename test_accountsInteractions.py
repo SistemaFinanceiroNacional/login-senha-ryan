@@ -19,7 +19,7 @@ def test_add_account():
     assert y
 
 def test_add_existing_account():
-    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123")
+    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123 host=localhost")
     cursor = conn.cursor()
     x = accounts.accounts(cursor)
     existing_login = "same_login"
@@ -39,7 +39,7 @@ def test_hashpassword():
     assert y == "4dff4ea340f0a823f15d3f4f01ab62eae0e5da579ccb851f8db9dfe84c58b2b37b89903a740e1ee172da793a6e79d560e5f7f9bd058a12a280433ed6fa46510a"
 
 def test_authentication_just_or_nothing():################
-    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123")
+    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123 host=localhost")
     cursor = conn.cursor()
     x = accounts.accounts(cursor)
     l = "initial"
@@ -52,7 +52,7 @@ def test_authentication_just_or_nothing():################
     assert y.map(lambda _: True).orElse(lambda : False) == True
 
 def test_authentication_on_second_account():
-    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123")
+    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123 host=localhost")
     cursor = conn.cursor()
     x = accounts.accounts(cursor)
     login1 = "ryan"
@@ -68,7 +68,7 @@ def test_authentication_on_second_account():
     assert c.map(lambda _: True).orElse(lambda : False) == True
 
 def test_updateBalancec_from_an_internalAccount():
-    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123")
+    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123 host=localhost")
     cursor = conn.cursor()
     x = accounts.accounts(cursor)
     loginUpdate = "loginUpdate"
