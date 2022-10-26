@@ -11,7 +11,7 @@ class fakeCursor:
 def test_actionExecute_1():
     migrationsToUsePrint = "before File and rewrite."
     cursor = fakeCursor()
-    paths = [pathlib.Path("file1.sql"), pathlib.Path("file2.sql")]
+    paths = [pathlib.Path("/home/ryan/Documents/login-senha-ryan/migrate/file1.sql"), pathlib.Path("/home/ryan/Documents/login-senha-ryan/migrate/file2.sql")]
     actions.actionExecute(cursor, paths)
     assert cursor.outputList[0] == "CREATE TABLE test_sql_archive (login text);" and cursor.outputList[1] == "DROP TABLE test_sql_archive;"
 
