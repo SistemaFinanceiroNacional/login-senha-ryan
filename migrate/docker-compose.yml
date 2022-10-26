@@ -11,4 +11,4 @@ services:
     POSTGRES_PASSWORD: abc123
     POSTGRES_DB: test
    ports:
-    - 5432:8080
+    - "5432:5432"
