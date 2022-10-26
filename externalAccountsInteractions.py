@@ -22,5 +22,3 @@ class externalAccountsInteractions:
 
     def update(self,login,incrementBalance):
         self.cursor.execute("UPDATE accounts SET balance=balance+%s WHERE login=%s",(incrementBalance,login))
-
-
