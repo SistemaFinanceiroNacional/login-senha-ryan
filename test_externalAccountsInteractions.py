@@ -7,7 +7,7 @@ import internalAccount
 
 
 def test_update1():
-    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123")
+    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123 host=localhost")
     cursor = conn.cursor()
     loginUpdate = "loginUpdateTest"
     passwordUpdate = "passwordUpdateTest"
