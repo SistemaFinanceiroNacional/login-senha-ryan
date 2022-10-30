@@ -26,18 +26,19 @@ def main(args, userIO):
     if not args.password:
         args.password = userIO.inputoccult("password:")
 
-    p = Path(f'{args.folder[0]}')
+    p = Path(f'../{args.folder}')
     folderKids = list(p.glob(f'*_{args.action}.sql'))
 
     with psycopg2.connect(
-            f"dbname={args.dbname[0]} user={args.user[0]} password={args.password} host={args.host} port={args.port}") as conn, conn.cursor() as cursor:
-        cursor.execute("CREATE TABLE IF NOT EXISTS migrations_applied(id SERIAL PRIMARY KEY, version CHAR(8)")
+            f"dbname={args.dbname[0]} user={args.user[0]} password={args.password[0]} host={args.host} port={args.port}") as conn, conn.cursor() as cursor:
+        cursor.execute("CREATE TABLE IF NOT EXISTS migrations_applied(id SERIAL PRIMARY KEY, version CHAR(8));")
 
         if args.action == "up":
             cursor.execute("SELECT version FROM migrations_applied ORDER BY version asc")
-            comparablePaths: Iterable[str] = map(lambda x: x[0], cursor.fetchall())
+            x = cursor.fetchall()
+            comparablePaths: Iterable[str] = map(lambda i: i[0], x)
+            m = actions.unappliedMigrations(folderKids, list(comparablePaths))
 
-            m = actions.unappliedMigrations(folderKids, comparablePaths)
             actions.actionExecute(cursor, m)
 
         elif args.action == "down":
