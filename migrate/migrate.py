@@ -19,7 +19,7 @@ def main(args, userIO):
     parser.add_argument("-d", "--dbname", nargs=1, default="postgres")
     parser.add_argument("-u", "--user", nargs=1, default="postgres")
     parser.add_argument("--password", nargs=1)
-    parser.add_argument("--host", nargs=1, default="localhost")
+    parser.add_argument("--host", nargs=1, default=["localhost"])
     parser.add_argument("-p", "--port", nargs=1, default="5432")
     args = parser.parse_args()
 
@@ -30,16 +30,22 @@ def main(args, userIO):
     folderKids = list(p.glob(f'*_{args.action}.sql'))
 
     with psycopg2.connect(
-            f"dbname={args.dbname[0]} user={args.user[0]} password={args.password[0]} host={args.host} port={args.port}") as conn, conn.cursor() as cursor:
-        cursor.execute("CREATE TABLE IF NOT EXISTS migrations_applied(id SERIAL PRIMARY KEY, version CHAR(8));")
+            f"dbname={args.dbname[0]} user={args.user[0]} password={args.password[0]} host={args.host[0]} port={args.port}") as conn, conn.cursor() as cursor:
+        cursor.execute("CREATE TABLE IF NOT EXISTS migrations_applied(version CHAR(8));")
 
         if args.action == "up":
-            cursor.execute("SELECT version FROM migrations_applied ORDER BY version asc")
+            cursor.execute("SELECT version FROM migrations_applied")
             x = cursor.fetchall()
             comparablePaths: Iterable[str] = map(lambda i: i[0], x)
             m = actions.unappliedMigrations(folderKids, list(comparablePaths))
+            if len(m) > 0:
+                actions.actionExecute(cursor, m)
+                recentMigrations = m[-1].name.split("_")[0]
+                if len(m) == len(folderKids):
+                    cursor.execute(f"INSERT INTO migrations_applied(version) VALUES ({recentMigrations});")
 
-            actions.actionExecute(cursor, m)
+                else:
+                    cursor.execute(f"UPDATE migrations_applied SET version = {recentMigrations}")
 
         elif args.action == "down":
             cursor.execute("SELECT version FROM migrations_applied ORDER BY version desc")
