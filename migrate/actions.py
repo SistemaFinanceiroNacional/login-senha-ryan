@@ -4,11 +4,16 @@ import typing
 from collections.abc import Iterable
 from genericCursor import genericCursor
 
+
 def unappliedMigrations(allMigrationsFromArgsFolder: typing.List[Path], allMigrationsApplied: typing.List[str]) -> typing.List[Path]:
+    if len(allMigrationsApplied) == 0:
+        return allMigrationsFromArgsFolder
+
     unappliedMigrationsList: typing.List[Path] = []
+    lastMigrationApplied = allMigrationsApplied[0]
     for i in allMigrationsFromArgsFolder:
         version = i.name.split("_")
-        if version[0] not in allMigrationsApplied:
+        if version[0] > lastMigrationApplied:
             unappliedMigrationsList.append(i)
 
     return unappliedMigrationsList
