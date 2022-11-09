@@ -34,18 +34,31 @@ def test_unappliedMigrations_4():
     notUsedMigrations = actions.unappliedMigrations(fMigrations, DBMigrations)
     assert notUsedMigrations == []
 
-def test_downMigrations_1():
-    appliedMigrations = [pathlib.Path("20220708_update_account_table_up.sql"), pathlib.Path("20220709_create_service_table_up.sql")]
-    fMigrations = [pathlib.Path("20220708_update_account_table_up.sql"), pathlib.Path("20220709_create_service_table_up.sql"), pathlib.Path("20220709_drop_service_table_down.sql"), pathlib.Path("20220708_outdated_account_table_down.sql")]
-    downMigrations = actions.downMigrations(fMigrations, appliedMigrations)
-    assert downMigrations == [pathlib.Path("20220708_outdated_account_table_down.sql"), pathlib.Path("20220709_drop_service_table_down.sql")]
+def test_downMigrations_2_migrations():
+    appliedMigrationVersion = "20230101"
+    fMigrations = [pathlib.Path("20220709_create_service_table_up.sql"), pathlib.Path("20220709_outdate_service_table_down.sql"),
+                   pathlib.Path("20221008_update_account_table_up.sql"), pathlib.Path("20221008_outdate_account_table_down.sql")]
+    downMigrations = actions.downMigrations(fMigrations, appliedMigrationVersion)
+    assert downMigrations == [pathlib.Path("20221008_outdate_account_table_down.sql"), pathlib.Path("20220709_outdate_service_table_down.sql")]
 
-def test_downMigrations_2():
-    appliedMigrations = [pathlib.Path("20220708_update_account_table_up.sql"), pathlib.Path("20220709_create_service_table_up.sql")]
-    fMigrations = [pathlib.Path("20220708_update_account_table_up.sql"), pathlib.Path("20220709_create_service_table_up.sql"), pathlib.Path("20220709_drop_service_table_down.sql")]
-    downMigrations = actions.downMigrations(fMigrations, appliedMigrations)
-    assert downMigrations == [pathlib.Path("20220709_drop_service_table_down.sql")]
+def test_downMigrations_0_migrations():
+    appliedMigrationVersion = "20230101"
+    fMigrations = [pathlib.Path("20220708_update_account_table_up.sql"), pathlib.Path("20220709_create_service_table_up.sql")]
+    downMigrations = actions.downMigrations(fMigrations, appliedMigrationVersion)
+    assert downMigrations == []
 
+def test_downMigrations_1_migration():
+    appliedMigrationsVersion = "20220809"
+    fMigrations = [pathlib.Path("20220709_create_service_table_up.sql"), pathlib.Path("20220709_outdate_service_table_down.sql"),
+                   pathlib.Path("20220801_update_account_table_up.sql"), pathlib.Path("20220801_outdate_account_table_down.sql"),
+                   pathlib.Path("20220807_insert_ryan_account_into_accounts_table_up.sql"), pathlib.Path("20220807_delete_ryan_account_from_accounts_table_down.sql"),
+                   pathlib.Path("20220809_update_ryan_balance_into_accounts_table_up.sql"), pathlib.Path("20220809_decrease_ryan_balance_from_account_table_down.sql"),
+                   pathlib.Path("20221008_insert_pedro_account_into_accounts_table_up.sql"), pathlib.Path("20221008_delete_pedro_account_from_accounts_table_down.sql")]
+    downMigrations = actions.downMigrations(fMigrations, appliedMigrationsVersion)
+    assert downMigrations == [pathlib.Path("20220809_decrease_ryan_balance_from_account_table_down.sql"),
+                              pathlib.Path("20220807_delete_ryan_account_from_accounts_table_down.sql"),
+                              pathlib.Path("20220801_outdate_account_table_down.sql"),
+                              pathlib.Path("20220709_outdate_service_table_down.sql")]
 
 def test_version_unappliedMigrations():
     fMigrations = [pathlib.Path("20220708_update_account_table_up.sql"),pathlib.Path("20220810_update_account_tablee_up.sql"),pathlib.Path("20220920_update_account_table_up.sql"), pathlib.Path("20221008_update_account_table_up.sql")]
@@ -73,4 +86,4 @@ def test_version_unappliedMigrations_emptyString_on_list():
 
 
 if __name__ == "__main__":
-    test_unappliedMigrations_4()
+    test_downMigrations_1_migration()
