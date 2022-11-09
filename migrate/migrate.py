@@ -2,14 +2,12 @@
 
 import sys
 sys.path.append("../inputIO")
-
 import inputIO
 import argparse
 import psycopg2
 from pathlib import Path
 import actions
 from collections.abc import Iterable
-
 
 
 def main(args, userIO):
@@ -35,8 +33,8 @@ def main(args, userIO):
 
         if args.action == "up":
             cursor.execute("SELECT version FROM migrations_applied")
-            x = cursor.fetchall()
-            comparablePaths: Iterable[str] = map(lambda i: i[0], x)
+            version = cursor.fetchall()
+            comparablePaths: Iterable[str] = map(lambda i: i[0], version)
             m = actions.unappliedMigrations(folderKids, list(comparablePaths))
             if len(m) > 0:
                 actions.actionExecute(cursor, m)
@@ -48,8 +46,17 @@ def main(args, userIO):
                     cursor.execute(f"UPDATE migrations_applied SET version = {recentMigrations}")
 
         elif args.action == "down":
-            cursor.execute("SELECT version FROM migrations_applied ORDER BY version desc")
-            comparableList = cursor.fetchall()
+            cursor.execute("SELECT version FROM migrations_applied")
+            version = cursor.fetchone()
+            if version is not None:
+                version = version[0]
+                downMigrations = actions.downMigrations(folderKids, version)
+                if len(downMigrations) > 0:
+                    actions.actionExecute(cursor, downMigrations)
+                    cursor.execute("DELETE FROM migrations_applied")
+
+            else:
+                print("There is no migration applied.")
 
 
 if __name__ == "__main__":
