@@ -30,14 +30,14 @@ def appliedMigrations(allMigrationsFromArgsFolder, allMigrationsApplied):
             appliedMigrationsList.append(i)
     return appliedMigrationsList
 
-def downMigrations(allMigrationsFromArgsFolder, allMigrationsApplied):
+def downMigrations(allMigrationsFromArgsFolder: typing.List[Path], versionOfLastMigrationApplied: str) -> typing.List[Path]:
     downMigrationsList = []
-    for i in allMigrationsApplied:
-        iSplited = i.name.split("_")
-        for j in allMigrationsFromArgsFolder:
-            jSplited = j.name.split("_")
-            action = jSplited[-1].split(".")
-            if jSplited[0] == iSplited[0] and action[0] == "down":
-                downMigrationsList.append(j)
+    for migration in allMigrationsFromArgsFolder:
+        migrationData = migration.name.split("_")
+        action = migrationData[-1].split(".")[0]
+        if migrationData[0] <= versionOfLastMigrationApplied and action == "down":
+            downMigrationsList.append(migration)
+
+    downMigrationsList.reverse()
 
     return downMigrationsList
