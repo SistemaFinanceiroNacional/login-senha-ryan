@@ -60,6 +60,17 @@ def test_downMigrations_1_migration():
                               pathlib.Path("20220801_outdate_account_table_down.sql"),
                               pathlib.Path("20220709_outdate_service_table_down.sql")]
 
+
+def test_down_migrations_using_migrations_folder():
+    lastMigrationApplied = "20221101"
+    p = pathlib.Path('../migrations')
+    folderKids = sorted(p.glob('*.sql'))
+    downMigrations = actions.downMigrations(folderKids, lastMigrationApplied)
+    assert downMigrations == [pathlib.Path("../migrations/20221101_insert_into_accounts_ryan_accounts_down.sql"),
+                              pathlib.Path("../migrations/20221030_delete_from_accounts_joao_account_down.sql"),
+                              pathlib.Path("../migrations/20220704_drop_account_table_down.sql")]
+
+
 def test_version_unappliedMigrations():
     fMigrations = [pathlib.Path("20220708_update_account_table_up.sql"),pathlib.Path("20220810_update_account_tablee_up.sql"),pathlib.Path("20220920_update_account_table_up.sql"), pathlib.Path("20221008_update_account_table_up.sql")]
     DBMigrations = ["20220708"]
@@ -86,4 +97,4 @@ def test_version_unappliedMigrations_emptyString_on_list():
 
 
 if __name__ == "__main__":
-    test_downMigrations_1_migration()
+    test_down_migrations_using_migrations_folder()
