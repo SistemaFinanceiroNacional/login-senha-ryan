@@ -25,7 +25,7 @@ def main(args, userIO):
         args.password = userIO.inputoccult("password:")
 
     p = Path(f'../{args.folder}')
-    folderKids = list(p.glob(f'*_{args.action}.sql'))
+    folderKids = sorted(p.glob(f'*_{args.action}.sql'))
 
     with psycopg2.connect(
             f"dbname={args.dbname[0]} user={args.user[0]} password={args.password[0]} host={args.host[0]} port={args.port}") as conn, conn.cursor() as cursor:
