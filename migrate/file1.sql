@@ -1,1 +1,0 @@
-CREATE TABLE test_sql_archive (login text);
