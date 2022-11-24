@@ -1,1 +1,0 @@
-INSERT INTO accounts (login, password) VALUES ('joao', 'ab123');
