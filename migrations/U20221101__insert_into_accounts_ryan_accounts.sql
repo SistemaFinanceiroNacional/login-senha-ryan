@@ -1,1 +1,0 @@
-DELETE FROM accounts WHERE login='ryan';
