@@ -3,19 +3,48 @@ version: '3.1'
 
 services:
   db:
-   image: postgres
-   restart: always
-   environment:
-    POSTGRES_USER: ryanbanco
-    POSTGRES_PASSWORD: abc123
-    POSTGRES_DB: test
-   ports:
-    - "5432:5432"
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ryanbanco
+      POSTGRES_PASSWORD: abc123
+      POSTGRES_DB: test
+    ports:
+      - "5432:5432"
+    networks:
+      - default
 
-  flyway:
-   image: flyway/flyway
-   command: -url=jdbc:postgresql://db/test -user=ryanbanco -password=abc123 -connectRetries=60 -cleanDisabled="false" clean
-   volumes:
-    - ./migrations:/flyway/sql
-   depends_on:
-    - db
+  yoyo-rollback:
+    image: yoyo:1.0
+    build:
+      context: .
+      dockerfile: ./Dockerfile.yoyo
+    command: --no-config-file rollback --all --database postgresql://ryanbanco:abc123@db/test /yoyo/sql
+    volumes:
+      - ./migrations:/yoyo/sql
+    environment:
+      MIGRATIONS_PATH: ${MIGRATIONS_PATH}
+    depends_on:
+      - db
+    networks:
+      - default
+
+  yoyo-up:
+    image: yoyo:1.0
+    build:
+      context: .
+      dockerfile: ./Dockerfile.yoyo
+    command: --no-config-file apply --database postgresql://ryanbanco:abc123@db/test /yoyo/sql
+    volumes:
+      - ./migrations:/yoyo/sql
+    environment:
+      MIGRATIONS_PATH: ${MIGRATIONS_PATH}
+    depends_on:
+      - db
+    networks:
+      - default
+
+
+
+networks:
+  default:
