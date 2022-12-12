@@ -1,14 +1,6 @@
-def cache(func_f):
-    cachedValues = {}
+import copy
 
-    def wrapper(*args, **kwargs):
-        key = str((args, kwargs))
-        if key in cachedValues:
-            return cachedValues[key]
-        else:
-            cachedValues[key] = func_f(*args, **kwargs)
-            return cachedValues[key]
-    return wrapper
+from Web import IncompleteHttpRequest
 
 
 import IncompleteHttpRequest
@@ -179,4 +171,3 @@ def getBody(socket, headers):
             howManyBytes = len(body)
 
     return body
-
