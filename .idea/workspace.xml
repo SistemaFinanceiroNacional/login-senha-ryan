@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0b2f7905-0594-4d6a-addc-6e04e1849d5e" name="Changes" comment="" />
+    <list default="true" id="0b2f7905-0594-4d6a-addc-6e04e1849d5e" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/Web/httpRequest.py" beforeDir="false" afterPath="$PROJECT_DIR$/Web/httpRequest.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/test_HttpRequest.py" beforeDir="false" afterPath="$PROJECT_DIR$/Web/test_HttpRequest.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -28,7 +31,7 @@
   </component>
   <component name="ProblemsViewState">
     <option name="groupByToolId" value="true" />
-    <option name="selectedTabId" value="ProjectErrors" />
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectId" id="2BDPPKX7ycFADJoEa4iqpdGctvR" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
