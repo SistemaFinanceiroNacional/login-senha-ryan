@@ -1,89 +1,152 @@
-def cache(func_f):
-    cachedValues = {}
+import copy
 
-    def wrapper(*args, **kwargs):
-        key = str((args, kwargs))
-        if key in cachedValues:
-            return cachedValues[key]
-        else:
-            cachedValues[key] = func_f(*args, **kwargs)
-            return cachedValues[key]
-    return wrapper
+from Web import IncompleteHttpRequest
 
 
 class httpRequest:
-    def __init__(self, socket):
-        self.socket = socket
+    def __init__(self, header, body, method, resource, version):
+        self.header = header
+        self.body = body
+        self.method = method
+        self.resource = resource
+        self.version = version
 
-    @cache
-    def head(self):
-        header = {}
-        FirstLine = 0
-        FirstLineWithCarriageReturn = 1
-        NameOfHeader = 2
-        NameOfHeaderWithCarriageReturn = 3
-        ValueOfHeaderWithSpace = 4
-        ValueOfHeader = 5
-        ValueOfHeaderWithCarriageReturn = 6
-        NewNameOfHeader = 7
-        MaybeFinalState = 9
-        FinalState = 10
-        state = FirstLine
+    def getHeader(self):
+        return self.header
 
-        headerName = b''
-        headerValue = b''
+    def getBody(self):
+        return self.body
 
-        while state != FinalState:
-            nextByte = self.socket.recv(1)
+    def getMethod(self):
+        return self.method
 
-            if nextByte == b'':
-                raise 42
+    def getResource(self):
+        return self.resource
 
-            if nextByte == b'\r' and state == FirstLine:
-                state = FirstLineWithCarriageReturn
+    def getVersion(self):
+        return self.version
 
-            elif nextByte == b'\n' and state == FirstLineWithCarriageReturn:
-                state = NameOfHeader
+def getNextHttpRequest(socket):
+    method, resource, version = getFirstLine(socket)
+    headers = getHeaders(socket)
+    body = getBody(socket, headers)
+    request = httpRequest(headers, body, method, resource, version)
 
-            elif nextByte == b'\r' and state == NameOfHeader:
-                state = FinalState
+    return request
 
-            elif nextByte != b':' and state == NameOfHeader:
-                headerName += nextByte
+def getFirstLine(socket):
+    methodState = 0
+    resourceState = 1
+    versionState = 2
+    carriageReturnState = 3
+    finalState = 4
+    method, resource, version = b'', b'', b''
+    state = 0
 
-            elif nextByte == b':' and state == NameOfHeader:
-                state = ValueOfHeaderWithSpace
+    while state != finalState:
+        nextByte = socket.recv(1)
 
-            elif nextByte == b'\r' and state == NameOfHeader:
-                state = NameOfHeaderWithCarriageReturn
+        if nextByte == b'':
+            break
 
-            elif nextByte == b'\n' and state == NameOfHeaderWithCarriageReturn:
-                state = FinalState
+        elif nextByte == b'\r':
+            state = carriageReturnState
 
-            elif nextByte == b' ' and state == ValueOfHeaderWithSpace:
-                state = ValueOfHeader
+        elif nextByte == b'\n':
+            state = finalState
 
-            elif nextByte != b'\r' and state == ValueOfHeader:
-                headerValue += nextByte
+        elif nextByte != b' ' and state == methodState:
+            method += nextByte
 
-            elif nextByte == b'\r' and state == ValueOfHeader:
-                state = ValueOfHeaderWithCarriageReturn
+        elif nextByte == b' ' and state == methodState:
+            state = resourceState
 
-            elif nextByte == b'\n' and state == ValueOfHeaderWithCarriageReturn:
-                state = NewNameOfHeader
-                header[headerName] = headerValue
-                headerName = b''
-                headerValue = b''
+        elif nextByte != b' ' and state == resourceState:
+            resource += nextByte
 
-            elif nextByte == b'\r' and state == NewNameOfHeader:
-                state = MaybeFinalState
+        elif nextByte == b' ' and state == resourceState:
+            state = versionState
 
-            elif nextByte == b'\n' and state == MaybeFinalState:
-                state = FinalState
+        elif nextByte != b' ' and state == versionState:
+            if nextByte not in b'HTTP/':
+                version += nextByte
 
-            elif nextByte != b':' and state == NewNameOfHeader:
-                headerName += nextByte
-                state = NameOfHeader
+    if state != finalState:
+        raise IncompleteHttpRequest.IncompleteHttpRequest()
 
-        return header
+    return method.decode("UTF-8"), resource.decode("UTF-8"), version.decode("UTF-8")
 
+
+def getHeaders(socket):
+    header = {}
+    FirstLine = 0
+    FirstLineWithCarriageReturn = 1
+    NameOfHeader = 2
+    NameOfHeaderWithCarriageReturn = 3
+    ValueOfHeaderWithSpace = 4
+    ValueOfHeader = 5
+    ValueOfHeaderWithCarriageReturn = 6
+    NewNameOfHeader = 7
+    MaybeFinalState = 9
+    FinalState = 10
+    state = FirstLine
+
+    headerName = b''
+    headerValue = b''
+
+    while state != FinalState:
+        nextByte = socket.recv(1)
+
+        if nextByte == b'':
+            break
+
+        if nextByte == b'\r' and state == FirstLine:
+            state = FirstLineWithCarriageReturn
+
+        elif nextByte == b'\n' and state == FirstLineWithCarriageReturn:
+            state = NameOfHeader
+
+        elif nextByte == b'\r' and state == NameOfHeader:
+            state = FinalState
+
+        elif nextByte != b':' and state == NameOfHeader:
+            headerName += nextByte
+
+        elif nextByte == b':' and state == NameOfHeader:
+            state = ValueOfHeaderWithSpace
+
+        elif nextByte == b'\r' and state == NameOfHeader:
+            state = NameOfHeaderWithCarriageReturn
+
+        elif nextByte == b'\n' and state == NameOfHeaderWithCarriageReturn:
+            state = FinalState
+
+        elif nextByte == b' ' and state == ValueOfHeaderWithSpace:
+            state = ValueOfHeader
+
+        elif nextByte != b'\r' and state == ValueOfHeader:
+            headerValue += nextByte
+
+        elif nextByte == b'\r' and state == ValueOfHeader:
+            state = ValueOfHeaderWithCarriageReturn
+
+        elif nextByte == b'\n' and state == ValueOfHeaderWithCarriageReturn:
+            state = NewNameOfHeader
+            header[headerName] = headerValue
+            headerName = b''
+            headerValue = b''
+
+        elif nextByte == b'\r' and state == NewNameOfHeader:
+            state = MaybeFinalState
+
+        elif nextByte == b'\n' and state == MaybeFinalState:
+            state = FinalState
+
+        elif nextByte != b':' and state == NewNameOfHeader:
+            headerName += nextByte
+            state = NameOfHeader
+
+    if state != FinalState:
+        raise IncompleteHttpRequest.IncompleteHttpRequest()
+
+    return header
