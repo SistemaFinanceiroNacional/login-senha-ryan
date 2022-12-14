@@ -2,7 +2,6 @@ import copy
 
 from Web import IncompleteHttpRequest
 
-
 import logging
 
 import IncompleteHttpRequest
@@ -32,15 +31,15 @@ class httpRequest:
     def getVersion(self):
         return self.version
 
-def getNextHttpRequest(socket):
-    method, resource, version = getFirstLine(socket)
-    headers = getHeaders(socket)
-    body = getBody(socket, headers)
+def getNextHttpRequest(socket, logging):
+    method, resource, version = getFirstLine(socket, logging)
+    headers = getHeaders(socket, logging)
+    body = getBody(socket, headers, logging)
     request = httpRequest(headers, body, method, resource, version)
 
     return request
 
-def getFirstLine(socket):
+def getFirstLine(socket, logging):
     methodState = 0
     resourceState = 1
     versionState = 2
@@ -197,6 +196,7 @@ def getFirstLine(socket):
 
     while state != finalState:
         nextByte = socket.recv(1)
+        logging.debug(f"GetFirstLine: state = {state} & actual byte = {nextByte}")
 
         if nextByte == b'':
             break
@@ -229,8 +229,8 @@ def getFirstLine(socket):
     return method.decode("UTF-8"), resource.decode("UTF-8"), version.decode("UTF-8")
 
 
-def getHeaders(socket):
-    header = {}
+def getHeaders(socket, logging):
+    headers = {}
     FirstLine = 0
     FirstLineWithCarriageReturn = 1
     NameOfHeader = 2
@@ -241,22 +241,17 @@ def getHeaders(socket):
     NewNameOfHeader = 7
     MaybeFinalState = 9
     FinalState = 10
-    state = FirstLine
+    state = NewNameOfHeader
 
     headerName = b''
     headerValue = b''
 
     while state != FinalState:
         nextByte = socket.recv(1)
+        logging.debug(f"GetHeaders: state = {state} & actual byte = {nextByte}")
 
         if nextByte == b'':
             break
-
-        if nextByte == b'\r' and state == FirstLine:
-            state = FirstLineWithCarriageReturn
-
-        elif nextByte == b'\n' and state == FirstLineWithCarriageReturn:
-            state = NameOfHeader
 
         elif nextByte == b'\r' and state == NameOfHeader:
             state = FinalState
@@ -284,7 +279,7 @@ def getHeaders(socket):
 
         elif nextByte == b'\n' and state == ValueOfHeaderWithCarriageReturn:
             state = NewNameOfHeader
-            header[headerName] = headerValue
+            headers[headerName] = headerValue
             headerName = b''
             headerValue = b''
 
@@ -301,4 +296,7 @@ def getHeaders(socket):
     if state != FinalState:
         raise IncompleteHttpRequest.IncompleteHttpRequest()
 
-    return header
+    return headers
+
+def getBody(socket, headers, logging):
+    return b''
