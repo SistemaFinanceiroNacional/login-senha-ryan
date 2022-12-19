@@ -1,13 +1,10 @@
 from Web import httpRequest, IncompleteHttpRequest
 
-<<<<<<< HEAD
-=======
 import logging
 
 logging.basicConfig(filename='example.log', level=logging.DEBUG)
 # logging.disable(logging.CRITICAL)
 
->>>>>>> Removed the logger disabler.
 class fakeSocket:
     def __init__(self, content):
         self.content = content
@@ -71,30 +68,26 @@ def test_http_request_getFirstLine_resource():
 
 def test_http_request_getFirstLine_version():
     socket = fakeSocket(b'GET /bank/Main-page HTTP/1.1\r\n')
-<<<<<<< HEAD
     _, _, version = httpRequest.getFirstLine(socket)
-    assert version == "1.1"
-=======
-    _, _, version = httpRequest.getFirstLine(socket, logging)
     assert version == "1.1"
 
 def test_http_request_getBody():
     oneTagHeader = {b'Content-length': b'20'}
     socket = fakeSocket(b'a'*20)
-    body = httpRequest.getBody(socket, oneTagHeader, logging)
+    body = httpRequest.getBody(socket, oneTagHeader)
     assert body == b'a'*20
 
 def test_http_request_getBody2():
     oneTagHeader = {b'Content-length': b'20'}
     socket = fakeSocket(b'a'*50)
-    body = httpRequest.getBody(socket, oneTagHeader, logging)
+    body = httpRequest.getBody(socket, oneTagHeader)
     assert body == b'a'*20
 
 def test_http_request_getBody3():
     oneTagHeader = {b'Content-length': b'20'}
     socket = fakeSocket(b'a'*15)
     try:
-        body = httpRequest.getBody(socket, oneTagHeader, logging)
+        body = httpRequest.getBody(socket, oneTagHeader)
         assert False
     except IncompleteHttpRequest.IncompleteHttpRequest as error:
         assert True
@@ -102,12 +95,11 @@ def test_http_request_getBody3():
 def test_http_request_getBody4():
     oneTagHeader = {b'Content-length': b'0'}
     socket = fakeSocket(b'a'*15)
-    body = httpRequest.getBody(socket, oneTagHeader, logging)
+    body = httpRequest.getBody(socket, oneTagHeader)
     assert body == b''
 
 def test_http_request_getBody_noContentLength():
     oneTagHeader = {}
     socket = fakeSocket(b'a'*15)
-    body = httpRequest.getBody(socket, oneTagHeader, logging)
+    body = httpRequest.getBody(socket, oneTagHeader)
     assert body == b''
->>>>>>> Removed the logger disabler.

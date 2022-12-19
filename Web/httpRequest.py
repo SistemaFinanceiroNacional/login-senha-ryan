@@ -1,18 +1,20 @@
-import copy
+import logging
 
-from Web import IncompleteHttpRequest
+import IncompleteHttpRequest
+
+logger = logging.getLogger(__name__)
 
 
 class httpRequest:
     def __init__(self, header, body, method, resource, version):
-        self.header = header
+        self.headers = header
         self.body = body
         self.method = method
         self.resource = resource
         self.version = version
 
-    def getHeader(self):
-        return self.header
+    def getHeaders(self):
+        return self.headers
 
     def getBody(self):
         return self.body
@@ -45,6 +47,8 @@ def getFirstLine(socket):
 
     while state != finalState:
         nextByte = socket.recv(1)
+        logger.debug(f"GetFirstLine: state = {state} & actual byte = {nextByte}")
+
 
         if nextByte == b'':
             break
@@ -78,9 +82,9 @@ def getFirstLine(socket):
 
 
 def getHeaders(socket):
-    header = {}
     FirstLine = 0
     FirstLineWithCarriageReturn = 1
+    headers = {}
     NameOfHeader = 2
     NameOfHeaderWithCarriageReturn = 3
     ValueOfHeaderWithSpace = 4
@@ -96,6 +100,7 @@ def getHeaders(socket):
 
     while state != FinalState:
         nextByte = socket.recv(1)
+        logger.debug(f"GetHeaders: state = {state} & actual byte = {nextByte}")
 
         if nextByte == b'':
             break
@@ -132,7 +137,7 @@ def getHeaders(socket):
 
         elif nextByte == b'\n' and state == ValueOfHeaderWithCarriageReturn:
             state = NewNameOfHeader
-            header[headerName] = headerValue
+            headers[headerName] = headerValue
             headerName = b''
             headerValue = b''
 
@@ -149,4 +154,24 @@ def getHeaders(socket):
     if state != FinalState:
         raise IncompleteHttpRequest.IncompleteHttpRequest()
 
-    return header
+    return headers
+
+def getBody(socket, headers):
+    defaultLength = b'0'
+    length = int(headers.get(b'Content-length', defaultLength))
+    body = socket.recv(length)
+    howManyBytes = len(body)
+    logger.debug(f"GetBody: length = {length} & actual body = {body} & actual body's size = {howManyBytes}")
+
+    while howManyBytes < length:
+        difference = length - howManyBytes
+        rest = socket.recv(difference)
+        logger.debug(f"GetBody: While statement: actual rest = {rest} & actual difference = {difference}")
+        if rest == b'':
+            raise IncompleteHttpRequest.IncompleteHttpRequest()
+
+        else:
+            body += rest
+            howManyBytes = len(body)
+
+    return body
