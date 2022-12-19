@@ -6,7 +6,7 @@ import accounts
 import password
 import psycopg2
 
-class inputfake():
+class inputfake:
     def __init__(self,lista):
         self.inputlist = lista
         self.outputlist = []
@@ -21,7 +21,7 @@ class inputfake():
         self.outputlist.append(prompt)
 
 
-class contasfake():
+class contasfake:
     def __init__(self,actualAccounts=dict(),newAccounts=dict()):
         self.actualAccounts = actualAccounts
         self.newAccounts = newAccounts
