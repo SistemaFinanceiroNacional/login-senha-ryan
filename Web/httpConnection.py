@@ -1,4 +1,8 @@
-import httpRequest
+import httpRequest, httpResponse
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 class httpConnection:
     def __init__(self, socket):
@@ -7,8 +11,8 @@ class httpConnection:
     def process(self, handler):
 
         while True:
-            request = httpRequest.httpRequest(self.socket)
+            request = httpRequest.getNextHttpRequest(self.socket)
             response = handler(request)
-            self.socket.sendall(response.asbytes())
-            if request.head()["Connection"] == "close":
+            self.socket.sendall(httpResponse.responseAsBytes(response))
+            if request.getHeaders().get(b'Connection', b'') == "close":
                 break
