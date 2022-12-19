@@ -1,4 +1,4 @@
-class maybe():
+class maybe:
     def map(self,function):
         raise NotImplementedError
 
