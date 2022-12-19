@@ -1,6 +1,6 @@
 import getpass
 
-class inputIO():
+class inputIO:
     def input(self,prompt):
         return input(prompt)
 
