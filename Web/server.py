@@ -1,4 +1,5 @@
 
+
 import httpConnection
 import bankApplication
 
@@ -8,6 +9,7 @@ import logging
 logging.basicConfig(filename='server.log', level=logging.DEBUG)
 
 logging.basicConfig(filename='server.log', level=logging.DEBUG)
+
 
 def main():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as serverSocket:
