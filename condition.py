@@ -1,4 +1,4 @@
-class condition():
+class condition:
     def __str__(self):
         raise NotImplementedError
 
@@ -28,7 +28,7 @@ class equal(condition):
         return self.projection1.proj(dicio) == self.projection2.proj(dicio)
 
 
-class projection():
+class projection:
     def proj(self,dicio):
         raise NotImplementedError
 
