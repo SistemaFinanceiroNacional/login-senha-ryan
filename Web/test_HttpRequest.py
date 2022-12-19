@@ -3,13 +3,10 @@ import pytest
 from Web import httpRequest
 from Web import IncompleteHttpRequest
 
-
 import logging
 
 logging.basicConfig(filename='example.log', level=logging.DEBUG)
 # logging.disable(logging.CRITICAL)
-
-
 class fakeSocket:
     def __init__(self, content):
         self.content = content
