@@ -1,12 +1,13 @@
 
+
 import IncompleteHttpRequest
 
 import logging
+
 logger = logging.getLogger(__name__)
 
 class httpRequest:
     def __init__(self, header, body, method, resource, version):
-
         self.headers = header
         self.body = body
         self.method = method
@@ -166,3 +167,4 @@ def getBody(socket, headers):
             howManyBytes = len(body)
 
     return body
+
