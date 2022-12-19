@@ -1,11 +1,6 @@
-import copy
-
-from Web import IncompleteHttpRequest
-
+import logging
 
 import IncompleteHttpRequest
-
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -171,3 +166,4 @@ def getBody(socket, headers):
             howManyBytes = len(body)
 
     return body
+
