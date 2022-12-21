@@ -17,7 +17,6 @@ def main():
         with serverSocket.accept() as connectionSocket:
             clientSocket, addr = connectionSocket
             logging.debug(f"Client connected on IP {clientSocket.getpeername()}")
-
             connection = httpConnection.httpConnection(clientSocket)
             connection.process(bankApplication.root)
 
