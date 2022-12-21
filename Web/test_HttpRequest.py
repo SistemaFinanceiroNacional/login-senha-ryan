@@ -1,15 +1,14 @@
 
-from Web import httpRequest, IncompleteHttpRequest
+import pytest
+
+from Web import httpRequest
+from Web import IncompleteHttpRequest
 
 import logging
 
 logging.basicConfig(filename='example.log', level=logging.DEBUG)
 logging.disable(logging.CRITICAL)
 
-import logging
-
-logging.basicConfig(filename='example.log', level=logging.DEBUG)
-# logging.disable(logging.CRITICAL)
 
 class fakeSocket:
     def __init__(self, content):
@@ -84,11 +83,8 @@ def test_http_request_getBody2():
 def test_http_request_getBody3():
     oneTagHeader = {b'Content-length': b'20'}
     socket = fakeSocket(b'a'*15)
-    try:
-        body = httpRequest.getBody(socket, oneTagHeader)
-        assert False
-    except IncompleteHttpRequest.IncompleteHttpRequest as error:
-        assert True
+    with pytest.raises(IncompleteHttpRequest.IncompleteHttpRequest) as exc_info:
+        httpRequest.getBody(socket, oneTagHeader)
 
 def test_http_request_getBody4():
     oneTagHeader = {b'Content-length': b'0'}
