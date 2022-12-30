@@ -1,6 +1,6 @@
 import accounts
 import externalAccountsInteractions
-import inputIO
+from inputIO import inputIO
 import internalAccount
 import password
 import psycopg2
@@ -24,7 +24,6 @@ def repl(userIO, acc, transferUseCase):
                 userIO.print(f"{e.value} is a non-positive value to transfer.")
 
 
-
 def main(accounts, transferUseCase, userIO):
     choose = userIO.input("Would you like to Sign In (1) or Create a new account (2)? ")
     if choose == "1":
@@ -43,7 +42,6 @@ def main(accounts, transferUseCase, userIO):
 
 
 if __name__ == "__main__":
-    with psycopg2.connect("dbname=ryanbanco user=ryanbanco password=abc123") as connection, connection.cursor() as cursor, accounts.accounts(cursor) as c, externalAccountsInteractions.externalAccountsInteractions(cursor) as extC:
+    with psycopg2.connect("dbname=ryanbanco user=ryanbanco password=abc123 host=localhost") as connection, connection.cursor() as cursor, accounts.accounts(cursor) as c, externalAccountsInteractions.externalAccountsInteractions(cursor) as extC:
         transferUseCase = transferFundsBetweenAccounts.transferFundsBetweenAccountsClass(c, extC)
         main(c, transferUseCase, inputIO.inputIO())
-
