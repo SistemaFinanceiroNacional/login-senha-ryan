@@ -2,7 +2,7 @@ import maybe
 import internalAccount
 
 class accounts:
-    def __init__(self,archiveCursor):
+    def __init__(self, archiveCursor):
         self.archive = archiveCursor
 
     def __enter__(self):
