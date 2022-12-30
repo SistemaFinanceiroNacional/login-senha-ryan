@@ -13,7 +13,7 @@ class fakeSocket:
     def __init__(self, content):
         self.content = content
 
-    def recv(self, bufsize, flags=0):
+    def recv(self, bufsize):
         requiredContent = self.content[0:bufsize]
         self.content = self.content[bufsize:]
         return requiredContent
@@ -22,27 +22,27 @@ class fakeSocket:
 def test_http_request_1():
     noTagsHeader = fakeSocket(b'GET /bank/Main-page HTTP/1.1\r\n\r\n')
     request = httpRequest.getNextHttpRequest(noTagsHeader)
-    assert len(request.getHeader()) == 0
+    assert len(request.getHeaders()) == 0
 
 def test_http_request_host():
     oneTagsHeader = fakeSocket(b'GET /bank/Main-page HTTP/1.1\r\nHost: www.ryanbanco.com.br\r\n\r\n')
     request = httpRequest.getNextHttpRequest(oneTagsHeader)
-    assert len(request.getHeader()) == 1
+    assert len(request.getHeaders()) == 1
 
 def test_http_request_calling_host():
     oneTagsHeader = fakeSocket(b'GET /bank/Main-page HTTP/1.1\r\nHost: www.ryanbanco.com.br\r\n\r\n')
     request = httpRequest.getNextHttpRequest(oneTagsHeader)
-    assert request.getHeader()[b'Host'] == b'www.ryanbanco.com.br'
+    assert request.getHeaders()['Host'] == 'www.ryanbanco.com.br'
 
 def test_http_request_calling_2_headers():
     oneTagsHeader = fakeSocket(b'GET /bank/Main-page HTTP/1.1\r\nHost: www.ryanbanco.com.br\r\nUser-Agent: Mozilla 5.0\r\n\r\n')
     request = httpRequest.getNextHttpRequest(oneTagsHeader)
-    assert request.getHeader()[b'User-Agent'] == b'Mozilla 5.0'
+    assert request.getHeaders()['User-Agent'] == 'Mozilla 5.0'
 
 def test_http_request_calling_3_headers():
     oneTagsHeader = fakeSocket(b'GET /bank/Main-page HTTP/1.1\r\nHost: www.ryanbanco.com.br\r\nUser-Agent: Mozilla 5.0\r\nAccept-Language: en-US\r\n\r\n')
     request = httpRequest.getNextHttpRequest(oneTagsHeader)
-    assert request.getHeader()[b'Accept-Language'] == b'en-US'
+    assert request.getHeaders()['Accept-Language'] == 'en-US'
 
 def test_http_request_getFirstLine_methodGet():
     socket = fakeSocket(b'GET /bank/Main-page HTTP/1.1\r\n')
@@ -79,7 +79,7 @@ def test_http_request_getBody2():
 def test_http_request_getBody3():
     oneTagHeader = {b'Content-length': b'20'}
     socket = fakeSocket(b'a'*15)
-    with pytest.raises(IncompleteHttpRequest.IncompleteHttpRequest) as exc_info:
+    with pytest.raises(IncompleteHttpRequest.IncompleteHttpRequest):
         httpRequest.getBody(socket, oneTagHeader)
 
 def test_http_request_getBody4():

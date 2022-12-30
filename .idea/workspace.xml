@@ -5,10 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0b2f7905-0594-4d6a-addc-6e04e1849d5e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Web/testHttpRequest.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Web/httpConnection.py" beforeDir="false" afterPath="$PROJECT_DIR$/Web/httpConnection.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Web/httpRequest.py" beforeDir="false" afterPath="$PROJECT_DIR$/Web/httpRequest.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Web/httpResponse.py" beforeDir="false" afterPath="$PROJECT_DIR$/Web/httpResponse.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/test_HttpRequest.py" beforeDir="false" afterPath="$PROJECT_DIR$/Web/test_HttpRequest.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/test_httpResponse.py" beforeDir="false" afterPath="$PROJECT_DIR$/Web/test_httpResponse.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_accountsInteractions.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
