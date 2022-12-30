@@ -24,7 +24,8 @@ class accounts:
         self.archive.execute("SELECT login, password, balance FROM accounts WHERE login=%s AND password=%s", (login, str(password)))
         findLoginList = self.archive.fetchone()
         if findLoginList is not None:
-            return maybe.just(internalAccount.internalAccount(findLoginList[1], findLoginList[2], findLoginList[3]))
+            return maybe.just(internalAccount.internalAccount(findLoginList[0], findLoginList[1], findLoginList[2]))
+        return maybe.nothing()
 
     def updateBalance(self, login, new_balance):
         self.archive.execute("UPDATE accounts SET balance=%s WHERE login=%s", (new_balance, login))
