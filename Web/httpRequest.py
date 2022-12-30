@@ -114,6 +114,9 @@ def getHeaders(socket):
         elif nextByte == b'\r' and state == NameOfHeader:
             state = NameOfHeaderWithCarriageReturn
 
+        elif nextByte != b':' and state == NameOfHeader:
+            headerName += nextByte
+
         elif nextByte == b'\n' and state == NameOfHeaderWithCarriageReturn:
             state = FinalState
 
@@ -128,7 +131,7 @@ def getHeaders(socket):
 
         elif nextByte == b'\n' and state == ValueOfHeaderWithCarriageReturn:
             state = NewNameOfHeader
-            headers[headerName] = headerValue
+            headers[headerName.decode("utf-8")] = headerValue.decode("utf-8")
             headerName = b''
             headerValue = b''
 
@@ -166,4 +169,3 @@ def getBody(socket, headers):
             howManyBytes = len(body)
 
     return body
-
