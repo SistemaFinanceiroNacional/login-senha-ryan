@@ -42,6 +42,6 @@ def main(accounts, transferUseCase, userIO):
 
 
 if __name__ == "__main__":
-    with psycopg2.connect("dbname=ryanbanco user=ryanbanco password=abc123 host=localhost") as connection, connection.cursor() as cursor, accounts.accounts(cursor) as c, externalAccountsInteractions.externalAccountsInteractions(cursor) as extC:
+    with psycopg2.connect("dbname=test user=ryanbanco password=abc123 host=localhost") as connection, connection.cursor() as cursor, accounts.accounts(cursor) as c, externalAccountsInteractions.externalAccountsInteractions(cursor) as extC:
         transferUseCase = transferFundsBetweenAccounts.transferFundsBetweenAccountsClass(c, extC)
         main(c, transferUseCase, inputIO.inputIO())
