@@ -1,6 +1,6 @@
 import pytest
 
-from Web import httpResponse
+from drivers.Web import httpResponse
 
 @pytest.fixture
 def responseExample():

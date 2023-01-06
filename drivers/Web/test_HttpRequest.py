@@ -1,8 +1,7 @@
+import drivers.Web.httpRequest as httpRequest
+from drivers import Web as IncompleteHttpRequest
 
 import pytest
-
-from Web import httpRequest
-from Web import IncompleteHttpRequest
 
 import logging
 
