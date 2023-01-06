@@ -6,6 +6,7 @@ import password
 import psycopg2
 from ApplicationService import transferFundsBetweenAccounts
 
+
 def repl(userIO, acc, transferUseCase):
     comando = ""
     while comando != "logout":
@@ -16,7 +17,7 @@ def repl(userIO, acc, transferUseCase):
             destinationAccount = userIO.input("Enter the destination account: ")
             value = int(userIO.input("How much do you want to transfer? "))
             try:
-                transferUseCase.execute(acc,destinationAccount,value)
+                transferUseCase.execute(acc, destinationAccount, value)
                 userIO.print("Successful transaction.")
             except internalAccount.insufficientFundsException:
                 userIO.print("Insufficient funds.")
