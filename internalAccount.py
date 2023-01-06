@@ -1,5 +1,5 @@
 class internalAccount:
-    def __init__(self,login,password,balance):
+    def __init__(self, login, password, balance):
         self.m_login = login
         self.m_password = password
         self.m_balance = balance
@@ -7,7 +7,7 @@ class internalAccount:
     def balance(self):
         return self.m_balance
 
-    def transfer(self,intoAccount,value):
+    def transfer(self, intoAccount, value):
         if value <= 0:
             raise invalidValueToTransfer(value)
 
