@@ -1,6 +1,5 @@
 
-import httpConnection
-import bankApplication
+from Web import httpConnection, bankApplication
 
 import socket
 import logging
