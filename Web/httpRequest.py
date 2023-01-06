@@ -1,9 +1,8 @@
-import logging
-
 import IncompleteHttpRequest
 
-logger = logging.getLogger(__name__)
+import logging
 
+logger = logging.getLogger(__name__)
 
 class httpRequest:
     def __init__(self, header, body, method, resource, version):
