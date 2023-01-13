@@ -21,7 +21,7 @@ def responseAsBytes(response):
     headers["Content-length"] = len(body)
     status = response.getStatus()
     version = "1.1"
-    mappingStatus = {200: "OK"}
+    mappingStatus = {200: "OK", 404: "Not Found"}
     responseToBytes = f"HTTP/{version} {status} {mappingStatus.get(status, '')}\r\n"
     for key in headers:
         responseToBytes += f"{key}: {headers[key]}\r\n"
