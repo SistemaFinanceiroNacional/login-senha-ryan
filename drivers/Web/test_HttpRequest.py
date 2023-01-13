@@ -5,8 +5,8 @@ import pytest
 
 import logging
 
-logging.basicConfig(filename='example.log', level=logging.DEBUG)
-# logging.disable(logging.CRITICAL)
+logging.basicConfig(level=logging.DEBUG)
+
 
 class fakeSocket:
     def __init__(self, content):
