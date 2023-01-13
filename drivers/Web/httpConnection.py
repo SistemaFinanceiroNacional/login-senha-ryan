@@ -1,5 +1,5 @@
 
-import httpRequest, httpResponse
+from Web import httpRequest, httpResponse
 
 import logging
 
