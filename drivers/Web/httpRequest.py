@@ -1,4 +1,4 @@
-from drivers.Web import IncompleteHttpRequest
+from Web import IncompleteHttpRequest
 
 import logging
 
