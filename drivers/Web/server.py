@@ -9,6 +9,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 def main():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as serverSocket:
+        serverSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         serverSocket.bind(("127.0.0.1", 8080))
         serverSocket.listen()
         logging.info("serverSocket listened")
