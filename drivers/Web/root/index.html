@@ -1,16 +1,61 @@
+<!DOCTYPE html>
+
 <html>
 <head>
     <title>
-        Visitors Counter
+        Make a navigation bar
     </title>
+    <style>
+        * {
+            box-sizing: content-box;
+        }
 
+        ul {
+            list-style-type: none;
+            background-color: #f1f1f1;
+            margin: 0;
+            padding: 0;
+        }
+
+        li {
+            display: inline;
+        }
+
+        li a {
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+
+        li a:hover {
+            background-color: #cdcdcd;
+        }
+    </style>
 </head>
 
 <body>
-    <h1>
-        Times visited: {counter}
-    </h1>
+    <nav>
+        <ul>
+            <li><a href="#">Item 1</a></li>
+            <li><a href="#">Item 2</a></li>
+            <li><a href="#">Item 3</a></li>
+            <li><a href="#">Item 4</a></li>
+        </ul>
+    </nav>
 
+    <form>
+        <div>
+            <label for="login">Login:</label>
+            <input type="text" id="login" />
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" id="password" />
+        </div>
+        <div>
+            <button type="submit">Login</button>
+        </div>
+    </form>
 </body>
 
 
