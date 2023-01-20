@@ -4,7 +4,7 @@ from drivers.Web import httpConnection, bankApplication
 import socket
 import logging
 
-logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger("drivers.Web.server")
 
 
 def main():
@@ -12,9 +12,9 @@ def main():
         serverSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         serverSocket.bind(("127.0.0.1", 8080))
         serverSocket.listen()
-        logging.info("serverSocket listened")
+        logger.info("serverSocket listened")
         clientSocket, addr = serverSocket.accept()
-        logging.debug(f"Client connected on IP {clientSocket.getpeername()}")
+        logger.debug(f"Client connected on IP {clientSocket.getpeername()}")
         connection = httpConnection.httpConnection(clientSocket)
         connection.process(bankApplication.root)
 

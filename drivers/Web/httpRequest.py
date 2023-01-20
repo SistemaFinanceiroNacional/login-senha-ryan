@@ -2,7 +2,7 @@ from drivers.Web import IncompleteHttpRequest
 
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("drivers.Web.httpRequest")
 
 class httpRequest:
     def __init__(self, header, body, method, resource, version):
