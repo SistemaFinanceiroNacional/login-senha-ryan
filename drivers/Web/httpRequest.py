@@ -27,8 +27,42 @@ class httpRequest:
     def getVersion(self):
         return self.version
 
+class resource:
+    def __init__(self, endpoint, queryParameters):
+        self.endpoint = endpoint
+        self.queryParameters = queryParameters
+
+    def getEndpoint(self):
+        return self.endpoint
+
+    def getQueryParameters(self):
+        return self.queryParameters
+
+def makeResource(rowResource: str) -> resource:
+    splitedRowResource = rowResource.split("?")
+    endpoint = splitedRowResource[0]
+
+    if len(splitedRowResource) > 1 and splitedRowResource[1] != "":
+        queryParameters = makeQueryParameters(splitedRowResource[1])
+
+    else:
+        queryParameters = {}
+
+    return resource(endpoint, queryParameters)
+
+def makeQueryParameters(string):
+    logger.debug(f"String: {string}")
+    keysAndValues = string.split("&")
+    queryParameters = {}
+    for keyAndValue in keysAndValues:
+        key, value = keyAndValue.split("=")
+        queryParameters[key] = value
+
+    return queryParameters
+
 def getNextHttpRequest(socket):
     method, resource, version = getFirstLine(socket)
+    logger.debug(f"Method: {method}; Resource: {resource}; Version: {version}")
     headers = getHeaders(socket)
     body = getBody(socket, headers)
     request = httpRequest(headers, body, method, resource, version)
@@ -76,7 +110,7 @@ def getFirstLine(socket):
     if state != finalState:
         raise IncompleteHttpRequest.IncompleteHttpRequest()
 
-    return method.decode("UTF-8"), resource.decode("UTF-8"), version.decode("UTF-8")
+    return method.decode("UTF-8"), makeResource(resource.decode("UTF-8")), version.decode("UTF-8")
 
 
 def getHeaders(socket):
@@ -150,8 +184,8 @@ def getHeaders(socket):
     return headers
 
 def getBody(socket, headers):
-    defaultLength = b'0'
-    length = int(headers.get(b'Content-length', defaultLength))
+    defaultLength = '0'
+    length = int(headers.get('Content-Length', defaultLength))
     body = socket.recv(length)
     howManyBytes = len(body)
     logger.debug(f"GetBody: length = {length} & actual body = {body} & actual body's size = {howManyBytes}")
