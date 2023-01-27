@@ -3,7 +3,7 @@ from drivers.Web import httpRequest, bankApplication
 
 def test_request_using_Users_as_resource_returns_404():
     header = {}
-    body = ""
+    body = b''
     method = "GET"
     resource = httpRequest.resource("/users", {})
     version = "1.1"

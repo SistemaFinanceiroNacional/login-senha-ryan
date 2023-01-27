@@ -12,10 +12,10 @@ class just(maybe):
     def __init__(self,value):
         self.value = value
 
-    def map(self,function):
+    def map(self, function):
         return just(function(self.value))
 
-    def orElse(self,default):
+    def orElse(self, default):
         return self.value
 
     def orElseThrow(self, value):
@@ -23,11 +23,17 @@ class just(maybe):
 
 class nothing(maybe):
 
-    def map(self,function):
+    def map(self, function):
         return self
 
-    def orElse(self,default):
+    def orElse(self, default):
         return default()
 
     def orElseThrow(self, value):
         raise value
+
+def getFirstNotEmpty(possible_not_empties):
+    for possible in possible_not_empties:
+        if isinstance(possible, just):
+            return possible
+    return nothing()
