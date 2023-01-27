@@ -1,4 +1,4 @@
-from drivers.Web import httpResponse, httpRequest
+from drivers.Web import httpResponse, httpRequest, template
 
 import logging
 
@@ -7,19 +7,15 @@ logger = logging.getLogger("drivers.Web.bankApplication")
 def root(request):
     if request.getResource().getEndpoint() == "/":
         if request.getMethod() == "GET":
-            with open("drivers/Web/root/index.html") as index:
-                htmlContent = index.read()
-
-            response = httpResponse.httpResponse({"Content-Type": "text/html"}, htmlContent, 200)
+            html_content = template.render_template("index.html", {})
+            response = httpResponse.httpResponse({"Content-Type": "text/html"}, html_content, 200)
 
         elif request.getMethod() == "POST":
-            with open("drivers/Web/root/loggedPage.html") as loggedPage:
-                htmlContent = loggedPage.read()
-
             body = request.getBody().decode("utf-8")
             logger.debug(f"Body-Content: {body}")
             queryParameters = httpRequest.makeQueryParameters(body)
-            response = httpResponse.httpResponse({"Content-Type": "text/html"}, htmlContent.replace("{user}", queryParameters["login"]), 200)
+            html_content = template.render_template("loggedPage.html", {"user": queryParameters["login"]})
+            response = httpResponse.httpResponse({"Content-Type": "text/html"}, html_content, 200)
 
         else:
             response = httpResponse.httpResponse({"Allow": "GET, POST"}, "", 405)
