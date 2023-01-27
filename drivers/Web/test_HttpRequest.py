@@ -53,10 +53,15 @@ def test_http_request_getFirstLine_methodPost():
     method, _, _ = httpRequest.getFirstLine(socket)
     assert method == "POST"
 
-def test_http_request_getFirstLine_resource():
+def test_http_request_getFirstLine_resource_getEndpoint():
     socket = fakeSocket(b'GET /bank/Main-page HTTP/1.1\r\n')
     _, resource, _ = httpRequest.getFirstLine(socket)
-    assert resource == "/bank/Main-page"
+    assert resource.getEndpoint() == "/bank/Main-page"
+
+def test_http_request_getFirstLine_resource_getQueryParameters():
+    socket = fakeSocket(b'GET /bank/Main-page HTTP/1.1\r\n')
+    _, resource, _ = httpRequest.getFirstLine(socket)
+    assert resource.getQueryParameters() == {}
 
 def test_http_request_getFirstLine_version():
     socket = fakeSocket(b'GET /bank/Main-page HTTP/1.1\r\n')
@@ -64,25 +69,25 @@ def test_http_request_getFirstLine_version():
     assert version == "1.1"
 
 def test_http_request_getBody():
-    oneTagHeader = {b'Content-length': b'20'}
+    oneTagHeader = {'Content-Length': '20'}
     socket = fakeSocket(b'a'*20)
     body = httpRequest.getBody(socket, oneTagHeader)
     assert body == b'a'*20
 
 def test_http_request_getBody2():
-    oneTagHeader = {b'Content-length': b'20'}
+    oneTagHeader = {'Content-Length': '20'}
     socket = fakeSocket(b'a'*50)
     body = httpRequest.getBody(socket, oneTagHeader)
     assert body == b'a'*20
 
 def test_http_request_getBody3():
-    oneTagHeader = {b'Content-length': b'20'}
+    oneTagHeader = {'Content-Length': '20'}
     socket = fakeSocket(b'a'*15)
     with pytest.raises(IncompleteHttpRequest.IncompleteHttpRequest):
         httpRequest.getBody(socket, oneTagHeader)
 
 def test_http_request_getBody4():
-    oneTagHeader = {b'Content-length': b'0'}
+    oneTagHeader = {b'Content-Length': b'0'}
     socket = fakeSocket(b'a'*15)
     body = httpRequest.getBody(socket, oneTagHeader)
     assert body == b''
@@ -92,3 +97,43 @@ def test_http_request_getBody_noContentLength():
     socket = fakeSocket(b'a'*15)
     body = httpRequest.getBody(socket, oneTagHeader)
     assert body == b''
+
+def test_resource_endpoint():
+    socket = fakeSocket(b'GET /bank/main-page?login=ryanbanco&password=abc123 HTTP/1.1\r\n\r\n')
+    request = httpRequest.getNextHttpRequest(socket)
+    assert request.getResource().getEndpoint() == "/bank/main-page"
+
+def test_resource_queryParameters():
+    socket = fakeSocket(b'GET /bank/main-page?login=ryanbanco&password=abc123 HTTP/1.1\r\n\r\n')
+    request = httpRequest.getNextHttpRequest(socket)
+    assert request.getResource().getQueryParameters() == {"login": "ryanbanco", "password": "abc123"}
+
+def test_resource_NO_queryParameters():
+    socket = fakeSocket(b'GET /bank/main-page? HTTP/1.1\r\n\r\n')
+    request = httpRequest.getNextHttpRequest(socket)
+    assert request.getResource().getQueryParameters() == {}
+
+def test_resource_NO_queryParameters_without_interrogation_point():
+    socket = fakeSocket(b'GET /bank/main-page HTTP/1.1\r\n\r\n')
+    request = httpRequest.getNextHttpRequest(socket)
+    assert request.getResource().getQueryParameters() == {}
+
+def test_fakeSocket_getNextHttpRequest_complete_getBody():
+    socket = fakeSocket(b'POST / HTTP/1.1\r\nContent-Length: 31\r\n\r\nlogin=ryanbanco&password=abc123')
+    request = httpRequest.getNextHttpRequest(socket)
+    assert request.getBody() == b'login=ryanbanco&password=abc123'
+
+def test_fakeSocket_getNextHttpRequest_complete_getMethod():
+    socket = fakeSocket(b'POST / HTTP/1.1\r\nContent-Length: 31\r\n\r\nlogin=ryanbanco&password=abc123')
+    request = httpRequest.getNextHttpRequest(socket)
+    assert request.getMethod() == "POST"
+
+def test_fakeSocket_getNextHttpRequest_complete_getResource_getEndpoint():
+    socket = fakeSocket(b'POST / HTTP/1.1\r\nContent-Length: 31\r\n\r\nlogin=ryanbanco&password=abc123')
+    request = httpRequest.getNextHttpRequest(socket)
+    assert request.getResource().getEndpoint() == "/"
+
+def test_fakeSocket_getNextHttpRequest_complete_getResource_getQueryParameters():
+    socket = fakeSocket(b'POST / HTTP/1.1\r\nContent-Length: 31\r\n\r\nlogin=ryanbanco&password=abc123')
+    request = httpRequest.getNextHttpRequest(socket)
+    assert request.getResource().getQueryParameters() == {}
