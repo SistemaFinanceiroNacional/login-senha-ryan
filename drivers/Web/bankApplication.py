@@ -22,4 +22,4 @@ def home_handler(request):
     return response
 
 
-root = router.router(routes.endpointRoute("/", home_handler))
+root = router.router(routes.fixed_route("/", home_handler))
