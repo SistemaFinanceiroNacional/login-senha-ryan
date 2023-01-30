@@ -1,5 +1,5 @@
 
-from drivers.Web import httpRequest, httpResponse
+from drivers.Web import httpRequest, httpResponse, IncompleteHttpRequest
 
 import logging
 
@@ -11,7 +11,11 @@ class httpConnection:
 
     def process(self, handler):
         while True:
-            request = httpRequest.getNextHttpRequest(self.socket)
+            try:
+                request = httpRequest.getNextHttpRequest(self.socket)
+            except IncompleteHttpRequest.IncompleteHttpRequest:
+                break
+
             logger.info(f"Resource: {request.getResource()}; Method: {request.getMethod()}")
             response = handler(request)
             self.socket.sendall(httpResponse.responseAsBytes(response))
