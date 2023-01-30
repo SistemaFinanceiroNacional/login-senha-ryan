@@ -22,7 +22,7 @@ class inputfake:
 
 
 class contasfake:
-    def __init__(self,actualAccounts=dict(),newAccounts=dict()):
+    def __init__(self,actualAccounts,newAccounts):
         self.actualAccounts = actualAccounts
         self.newAccounts = newAccounts
 
@@ -39,10 +39,10 @@ class contasfake:
 
 
 def existing_pedros_account():
-    return contasfake(actualAccounts={"pedro":("abc123","400")})
+    return contasfake(actualAccounts={"pedro":("abc123","400")}, newAccounts={})
 
 def waiting_pedro_account():
-    return contasfake(newAccounts={"pedro":"abc123"})
+    return contasfake(newAccounts={"pedro":"abc123"}, actualAccounts={})
 
 
 def test_main_with_repl():
@@ -79,6 +79,6 @@ def test_verify_correct_content_using_different_password():
     conn.close()
     assert y.outputlist[0] == "Account already exists. Try another username and password."
 
+
 if __name__ == "__main__":
     test_verify_correct_content_using_different_password()
-

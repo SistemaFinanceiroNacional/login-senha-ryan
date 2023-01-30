@@ -1,4 +1,3 @@
-import accounts
 import externalAccount
 import internalAccount
 
@@ -13,7 +12,7 @@ def test_incrementBalance1():
     try:
         x.incrementBalance(-20)
         assert False
-    except externalAccount.negativeIncrementException as err:
+    except externalAccount.negativeIncrementException:
         assert True
 
 def test_transfer_poor_ryan():
@@ -22,7 +21,7 @@ def test_transfer_poor_ryan():
     try:
         x.transfer(y,20)
         assert False
-    except internalAccount.insufficientFundsException as err:
+    except internalAccount.insufficientFundsException:
         assert True
 
 def test_incrementBalance2():
