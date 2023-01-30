@@ -4,22 +4,19 @@ import logging
 
 logger = logging.getLogger("drivers.Web.bankApplication")
 
-def home_handler(request):
-    if request.getMethod() == "GET":
+class home_handler(routes.method_dispatcher):
+    def get(self, request):
         html_content = template.render_template("index.html", {})
         response = httpResponse.httpResponse({"Content-Type": "text/html"}, html_content, 200)
+        return response
 
-    elif request.getMethod() == "POST":
+    def post(self, request):
         body = request.getBody().decode("utf-8")
         logger.debug(f"Body-Content: {body}")
         queryParameters = httpRequest.makeQueryParameters(body)
         html_content = template.render_template("loggedPage.html", {"user": queryParameters["login"]})
         response = httpResponse.httpResponse({"Content-Type": "text/html"}, html_content, 200)
-
-    else:
-        response = httpResponse.httpResponse({"Allow": "GET, POST"}, "", 405)
-
-    return response
+        return response
 
 
-root = router.router(routes.fixed_route("/", home_handler))
+root = router.router(routes.fixed_route("/", home_handler()))
