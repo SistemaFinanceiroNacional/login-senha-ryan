@@ -27,7 +27,7 @@ class httpRequest:
     def getVersion(self):
         return self.version
 
-class resource:
+class http_resource:
     def __init__(self, endpoint, queryParameters):
         self.endpoint = endpoint
         self.queryParameters = queryParameters
@@ -38,17 +38,17 @@ class resource:
     def getQueryParameters(self):
         return self.queryParameters
 
-def makeResource(rowResource: str) -> resource:
-    splitedRowResource = rowResource.split("?")
-    endpoint = splitedRowResource[0]
+def makeResource(rawResource: str) -> http_resource:
+    splitRawResource = rawResource.split("?")
+    endpoint = splitRawResource[0]
 
-    if len(splitedRowResource) > 1 and splitedRowResource[1] != "":
-        queryParameters = makeQueryParameters(splitedRowResource[1])
+    if len(splitRawResource) > 1 and splitRawResource[1] != "":
+        queryParameters = makeQueryParameters(splitRawResource[1])
 
     else:
         queryParameters = {}
 
-    return resource(endpoint, queryParameters)
+    return http_resource(endpoint, queryParameters)
 
 def makeQueryParameters(string):
     logger.debug(f"String: {string}")

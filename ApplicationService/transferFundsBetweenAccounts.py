@@ -1,5 +1,3 @@
-import accounts
-import externalAccountsInteractions
 
 class transferFundsBetweenAccountsClass:
     def __init__(self, internalRepository, externalRepository):

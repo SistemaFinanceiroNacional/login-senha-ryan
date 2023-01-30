@@ -1,8 +1,8 @@
 import hashlib
 
 class password:
-    def __init__(self,password):
-        self.password = password
+    def __init__(self, raw_password):
+        self.password = raw_password
 
     def __str__(self):
         hash_password = hashlib.sha512(self.password.encode("utf-8"))

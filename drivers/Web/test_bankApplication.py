@@ -5,7 +5,7 @@ def test_request_using_Users_as_resource_returns_404():
     header = {}
     body = b''
     method = "GET"
-    resource = httpRequest.resource("/users", {})
+    resource = httpRequest.http_resource("/users", {})
     version = "1.1"
     request = httpRequest.httpRequest(header, body, method, resource, version)
     bankApplicationReturn = bankApplication.root(request)
@@ -15,7 +15,7 @@ def test_request_root_status_is_200():
     header = {}
     body = ""
     method = "GET"
-    resource = httpRequest.resource("/", {})
+    resource = httpRequest.http_resource("/", {})
     version = "1.1"
     request = httpRequest.httpRequest(header, body, method, resource, version)
     bankApplicationReturn = bankApplication.root(request)
@@ -26,7 +26,7 @@ def test_request_root_resource_is_html():
     header = {}
     body = b''
     method = "GET"
-    resource = httpRequest.resource("/", {})
+    resource = httpRequest.http_resource("/", {})
     version = "1.1"
     request = httpRequest.httpRequest(header, body, method, resource, version)
     bankApplicationReturn = bankApplication.root(request)
@@ -34,10 +34,14 @@ def test_request_root_resource_is_html():
 
 def test_post_status_200():
     header = {}
-    resource = httpRequest.resource("/", {})
+    resource = httpRequest.http_resource("/", {})
     method = "POST"
     body = b"login=ryanbanco&password=abc123"
     version = "1.1"
     request = httpRequest.httpRequest(header, body, method, resource, version)
     bankApplicationReturn = bankApplication.root(request)
     assert bankApplicationReturn.getStatus() == 200
+
+
+if __name__ == "__main__":
+    test_post_status_200()
