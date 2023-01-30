@@ -34,7 +34,7 @@ class method_dispatcher:
             return httpResponse.httpResponse({"Allow": self.allowed_methods()}, "", 405)
 
     def allowed_methods(self):
-        possible_methods = ["get", "post"]
+        possible_methods = ["get", "post", "head"]
         allowed_methods_list = []
         for method in possible_methods:
             if getattr(type(self), method) != getattr(method_dispatcher, method):
