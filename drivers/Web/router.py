@@ -13,4 +13,4 @@ class router:
         possible_responses = map(lambda route: route(request), self.routes)
         possible_response = maybe.getFirstNotEmpty(possible_responses)
         logger.error(f"Resource: {request.getResource()}; Method: {request.getMethod()}")
-        return possible_response.orElse(httpResponse.httpResponse({}, "", 404))
+        return possible_response.orElse(lambda: httpResponse.httpResponse({}, "", 404))
