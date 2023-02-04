@@ -78,7 +78,3 @@ def test_verify_correct_content_using_different_password():
     conn.rollback()
     conn.close()
     assert y.outputlist[0] == "Account already exists. Try another username and password."
-
-
-if __name__ == "__main__":
-    test_verify_correct_content_using_different_password()
