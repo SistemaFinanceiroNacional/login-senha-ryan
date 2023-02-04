@@ -28,7 +28,7 @@ class method_dispatcher:
         attribute = getattr(type(self), method, None)
         class_attribute = getattr(method_dispatcher, method, None)
         if attribute != class_attribute:
-            return attribute(type(self), request)
+            return attribute(self, request)
 
         else:
             return httpResponse.httpResponse({"Allow": self.allowed_methods()}, "", 405)

@@ -41,7 +41,3 @@ def test_post_status_200():
     request = httpRequest.httpRequest(header, body, method, resource, version)
     bankApplicationReturn = bankApplication.root(request)
     assert bankApplicationReturn.getStatus() == 200
-
-
-if __name__ == "__main__":
-    test_post_status_200()
