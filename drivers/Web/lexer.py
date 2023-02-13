@@ -17,6 +17,15 @@ class BLOCK_CLASS:
 class END_BLOCK_CLASS:
     pass
 
+class IDENTIFIER_CLASS:
+    def __init__(self, var_name):
+        self.var_name = var_name
+
+    def __eq__(self, other):
+        if not isinstance(other, IDENTIFIER_CLASS):
+            return False
+        return self.var_name == other.var_name
+
 
 END_BLOCK = END_BLOCK_CLASS()
 BLOCK = BLOCK_CLASS()
@@ -27,65 +36,68 @@ class lexer:
         self.input_str = input_str
         self.start_command = "{% "
         self.end_command = " %}"
-        self.buffer = []
+        self.start_identifier = "{{ "
+        self.end_identifier = " }}"
         self.initial_state = 0
-        self.waiting_command = 1
-        self.getting_command = 2
+        self.getting_command = 1
+        self.getting_identifier = 2
         self.state = self.initial_state
+        self.key_words = {"block": BLOCK, "endblock": END_BLOCK}
 
     def __iter__(self):
         return self
 
     def __next__(self):
-        if self.buffer:
-            first_element = self.buffer[0]
-            self.buffer = self.buffer[1:]
-            return first_element
+        while True:
+            if self.input_str == "":
+                raise StopIteration()
 
-        if self.input_str == "":
-            raise StopIteration()
+            if self.state == self.initial_state and not self.input_str.startswith(self.start_command) and not self.input_str.startswith(self.start_identifier):
+                aux = ""
+                while not self.input_str.startswith(self.start_command) and self.input_str != "":
+                    aux += self.input_str[0]
+                    self.input_str = self.input_str[1:]
 
-        elif self.input_str.startswith(self.start_command):
-            self.buffer = self.process_command()
+                return STRING_CONSTANT_CLASS(aux)
 
-        else:
-            self.buffer = self.process_constant_string()
+            elif self.state == self.initial_state and self.input_str.startswith(self.start_command):
+                self.state = self.getting_command
+                self.input_str = self.input_str[3:]
 
-        first_element = self.buffer[0]
-        self.buffer = self.buffer[1:]
-        return first_element
+            elif self.state == self.initial_state and self.input_str.startswith(self.start_identifier):
+                self.state = self.getting_identifier
+                self.input_str = self.input_str[3:]
 
-    def process_command(self):
-        first_close_keys = self.input_str.find("%}")
-        block_name_and_type = self.input_str[3:first_close_keys-1].split(" ")
+            elif self.state == self.getting_identifier and self.input_str.startswith(self.end_identifier):
+                self.state = self.initial_state
+                self.input_str = self.input_str[3:]
 
-        self.input_str = self.input_str[first_close_keys+1:]
+            elif self.state == self.getting_identifier and self.input_str.startswith(" "):
+                self.input_str = self.input_str[1:]
 
-        if block_name_and_type[0] == "endblock":
-            self.input_str = ""
-            return [END_BLOCK]
+            elif self.state == self.getting_identifier and not self.input_str.startswith(" "):
+                aux = ""
+                while self.input_str != "" and not self.input_str.startswith(" ") and not self.input_str.startswith(self.end_identifier):
+                    aux += self.input_str[0]
+                    self.input_str = self.input_str[1:]
 
-        elif block_name_and_type[0] == "block":
-            block_name = block_name_and_type[1]
+                return IDENTIFIER_CLASS(aux)
 
-            index_of_block_content = self.input_str.find("{%")
-            block_content = self.input_str[1:index_of_block_content]
+            elif self.state == self.getting_command and self.input_str.startswith(self.end_command):
+                self.state = self.initial_state
+                self.input_str = self.input_str[3:]
 
-            self.input_str = ""
+            elif self.state == self.getting_command and self.input_str.startswith(" "):
+                self.input_str = self.input_str[1:]
 
-            if block_content == "":
-                return [BLOCK, STRING_CONSTANT_CLASS(block_name), END_BLOCK]
-            return [BLOCK, STRING_CONSTANT_CLASS(block_name), STRING_CONSTANT_CLASS(block_content), END_BLOCK]
+            elif self.state == self.getting_command and not self.input_str.startswith(" "):
+                aux = ""
+                while self.input_str != "" and not self.input_str.startswith(" ") and not self.input_str.startswith(self.end_command):
+                    aux += self.input_str[0]
+                    self.input_str = self.input_str[1:]
 
-    def process_constant_string(self):
-        input_str_token = self.input_str
-        logger.debug(f"Input_str_token: {input_str_token}")
-        index_of_str_constant = self.input_str.find(self.start_command)
-        logger.debug(f"Index_of_str_constant: {index_of_str_constant}")
-        if index_of_str_constant != -1:
-            input_str_token = input_str_token[:index_of_str_constant]
-            logger.debug(f"Input_str_token after change: {input_str_token}")
-            self.input_str = self.input_str[index_of_str_constant:]
-            logger.debug(f"Input_str after change: {self.input_str}")
+                if aux in self.key_words:
+                    return self.key_words[aux]
 
-        return [STRING_CONSTANT_CLASS(input_str_token)]
+                else:
+                    return STRING_CONSTANT_CLASS(aux)
