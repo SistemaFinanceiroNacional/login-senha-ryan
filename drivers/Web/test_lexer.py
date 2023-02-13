@@ -53,7 +53,7 @@ def test_lexer_block_support_using_list_function():
 def test_lexer_identifying_end_block():
     lxer = lexer.lexer("{% endblock %}")
     next(lxer)
-    assert lxer.input_str == ""
+    assert lxer.input_str == " %}"
 
 def test_lexer_using_next():
     lxer = lexer.lexer("{% endblock %}")
@@ -93,4 +93,7 @@ def test_lexer_string_before_block_with_block_content():
     lexer_as_list = list(lxer)
     assert lexer_as_list == [lexer.STRING_CONSTANT_CLASS("lorem ipsum "), lexer.BLOCK, lexer.STRING_CONSTANT_CLASS("title"), lexer.STRING_CONSTANT_CLASS("dolor sit amet"), lexer.END_BLOCK]
 
-
+def test_lexer_identifying_variable():
+    lxer = lexer.lexer("{{ is_authenticated }}")
+    lexer_as_list = list(lxer)
+    assert lexer_as_list == [lexer.IDENTIFIER_CLASS("is_authenticated")]
