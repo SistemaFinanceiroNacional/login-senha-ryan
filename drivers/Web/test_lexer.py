@@ -97,3 +97,32 @@ def test_lexer_identifying_variable():
     lxer = lexer.lexer("{{ is_authenticated }}")
     lexer_as_list = list(lxer)
     assert lexer_as_list == [lexer.IDENTIFIER_CLASS("is_authenticated")]
+
+def test_lexer_identifying_string_constant_and_identifier():
+    lxer = lexer.lexer("Your username is {{ username }}")
+    lexer_as_list = list(lxer)
+    assert lexer_as_list == [lexer.STRING_CONSTANT_CLASS("Your username is "), lexer.IDENTIFIER_CLASS("username")]
+
+def test_identifying_extends_token():
+    lxer = lexer.lexer("{% extends base.html %}")
+    lexer_as_list = list(lxer)
+    assert lexer_as_list == [lexer.EXTENDS, lexer.STRING_CONSTANT_CLASS("base.html")]
+
+def test_identifying_extends_token_and_a_block_token():
+    lxer = lexer.lexer("{% extends base.html %}{% block title %}{% endblock %}")
+    lexer_as_list = list(lxer)
+    assert lexer_as_list == [lexer.EXTENDS,
+                             lexer.STRING_CONSTANT_CLASS("base.html"),
+                             lexer.BLOCK, lexer.STRING_CONSTANT_CLASS("title"),
+                             lexer.END_BLOCK]
+
+def test_identifying_extends_token_and_a_block_token_and_multiline_strings():
+    lxer = lexer.lexer("""{% extends base.html %}
+{% block title %}lorem ipsum{% endblock %}""")
+    lexer_as_list = list(lxer)
+    assert lexer_as_list == [lexer.EXTENDS,
+                             lexer.STRING_CONSTANT_CLASS("base.html"),
+                             lexer.STRING_CONSTANT_CLASS("\n"),
+                             lexer.BLOCK, lexer.STRING_CONSTANT_CLASS("title"),
+                             lexer.STRING_CONSTANT_CLASS("lorem ipsum"),
+                             lexer.END_BLOCK]

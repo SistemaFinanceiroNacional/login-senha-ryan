@@ -26,7 +26,11 @@ class IDENTIFIER_CLASS:
             return False
         return self.var_name == other.var_name
 
+class EXTENDS_CLASS:
+    pass
 
+
+EXTENDS = EXTENDS_CLASS()
 END_BLOCK = END_BLOCK_CLASS()
 BLOCK = BLOCK_CLASS()
 
@@ -42,7 +46,7 @@ class lexer:
         self.getting_command = 1
         self.getting_identifier = 2
         self.state = self.initial_state
-        self.key_words = {"block": BLOCK, "endblock": END_BLOCK}
+        self.key_words = {"block": BLOCK, "endblock": END_BLOCK, "extends": EXTENDS}
 
     def __iter__(self):
         return self
@@ -54,7 +58,7 @@ class lexer:
 
             if self.state == self.initial_state and not self.input_str.startswith(self.start_command) and not self.input_str.startswith(self.start_identifier):
                 aux = ""
-                while not self.input_str.startswith(self.start_command) and self.input_str != "":
+                while not self.input_str.startswith(self.start_command) and not self.input_str.startswith(self.start_identifier) and self.input_str != "":
                     aux += self.input_str[0]
                     self.input_str = self.input_str[1:]
 
@@ -101,3 +105,28 @@ class lexer:
 
                 else:
                     return STRING_CONSTANT_CLASS(aux)
+
+class auxiliar_lexer:
+    def __init__(self, other_lexer):
+        self.lexer = other_lexer
+        self.look_ahead = None
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.look_ahead:
+            aux = self.look_ahead
+            self.look_ahead = None
+            return aux
+
+        else:
+            return next(self.lexer)
+
+    def peek(self):
+        if self.look_ahead:
+            return self.look_ahead
+
+        else:
+            self.look_ahead = next(self.lexer)
+            return self.look_ahead
