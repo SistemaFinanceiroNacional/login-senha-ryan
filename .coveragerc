@@ -1,0 +1,8 @@
+[run]
+
+[report]
+exclude_lines =
+    def __eq__
+    def __init__
+    def main()
+    if __name__
