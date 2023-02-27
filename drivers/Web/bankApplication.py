@@ -14,8 +14,9 @@ class home_handler(routes.method_dispatcher):
         body = request.getBody().decode("utf-8")
         logger.debug(f"Body-Content: {body}")
         queryParameters = httpRequest.makeQueryParameters(body)
-        html_content = template.render_template("loggedPage.html", {"user": queryParameters["login"]})
-        response = httpResponse.httpResponse({"Content-Type": "text/html"}, html_content, 200)
+        user_login = queryParameters["login"]
+        html_content = template.render_template("loggedPage.html", {"user": user_login})
+        response = httpResponse.httpResponse({"Content-Type": "text/html", "Set-Cookie": f"loggedUsername={user_login}"}, html_content, 200)
         return response
 
 
