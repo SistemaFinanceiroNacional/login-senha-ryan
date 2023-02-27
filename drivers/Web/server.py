@@ -1,8 +1,9 @@
 
-from drivers.Web import httpConnection, bankApplication
-
-import socket
 import logging
+import socket
+import threading
+
+from drivers.Web import httpConnection, bankApplication
 
 logger = logging.getLogger("drivers.Web.server")
 
@@ -13,10 +14,11 @@ def main():
         serverSocket.bind(("127.0.0.1", 8080))
         serverSocket.listen()
         logger.info("serverSocket listened")
-        clientSocket, addr = serverSocket.accept()
-        logger.debug(f"Client connected on IP {clientSocket.getpeername()}")
-        connection = httpConnection.httpConnection(clientSocket)
-        connection.process(bankApplication.root)
+        while True:
+            clientSocket, addr = serverSocket.accept()
+            logger.debug(f"Client connected on IP {clientSocket.getpeername()}")
+            connection = httpConnection.httpConnection(clientSocket)
+            threading.Thread(target=connection.process, args=(bankApplication.root,)).run()
 
 
 if __name__ == "__main__":
