@@ -135,7 +135,7 @@ class child_template:
         for block_name in context_blocks:
             c_blocks[block_name] = context_blocks[block_name]
 
-        extends.render(context, c_blocks)
+        return extends.render(context, c_blocks)
 
 def parser(alexer, lexer_function):
     class empty_template:
