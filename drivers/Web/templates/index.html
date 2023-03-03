@@ -1,14 +1,14 @@
 {% extends base.html %}
-{% block content %}<form action="/" method="post">
-        <div>
-            <label for="login">Login:</label>
-            <input type="text" id="login" name="login"/>
+{% block content %}<section class="area-login">
+        <div class="login">
+            <div>
+                <img src="https://avatars.githubusercontent.com/u/96090524?s=200&v=4">
+            </div>
+            <form action="/" method="post">
+                <input type="text" name="login" placeholder="Username" autofocus>
+                <input type="password" name="password" placeholder="Password" autofocus>
+                <input type="submit" value="Sign in">
+            </form>
+            <p>New in here?<a href="#">Create an account</a></p>
         </div>
-        <div>
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password"/>
-        </div>
-        <div>
-            <button type="submit">Login</button>
-        </div>
-    </form>{% endblock %}
+    </section>{% endblock %}
