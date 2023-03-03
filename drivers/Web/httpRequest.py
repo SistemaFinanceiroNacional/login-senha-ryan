@@ -5,6 +5,8 @@ import logging
 logger = logging.getLogger("drivers.Web.httpRequest")
 
 class httpRequest:
+    headers: dict[str, str]
+
     def __init__(self, header, body, method, resource, version):
         self.headers = header
         self.body = body
@@ -12,7 +14,7 @@ class httpRequest:
         self.resource = resource
         self.version = version
 
-    def getHeaders(self):
+    def getHeaders(self) -> dict[str, str]:
         return self.headers
 
     def getBody(self):
