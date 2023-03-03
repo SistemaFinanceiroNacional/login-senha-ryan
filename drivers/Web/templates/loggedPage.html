@@ -1,5 +1,9 @@
 {% extends base.html %}
 {% block content %}<h1>Você está logado(a)!</h1>
-    <h2>Seu usuário é {{ user }}</h2>{% endblock %}
+<h2>Seu usuário é {{ user }}</h2>
+<form action="/logout" method="post">
+    <input type="submit" value="Logout"/>
+</form>
+{% endblock %}
 
 
