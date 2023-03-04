@@ -1,4 +1,64 @@
 {% extends base.html %}
+{% block style %}
+    .area-login{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .login{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: #181920;
+        border-radius: 10px;
+        width: 355px;
+        height: 320px;
+        padding: 35px;
+    }
+
+    .login form{
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .login input{
+        margin-top: 10px;
+        background-color: #252A34;
+        color: #CBD0F7;
+        border: none;
+        height: 45px;
+        outline: none;
+        border-radius: 5px;
+        padding-left: 15px;
+    }
+
+    .login img{
+        width: 45px;
+        height: auto;
+    }
+
+    .login input:focus{
+        background-color: #e8f1ff;
+        color: #000000;
+    }
+
+    form [type="submit"]{
+        display: block;
+        background-color: #446bd5;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    p{
+        padding: 15px;
+        color: #CBD0F7;
+    }
+{% endblock %}
 {% block content %}<section class="area-login">
         <div class="login">
             <div>

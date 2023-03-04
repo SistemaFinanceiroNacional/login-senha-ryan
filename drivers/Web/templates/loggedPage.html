@@ -1,9 +1,85 @@
 {% extends base.html %}
-{% block content %}<h1>Você está logado(a)!</h1>
-<h2>Seu usuário é {{ user }}</h2>
-<form action="/logout" method="post">
-    <input type="submit" value="Logout"/>
-</form>
+{% block style %}
+    .logged-area{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .logout{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: #181920;
+        border-radius: 10px;
+        width: 355px;
+        height: 205px;
+        padding: 35px;
+    }
+
+    .logout form{
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .logout input{
+        margin-top: 10px;
+        background-color: #252A34;
+        color: #CBD0F7;
+        border: none;
+        height: 45px;
+        outline: none;
+        border-radius: 5px;
+        padding-left: 15px;
+    }
+
+    .logout img{
+        width: 45px;
+        height: auto;
+    }
+
+    .logout h1{
+        font-size: 27px;
+        color: #F0F0F0;
+        margin-bottom: 0px;
+    }
+
+    .logout h2{
+        font-size: 20px;
+        font-weight: normal;
+        color: #F0F0F0;
+    }
+
+    .logout h2 b{
+        color: #446BD5;
+    }
+
+    form [type="submit"]{
+        display: block;
+        background-color: #446BD5;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    form [type="submit"]:hover{
+        background-color: #2648a7;
+    }
 {% endblock %}
-
-
+{% block content %}
+    <section class="logged-area">
+        <div class="logout">
+            <div>
+                <img src="https://avatars.githubusercontent.com/u/96090524?s=200&v=4">
+            </div>
+            <h1>Você está logado(a)!</h1>
+            <h2>Seu usuário é <b>{{ user }}</b></h2>
+            <form action="/" method="post">
+                <input type="submit" value="Logout">
+            </form>
+        </div>
+    </section>
+{% endblock %}
