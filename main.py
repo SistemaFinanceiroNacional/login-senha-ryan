@@ -1,4 +1,5 @@
 from drivers.Web import server
+from drivers.Cli import command_line_interface as cli
 
 import argparse
 import logging
@@ -16,7 +17,7 @@ def main():
         print("Two options cannot be used at the same time.")
 
     elif args.cli and not args.web:
-        print("OK, but --cli is not implemented yet.")
+        cli.main()
 
     elif not args.cli and args.web:
         server.main()

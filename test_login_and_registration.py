@@ -1,5 +1,5 @@
 import externalAccountsInteractions
-import login_and_registration
+from drivers.Cli import command_line_interface
 import maybe
 import internalAccount
 import accounts
@@ -51,7 +51,7 @@ def test_main_with_repl():
     c = existing_pedros_account()
     i = inputfake(["logout","balance","abc123","pedro","1"])
     z = externalAccountsInteractions.externalAccountsInteractions(cursor)
-    login_and_registration.main(c,z,i)
+    login_and_registration.main(c, z, i)
     assert i.outputlist[0] == "400"
 
 def test_main_choose_2_already_exist():
@@ -60,7 +60,7 @@ def test_main_choose_2_already_exist():
     i = inputfake(["abc123","pedro","2"])
     c = waiting_pedro_account()
     z = externalAccountsInteractions.externalAccountsInteractions(cursor)
-    login_and_registration.main(c,z,i)
+    login_and_registration.main(c, z, i)
     assert i.outputlist[0] == "Your account has been successfully created!"
 
 def test_verify_correct_content_using_different_password():
@@ -73,7 +73,7 @@ def test_verify_correct_content_using_different_password():
     x.add_account(new_login,new_password)
     y = inputfake(["abc123","pedro","2"])
     z = externalAccountsInteractions.externalAccountsInteractions(cursor)
-    login_and_registration.main(x,z,y)
+    login_and_registration.main(x, z, y)
     cursor.close()
     conn.rollback()
     conn.close()
