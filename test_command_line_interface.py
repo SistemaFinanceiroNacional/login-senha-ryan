@@ -7,7 +7,7 @@ import password
 import psycopg2
 
 class inputfake:
-    def __init__(self,lista):
+    def __init__(self, lista):
         self.inputlist = lista
         self.outputlist = []
 
@@ -22,11 +22,11 @@ class inputfake:
 
 
 class contasfake:
-    def __init__(self,actualAccounts,newAccounts):
+    def __init__(self,actualAccounts, newAccounts):
         self.actualAccounts = actualAccounts
         self.newAccounts = newAccounts
 
-    def authentication(self,login,user_password):
+    def authentication(self, login, user_password):
         hashsenha = password.password(self.actualAccounts[login][0])
         if login in self.actualAccounts and str(hashsenha) == str(user_password):
             return maybe.just(internalAccount.internalAccount(login, user_password, self.actualAccounts[login][1]))
@@ -39,28 +39,28 @@ class contasfake:
 
 
 def existing_pedros_account():
-    return contasfake(actualAccounts={"pedro":("abc123","400")}, newAccounts={})
+    return contasfake(actualAccounts={"pedro": ("abc123", "400")}, newAccounts={})
 
 def waiting_pedro_account():
-    return contasfake(newAccounts={"pedro":"abc123"}, actualAccounts={})
+    return contasfake(newAccounts={"pedro": "abc123"}, actualAccounts={})
 
 
 def test_main_with_repl():
     conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123 host=localhost")
     cursor = conn.cursor()
     c = existing_pedros_account()
-    i = inputfake(["logout","balance","abc123","pedro","1"])
+    i = inputfake(["logout", "balance", "abc123", "pedro", "1"])
     z = externalAccountsInteractions.externalAccountsInteractions(cursor)
-    login_and_registration.main(c, z, i)
+    command_line_interface.main(c, z, i)
     assert i.outputlist[0] == "400"
 
 def test_main_choose_2_already_exist():
     conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123 host=localhost")
     cursor = conn.cursor()
-    i = inputfake(["abc123","pedro","2"])
+    i = inputfake(["abc123", "pedro", "2"])
     c = waiting_pedro_account()
     z = externalAccountsInteractions.externalAccountsInteractions(cursor)
-    login_and_registration.main(c, z, i)
+    command_line_interface.main(c, z, i)
     assert i.outputlist[0] == "Your account has been successfully created!"
 
 def test_verify_correct_content_using_different_password():
@@ -70,10 +70,10 @@ def test_verify_correct_content_using_different_password():
     x = accounts.accounts(cursor)
     new_login = "pedro"
     new_password = password.password("ab123")
-    x.add_account(new_login,new_password)
-    y = inputfake(["abc123","pedro","2"])
+    x.add_account(new_login, new_password)
+    y = inputfake(["abc123", "pedro", "2"])
     z = externalAccountsInteractions.externalAccountsInteractions(cursor)
-    login_and_registration.main(x, z, y)
+    command_line_interface.main(x, z, y)
     cursor.close()
     conn.rollback()
     conn.close()
