@@ -16,7 +16,7 @@ class fake_cursor:
 
 
 def test_connection_pool_postgresql_with_two_different_identities_returning_two_different_connections():
-    psql_conn = connection_pool.postgresql_connection_pool(fake_connection)
+    psql_conn = connection_pool.postgresql_connection_pool(fake_connection, 2)
     id1 = fake_identity(141)
     id2 = fake_identity(555)
 
@@ -70,3 +70,24 @@ def test_connection_pool_postgresql_verifying_if_the_second_tuple_item_is_not_no
     psql_conn.get_connection(id1)
 
     assert psql_conn.connections[id1.value()][1] is not None
+
+def test_connection_pool_refund_same_connection():
+    psql_conn_pool = connection_pool.postgresql_connection_pool(fake_connection)
+    id1 = fake_identity(141)
+    conn1 = psql_conn_pool.get_connection(id1)
+
+    psql_conn_pool.refund(id1)
+    id2 = fake_identity(500)
+    conn2 = psql_conn_pool.get_connection(id2)
+
+    assert conn1 == conn2
+
+def test_connection_pool_refund_trying_to_create_conn_but_max_has_reached():
+    psql_conn = connection_pool.postgresql_connection_pool(fake_connection)
+    id1 = fake_identity(141)
+    id2 = fake_identity(555)
+
+    connection_id1 = psql_conn.get_connection(id1)
+    connection_id2 = psql_conn.get_connection(id2)
+    psql_conn.refund(id1)
+

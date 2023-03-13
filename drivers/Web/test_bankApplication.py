@@ -32,7 +32,7 @@ def test_request_root_resource_is_html():
     bankApplicationReturn = bankApplication.root(request)
     assert bankApplicationReturn.getHeaders()["Content-Type"] == "text/html"
 
-def test_post_status_200():
+def test_post_status_303():
     header = {}
     resource = httpRequest.http_resource("/", {})
     method = "POST"
@@ -40,4 +40,4 @@ def test_post_status_200():
     version = "1.1"
     request = httpRequest.httpRequest(header, body, method, resource, version)
     bankApplicationReturn = bankApplication.root(request)
-    assert bankApplicationReturn.getStatus() == 200
+    assert bankApplicationReturn.getStatus() == 303
