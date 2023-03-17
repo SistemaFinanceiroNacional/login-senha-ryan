@@ -1,4 +1,11 @@
+import threading
+from time import sleep
+
+import pytest
+
 from ApplicationService import connection_pool, identity
+
+import asyncio
 
 class fake_identity(identity.identity):
     def __init__(self, iden):
@@ -87,7 +94,45 @@ def test_connection_pool_refund_trying_to_create_conn_but_max_has_reached():
     id1 = fake_identity(141)
     id2 = fake_identity(555)
 
-    connection_id1 = psql_conn.get_connection(id1)
-    connection_id2 = psql_conn.get_connection(id2)
-    psql_conn.refund(id1)
+    def get_conn(id_conn):
+        return psql_conn.get_connection(id_conn)
 
+    thread1 = threading.Thread(target=get_conn, args=(id1,))
+    print("Task1 created")
+    thread1.start()
+
+    sleep(1)
+
+    thread2 = threading.Thread(target=get_conn, args=(id2,))
+    print("Task2 created")
+    thread2.start()
+
+    sleep(2)
+
+    print("Going for if's...")
+    if not thread1.is_alive():
+        print("Thread1 is done")
+
+        assert thread2.is_alive()
+        print("Thread2 is not done")
+
+        psql_conn.refund(id1)
+        print("Thread1 refunded!!!")
+        sleep(2)
+
+        assert not thread2.is_alive()
+
+    elif not thread2.is_alive():
+        print("Thread2 is done")
+
+        assert thread1.is_alive()
+        print("Thread1 is not done")
+
+        psql_conn.refund(id2)
+        print("Task2 refunded!!!")
+        sleep(2)
+
+        assert not thread1.is_alive()
+
+    thread1.join()
+    thread2.join()

@@ -1,6 +1,6 @@
 import psycopg2
-import accounts
-import externalAccountsInteractions
+import internal_accounts_repository
+import external_accounts_interactions
 import internalAccount
 from ApplicationService import transferFundsBetweenAccounts
 
