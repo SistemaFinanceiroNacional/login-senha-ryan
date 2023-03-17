@@ -1,8 +1,8 @@
-import externalAccountsInteractions
+import external_accounts_interactions
 from drivers.Cli import command_line_interface
 import maybe
 import internalAccount
-import accounts
+import internal_accounts_repository
 import password
 import psycopg2
 

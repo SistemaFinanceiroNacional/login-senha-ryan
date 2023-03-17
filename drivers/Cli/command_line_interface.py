@@ -1,5 +1,5 @@
-import accounts
-import externalAccountsInteractions
+import internal_accounts_repository
+import external_accounts_interactions
 from inputIO import inputIO
 import internalAccount
 import password
@@ -40,9 +40,3 @@ def main(accounts_repository, transfer_use_case, userIO):
             userIO.print("Your account has been successfully created!")
         else:
             userIO.print("Account already exists. Try another username and password.")
-
-
-if __name__ == "__main__":
-    with psycopg2.connect("dbname=test user=ryanbanco password=abc123 host=localhost") as connection, connection.cursor() as cursor, accounts.accounts(cursor) as c, externalAccountsInteractions.externalAccountsInteractions(cursor) as extC:
-        transferUseCase = transferFundsBetweenAccounts.transferFundsBetweenAccountsClass(c, extC)
-        main(c, transferUseCase, inputIO.inputIO())
