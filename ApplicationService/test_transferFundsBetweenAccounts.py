@@ -1,9 +1,18 @@
 import psycopg2
-import internal_accounts_repository
-import external_accounts_interactions
+import internalaccountsrepository
+import externalaccountsinteractions
 import internalAccount
-from ApplicationService import transferFundsBetweenAccounts
+from ApplicationService import transferFundsBetweenAccountsUseCase
 
+class fakeCPool:
+    def __init__(self):
+        self.cursor = fakeCursor()
+
+    def get_cursor(self):
+        return self.cursor
+
+class fakeCursor:
+    pass
 
 def test_transfer_correct():
     conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123 host=localhost")
@@ -11,11 +20,11 @@ def test_transfer_correct():
     cursor.execute("CREATE TABLE IF NOT EXISTS accounts (login text, password text, balance int);")
     loginOrigin = "login"
     passwordOrigin = "password"
-    x = accounts.accounts(cursor)
+    x = internalaccountsrepository.internalAccountsRepository(cursor)
     x.add_account(loginOrigin, passwordOrigin)
 
-    extC = externalAccountsInteractions.externalAccountsInteractions(cursor)
-    externalAccountOrigin = extC.getByLogin(loginOrigin).value
+    extC = externalaccountsinteractions.externalAccountsInteractions(cursor)
+    externalAccountOrigin = extC.get_by_login(loginOrigin).value
     externalAccountOrigin.incrementBalance(100)
     extC.update(loginOrigin, 100)
 
@@ -25,7 +34,7 @@ def test_transfer_correct():
 
     loggedAccount = x.authentication(loginOrigin, passwordOrigin).value
 
-    transferFundsBetweenAccounts.transferFundsBetweenAccountsClass(x, extC).execute(loggedAccount, loginDestiny, 100)
+    transferFundsBetweenAccounts.transferFundsBetweenAccountsUseCase(x, extC).execute(loggedAccount, loginDestiny, 100)
 
     destinyAccount = x.authentication(loginDestiny, passwordDestiny).value
 
@@ -42,11 +51,11 @@ def test_transfer_correct2():
     conn.commit()
     loginOrigin = "login"
     passwordOrigin = "password"
-    x = accounts.accounts(cursor)
+    x = internalaccountsrepository.internalAccountsRepository(cursor)
     x.add_account(loginOrigin, passwordOrigin)
 
-    extC = externalAccountsInteractions.externalAccountsInteractions(cursor)
-    externalAccountOrigin = extC.getByLogin(loginOrigin).value
+    extC = externalaccountsinteractions.externalAccountsInteractions(cursor)
+    externalAccountOrigin = extC.get_by_login(loginOrigin).value
     externalAccountOrigin.incrementBalance(100)
     externalAccountOrigin.update(extC)
 
@@ -56,7 +65,7 @@ def test_transfer_correct2():
 
     loggedAccount = x.authentication(loginOrigin, passwordOrigin).value
 
-    transferFundsBetweenAccounts.transferFundsBetweenAccountsClass(x, extC).execute(loggedAccount, loginDestiny, 100)
+    transferFundsBetweenAccounts.transferFundsBetweenAccountsUseCase(x, extC).execute(loggedAccount, loginDestiny, 100)
 
     loggedAccount = x.authentication(loginOrigin, passwordOrigin).value
 
@@ -82,7 +91,7 @@ def test_transfer_zero_amout():
     extC = externalAccountsInteractions.externalAccountsInteractions(cursor)
 
     try:
-        transferFundsBetweenAccounts.transferFundsBetweenAccountsClass(x, extC).execute(loggedAccount, loginDestiny, 0)
+        transferFundsBetweenAccounts.transferFundsBetweenAccountsUseCase(x, extC).execute(loggedAccount, loginDestiny, 0)
         assert False
 
     except internalAccount.invalidValueToTransfer as e:
@@ -110,7 +119,7 @@ def test_transfer_negative_amout():
     extC = externalAccountsInteractions.externalAccountsInteractions(cursor)
 
     try:
-        transferFundsBetweenAccounts.transferFundsBetweenAccountsClass(x, extC).execute(loggedAccount, loginDestiny, -50)
+        transferFundsBetweenAccounts.transferFundsBetweenAccountsUseCase(x, extC).execute(loggedAccount, loginDestiny, -50)
         assert False
 
     except internalAccount.invalidValueToTransfer as e:
@@ -133,10 +142,10 @@ def test_transfer_not_existing_login_destiny():
     loginDestiny = "loginDestiny"
     loggedAccount = x.authentication(loginOrigin, passwordOrigin).value
 
-    extC = externalAccountsInteractions.externalAccountsInteractions(cursor)
+    extC = externalaccountsinteraction.externalAccountsInteractions(cursor)
 
     try:
-        transferFundsBetweenAccounts.transferFundsBetweenAccountsClass(x, extC).execute(loggedAccount, loginDestiny, -20)
+        transferFundsBetweenAccounts.transferFundsBetweenAccountsUseCase(x, extC).execute(loggedAccount, loginDestiny, -20)
         assert False
     except transferFundsBetweenAccounts.accountDoesNotExists as e:
         assert e.destinyLogin == loginDestiny
