@@ -22,7 +22,7 @@ class internalAccount:
         return self.m_login
 
     def update(self, repository):
-        repository.updateBalance(self.m_login,self.m_balance)
+        repository.update_balance(self.m_login, self.m_balance)
 
 class insufficientFundsException(Exception):
     def __init__(self,balance,value):

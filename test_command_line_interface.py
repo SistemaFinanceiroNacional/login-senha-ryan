@@ -1,8 +1,8 @@
-import external_accounts_interactions
+import externalaccountsinteractions
 from drivers.Cli import command_line_interface
 import maybe
 import internalAccount
-import internal_accounts_repository
+import internalaccountsrepository
 import password
 import psycopg2
 
@@ -22,7 +22,7 @@ class inputfake:
 
 
 class contasfake:
-    def __init__(self,actualAccounts, newAccounts):
+    def __init__(self, actualAccounts, newAccounts):
         self.actualAccounts = actualAccounts
         self.newAccounts = newAccounts
 
@@ -33,7 +33,7 @@ class contasfake:
         else:
             return maybe.nothing()
 
-    def add_account(self,new_login,new_password):
+    def add_account(self, new_login, new_password):
         hashsenha = password.password(self.newAccounts[new_login])
         return new_login in self.newAccounts and str(hashsenha) == str(new_password)
 

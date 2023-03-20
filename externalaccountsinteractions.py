@@ -1,12 +1,12 @@
 import externalAccount
 import maybe
 
-class external_accounts_interactions:
+class externalAccountsInteractions:
     def __init__(self, connection_pool, identifier):
         self.connection_pool = connection_pool
         self.identifier = identifier
 
-    def getByLogin(self, login):
+    def get_by_login(self, login):
         cursor = self.connection_pool.get_cursor(self.identifier)
         cursor.execute("SELECT login FROM accounts WHERE login=%s", (login,))
         possibleLogin = cursor.fetchone()

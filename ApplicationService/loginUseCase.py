@@ -1,8 +1,9 @@
 import maybe
+from internalaccountsrepository import internalAccountsRepository
+from ApplicationService.transactioncontext import transactioncontext
 
-
-class login_use_case:
-    def __init__(self, account_repository, transactional_context):
+class loginUseCase:
+    def __init__(self, account_repository: internalAccountsRepository, transactional_context: transactioncontext):
         self.account_repository = account_repository
         self.transactional_context = transactional_context
 
