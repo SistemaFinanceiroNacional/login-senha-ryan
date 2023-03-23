@@ -1,6 +1,8 @@
 import internalAccount
 import password
+import logging
 
+logger = logging.getLogger("drivers.Cli.command_line_interface")
 
 def repl(userIO, acc, transfer_use_case):
     comando = ""
@@ -25,6 +27,7 @@ def main(userIO, login_use_case, transfer_use_case, open_account_use_case):
     if choose == "1":
         login = userIO.input("Enter your username: ")
         senha = password.password(userIO.inputoccult("Enter your password: "))
+        logger.debug("Going to verify the account...")
         possible_account = login_use_case.execute(login, senha)
         possible_account.map(lambda acc: repl(userIO, acc, transfer_use_case)).orElse(lambda: userIO.print("You are not logged in!"))
 
