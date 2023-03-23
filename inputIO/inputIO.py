@@ -1,11 +1,11 @@
 import getpass
 
 class inputIO:
-    def input(self,prompt):
+    def input(self, prompt):
         return input(prompt)
 
-    def inputoccult(self,prompt):
+    def inputoccult(self, prompt):
         return getpass.getpass(prompt)
 
-    def print(self,prompt):
+    def print(self, prompt):
         print(prompt)

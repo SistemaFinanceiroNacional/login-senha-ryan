@@ -2,6 +2,10 @@ import maybe
 import internalAccount
 from ApplicationService.connection_pool import connection_pool as cpool
 from ApplicationService.identity import identity
+import logging
+
+logger = logging.getLogger("internalaccountsrepository")
+
 
 class internalAccountsRepository:
     def __init__(self, connection_pool: cpool, identifier: identity):
@@ -19,11 +23,16 @@ class internalAccountsRepository:
         return not account_query_result
 
     def authentication(self, login, password) -> maybe.maybe:
+        logger.debug("Entered on authentication.")
         cursor = self.connection_pool.get_cursor(self.identifier)
+        logger.debug("Got cursor.")
         cursor.execute("SELECT login, password, balance FROM accounts WHERE login=%s AND password=%s", (login, str(password)))
+        logger.debug("Cursor execute ran.")
         find_login_list = cursor.fetchone()
         if find_login_list is not None:
+            logger.debug("Account found.")
             return maybe.just(internalAccount.internalAccount(find_login_list[0], find_login_list[1], find_login_list[2]))
+        logger.debug("Account not found.")
         return maybe.nothing()
 
     def update_balance(self, login: str, new_balance: float) -> None:

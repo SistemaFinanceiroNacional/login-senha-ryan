@@ -50,7 +50,7 @@ def test_main_with_repl():
     cursor = conn.cursor()
     c = existing_pedros_account()
     i = inputfake(["logout", "balance", "abc123", "pedro", "1"])
-    z = externalAccountsInteractions.externalAccountsInteractions(cursor)
+    z = externalaccountsinteractions.externalAccountsInteractions(cursor)
     command_line_interface.main(c, z, i)
     assert i.outputlist[0] == "400"
 
@@ -59,7 +59,7 @@ def test_main_choose_2_already_exist():
     cursor = conn.cursor()
     i = inputfake(["abc123", "pedro", "2"])
     c = waiting_pedro_account()
-    z = externalAccountsInteractions.externalAccountsInteractions(cursor)
+    z = externalaccountsinteractions.externalAccountsInteractions(cursor)
     command_line_interface.main(c, z, i)
     assert i.outputlist[0] == "Your account has been successfully created!"
 
@@ -67,12 +67,12 @@ def test_verify_correct_content_using_different_password():
     conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123 host=localhost")
     cursor = conn.cursor()
     cursor.execute("CREATE TABLE IF NOT EXISTS accounts (login text, password text, balance int)")
-    x = accounts.accounts(cursor)
+    x = internalaccountsrepository.internalAccountsRepository()
     new_login = "pedro"
     new_password = password.password("ab123")
     x.add_account(new_login, new_password)
     y = inputfake(["abc123", "pedro", "2"])
-    z = externalAccountsInteractions.externalAccountsInteractions(cursor)
+    z = externalaccountsinteractions.externalAccountsInteractions(cursor)
     command_line_interface.main(x, z, y)
     cursor.close()
     conn.rollback()

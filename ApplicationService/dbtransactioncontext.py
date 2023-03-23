@@ -1,5 +1,5 @@
 from typing import Any
-from identity import identity
+from ApplicationService.identity import identity
 from ApplicationService.connection_pool import connection_pool as cpool
 from ApplicationService.transactioncontext import transactioncontext
 
@@ -11,7 +11,6 @@ class dbTransactionContext(transactioncontext):
 
     def __enter__(self):
         connection = self.connection_pool.get_connection(self.identifier)
-        connection.start_transaction()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
