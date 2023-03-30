@@ -1,5 +1,5 @@
 import maybe
-from internalaccountsrepository import internalAccountsRepository
+from ApplicationService.repositories.internalaccountsrepository import internalAccountsRepository
 from ApplicationService.transactioncontext import transactioncontext
 import logging
 

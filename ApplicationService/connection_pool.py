@@ -1,7 +1,6 @@
 import os
 import psycopg2
 import threading
-
 from ApplicationService.identity import identity
 
 

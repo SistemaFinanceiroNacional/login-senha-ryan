@@ -2,12 +2,13 @@ import maybe
 import internalAccount
 from ApplicationService.connection_pool import connection_pool as cpool
 from ApplicationService.identity import identity
+from ApplicationService.repositories.internalaccountsrepository import internalAccountsRepository
 import logging
 
-logger = logging.getLogger("internalaccountsrepository")
+logger = logging.getLogger("internalAccountsRepository")
 
 
-class internalAccountsRepository:
+class internalRepository(internalAccountsRepository):
     def __init__(self, connection_pool: cpool, identifier: identity):
         self.connection_pool = connection_pool
         self.identifier = identifier
@@ -31,7 +32,8 @@ class internalAccountsRepository:
         find_login_list = cursor.fetchone()
         if find_login_list is not None:
             logger.debug("Account found.")
-            return maybe.just(internalAccount.internalAccount(find_login_list[0], find_login_list[1], find_login_list[2]))
+            return maybe.just(
+                internalAccount.internalAccount(find_login_list[0], find_login_list[1], find_login_list[2]))
         logger.debug("Account not found.")
         return maybe.nothing()
 

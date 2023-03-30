@@ -1,4 +1,4 @@
-import internalAccount
+from ApplicationService import internalAccount
 import password
 import logging
 
@@ -34,7 +34,7 @@ def main(userIO, login_use_case, transfer_use_case, open_account_use_case):
     elif choose == "2":
         loginFromUser = userIO.input("Enter your new username: ")
         passwordFromUser = password.password(userIO.inputoccult("Enter your new password: "))
-        if open_account_use_case.add_account(loginFromUser, passwordFromUser):
+        if open_account_use_case.execute(loginFromUser, passwordFromUser):
             userIO.print("Your account has been successfully created!")
         else:
-            userIO.print("Account already exists. Try another username and password.")
+            userIO.print("Account already exists. Try another username.")
