@@ -1,8 +1,9 @@
 from ApplicationService.transactioncontext import transactioncontext
-
+from ApplicationService.repositories.internalaccountsrepository import internalAccountsRepository
+from ApplicationService.repositories.externalaccountsrepository import externalAccountsRepository
 
 class transferFundsBetweenAccountsUseCase:
-    def __init__(self, internalRepository, externalRepository, transactional_context: transactioncontext):
+    def __init__(self, internalRepository: internalAccountsRepository, externalRepository: externalAccountsRepository, transactional_context: transactioncontext):
         self.internalRepository = internalRepository
         self.externalRepository = externalRepository
         self.transactional_context = transactional_context

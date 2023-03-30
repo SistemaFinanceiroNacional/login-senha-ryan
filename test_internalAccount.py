@@ -1,8 +1,8 @@
-import externalAccount
-import internalAccount
+from ApplicationService import externalAccount, internalAccount
+
 
 def test_transfer1():
-    x = internalAccount.internalAccount("ryan","abc123",20)
+    x = internalAccount.internalAccount("ryan", "abc123", 20)
     y = externalAccount.externalAccount("pedro")
     x.transfer(y, 10)
     assert x.balance() == 10

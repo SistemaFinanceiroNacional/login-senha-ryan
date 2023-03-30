@@ -1,8 +1,6 @@
 import psycopg2
-import internalaccountsrepository
-import externalaccountsinteractions
-import internalAccount
-from ApplicationService import transferFundsBetweenAccountsUseCase
+from ApplicationService import transferFundsBetweenAccountsUseCase, internalAccount
+
 
 class fakeCPool:
     def __init__(self):
@@ -20,10 +18,10 @@ def test_transfer_correct():
     cursor.execute("CREATE TABLE IF NOT EXISTS accounts (login text, password text, balance int);")
     loginOrigin = "login"
     passwordOrigin = "password"
-    x = internalaccountsrepository.internalAccountsRepository(cursor)
+    x = internalaccountsrepository.internalRepository(cursor)
     x.add_account(loginOrigin, passwordOrigin)
 
-    extC = externalaccountsinteractions.externalAccountsInteractions(cursor)
+    extC = externalaccountsinteractions.externalRepository(cursor)
     externalAccountOrigin = extC.get_by_login(loginOrigin).value
     externalAccountOrigin.incrementBalance(100)
     extC.update(loginOrigin, 100)
@@ -51,10 +49,10 @@ def test_transfer_correct2():
     conn.commit()
     loginOrigin = "login"
     passwordOrigin = "password"
-    x = internalaccountsrepository.internalAccountsRepository(cursor)
+    x = internalaccountsrepository.internalRepository(cursor)
     x.add_account(loginOrigin, passwordOrigin)
 
-    extC = externalaccountsinteractions.externalAccountsInteractions(cursor)
+    extC = externalaccountsinteractions.externalRepository(cursor)
     externalAccountOrigin = extC.get_by_login(loginOrigin).value
     externalAccountOrigin.incrementBalance(100)
     externalAccountOrigin.update(extC)
@@ -80,7 +78,7 @@ def test_transfer_zero_amout():
     cursor = conn.cursor()
     loginOrigin = "login"
     passwordOrigin = "password"
-    x = internalaccountsrepository.internalAccountsRepository()
+    x = internalaccountsrepository.internalRepository()
     x.add_account(loginOrigin, passwordOrigin)
 
     loginDestiny = "loginDestiny"
@@ -88,7 +86,7 @@ def test_transfer_zero_amout():
     x.add_account(loginDestiny, passwordDestiny)
     loggedAccount = x.authentication(loginOrigin, passwordOrigin).value
 
-    extC = externalaccountsinteractions.externalAccountsInteractions(cursor)
+    extC = externalaccountsinteractions.externalRepository(cursor)
 
     try:
         transferFundsBetweenAccountsUseCase.transferFundsBetweenAccountsUseCase(x, extC).execute(loggedAccount, loginDestiny, 0)
@@ -108,7 +106,7 @@ def test_transfer_negative_amount():
     cursor = conn.cursor()
     loginOrigin = "login"
     passwordOrigin = "password"
-    x = internalaccountsrepository.internalAccountsRepository()
+    x = internalaccountsrepository.internalRepository()
     x.add_account(loginOrigin, passwordOrigin)
 
     loginDestiny = "loginDestiny"
@@ -116,7 +114,7 @@ def test_transfer_negative_amount():
     x.add_account(loginDestiny, passwordDestiny)
     loggedAccount = x.authentication(loginOrigin, passwordOrigin).value
 
-    extC = externalaccountsinteractions.externalAccountsInteractions(cursor)
+    extC = externalaccountsinteractions.externalRepository(cursor)
 
     try:
         transferFundsBetweenAccountsUseCase.transferFundsBetweenAccountsUseCase(x, extC).execute(loggedAccount, loginDestiny, -50)
@@ -136,13 +134,13 @@ def test_transfer_not_existing_login_destiny():
     cursor.execute("CREATE TABLE IF NOT EXISTS accounts (login text, password text, balance int)")
     loginOrigin = "login"
     passwordOrigin = "password"
-    x = internalaccountsrepository.internalAccountsRepository()
+    x = internalaccountsrepository.internalRepository()
     x.add_account(loginOrigin, passwordOrigin)
 
     loginDestiny = "loginDestiny"
     loggedAccount = x.authentication(loginOrigin, passwordOrigin).value
 
-    extC = externalaccountsinteractions.externalAccountsInteractions(cursor)
+    extC = externalaccountsinteractions.externalRepository(cursor)
 
     try:
         transferFundsBetweenAccountsUseCase.transferFundsBetweenAccountsUseCase(x, extC).execute(loggedAccount, loginDestiny, -20)
