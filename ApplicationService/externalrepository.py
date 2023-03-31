@@ -1,4 +1,4 @@
-import externalAccount
+from ApplicationService.externalAccount import externalAccount
 import maybe
 from ApplicationService.connection_pool import connection_pool
 from ApplicationService.identity import identity
@@ -14,7 +14,7 @@ class externalRepository(externalAccountsRepository):
         cursor.execute("SELECT login FROM accounts WHERE login=%s", (login,))
         possibleLogin = cursor.fetchone()
         if possibleLogin is not None:
-            return maybe.just(externalAccount.externalAccount(possibleLogin[0]))
+            return maybe.just(externalAccount(possibleLogin[0]))
 
         else:
             return maybe.nothing()

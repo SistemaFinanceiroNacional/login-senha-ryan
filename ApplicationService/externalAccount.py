@@ -1,3 +1,5 @@
+from ApplicationService.repositories.externalaccountsrepository import externalAccountsRepository
+
 class externalAccount:
     def __init__(self, login: str):
         self.login = login
@@ -12,7 +14,7 @@ class externalAccount:
     def getIncrementBalance(self):
         return self.balanceIncrement
 
-    def update(self, repository):
+    def update(self, repository: externalAccountsRepository):
         repository.update(self.login, self.balanceIncrement)
 
     def login(self):

@@ -1,7 +1,7 @@
 import hashlib
 
 class password:
-    def __init__(self, raw_password):
+    def __init__(self, raw_password: str):
         self.password = raw_password
 
     def __str__(self):

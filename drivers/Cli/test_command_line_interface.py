@@ -9,7 +9,6 @@ from ApplicationService.openAccountUseCase import openAccountUseCase
 import maybe
 import password
 from ApplicationService.internalAccount import internalAccount
-import psycopg2
 
 
 class inputfake:
@@ -58,6 +57,11 @@ class contasFake(internalAccountsRepository):
 
         # return new_login  and new_login in self.newAccounts and str(hashsenha) == str(new_password)
 
+    def update_balance(self, login: str, balance: float):
+        if login in self.actualAccounts:
+            account = self.actualAccounts.get(login)
+            account.m_balance = balance
+            self.actualAccounts[login] = account
 
 def existing_pedros_account():
     return contasFake(actualAccounts={"pedro": ("abc123", "400")}, newAccounts={})

@@ -1,157 +1,132 @@
 import psycopg2
-from ApplicationService import transferFundsBetweenAccountsUseCase, internalAccount
+import maybe
+from ApplicationService.transferFundsBetweenAccountsUseCase import transferFundsBetweenAccountsUseCase, accountDoesNotExists
+from ApplicationService.transactioncontext import transactioncontext
+from ApplicationService.repositories.externalaccountsrepository import externalAccountsRepository
+from drivers.Cli.test_command_line_interface import contasFake, fake_context
+from ApplicationService.externalAccount import externalAccount
+from ApplicationService.internalAccount import internalAccount, invalidValueToTransfer
 
 
-class fakeCPool:
+class fakeContext(transactioncontext):
     def __init__(self):
-        self.cursor = fakeCursor()
+        self.errors = []
 
-    def get_cursor(self):
-        return self.cursor
+    def __enter__(self):
+        pass
 
-class fakeCursor:
-    pass
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        pass
+
+    def get_errors(self):
+        return self.errors
+
+class fakeExternalRepository(externalAccountsRepository):
+    def __init__(self):
+        self.accounts = dict()
+
+    def get_by_login(self, login: str):
+        if login in self.accounts:
+            account = self.accounts.get(login)
+            return maybe.just(account)
+        return maybe.nothing()
+
+    def update(self, login: str, balance: float):
+        if login in self.accounts:
+            account = self.accounts.get(login)
+            account.balanceIncrement = balance
+            self.accounts[login] = account
+
+    def add_account(self, login, account):
+        self.accounts[login] = account
+
 
 def test_transfer_correct():
-    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123 host=localhost")
-    cursor = conn.cursor()
-    cursor.execute("CREATE TABLE IF NOT EXISTS accounts (login text, password text, balance int);")
-    loginOrigin = "login"
-    passwordOrigin = "password"
-    x = internalaccountsrepository.internalRepository(cursor)
-    x.add_account(loginOrigin, passwordOrigin)
+    extAccount = externalAccount("joao")
+    intAccount = internalAccount("ryan", "abc123", 300)
+    context = fake_context()
 
-    extC = externalaccountsinteractions.externalRepository(cursor)
-    externalAccountOrigin = extC.get_by_login(loginOrigin).value
-    externalAccountOrigin.incrementBalance(100)
-    extC.update(loginOrigin, 100)
+    intRepository = contasFake({"ryan": intAccount}, {})
+    extRepository = fakeExternalRepository()
+    extRepository.add_account("joao", extAccount)
 
-    loginDestiny = "loginDestiny"
-    passwordDestiny = "passwordDestiny"
-    x.add_account(loginDestiny, passwordDestiny)
+    useCase = transferFundsBetweenAccountsUseCase(intRepository, extRepository, context)
 
-    loggedAccount = x.authentication(loginOrigin, passwordOrigin).value
-
-    transferFundsBetweenAccountsUseCase.transferFundsBetweenAccountsUseCase(x, extC).execute(loggedAccount, loginDestiny, 100)
-
-    destinyAccount = x.authentication(loginDestiny, passwordDestiny).value
-
-    assert destinyAccount.balance() == 100
-    cursor.close()
-    conn.rollback()
-    conn.close()
+    assert useCase.execute(intAccount, "joao", 150)
 
 
 def test_transfer_correct2():
-    conn = psycopg2.connect("dbname=test user=ryanbanco password='abc123' host=localhost")
-    cursor = conn.cursor()
-    cursor.execute("CREATE TABLE IF NOT EXISTS accounts (login text, password text, balance integer);")
-    conn.commit()
-    loginOrigin = "login"
-    passwordOrigin = "password"
-    x = internalaccountsrepository.internalRepository(cursor)
-    x.add_account(loginOrigin, passwordOrigin)
+    extAccount = externalAccount("joao")
+    intAccount = internalAccount("ryan", "abc123", 100)
+    context = fake_context()
 
-    extC = externalaccountsinteractions.externalRepository(cursor)
-    externalAccountOrigin = extC.get_by_login(loginOrigin).value
-    externalAccountOrigin.incrementBalance(100)
-    externalAccountOrigin.update(extC)
+    intRepository = contasFake({"ryan": intAccount}, {})
+    extRepository = fakeExternalRepository()
+    extRepository.add_account("joao", extAccount)
 
-    loginDestiny = "loginDestiny"
-    passwordDestiny = "passwordDestiny"
-    x.add_account(loginDestiny, passwordDestiny)
+    useCase = transferFundsBetweenAccountsUseCase(intRepository, extRepository, context)
+    useCase.execute(intAccount, "joao", 100)
 
-    loggedAccount = x.authentication(loginOrigin, passwordOrigin).value
-
-    transferFundsBetweenAccountsUseCase.transferFundsBetweenAccountsUseCase(x, extC).execute(loggedAccount, loginDestiny, 100)
-
-    loggedAccount = x.authentication(loginOrigin, passwordOrigin).value
-
-    assert loggedAccount.balance() == 0
-    cursor.close()
-    conn.rollback()
-    conn.close()
+    assert intRepository.actualAccounts["ryan"].m_balance == 0 and extRepository.accounts["joao"].balanceIncrement == 100
 
 
 def test_transfer_zero_amout():
-    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123 host=localhost")
-    cursor = conn.cursor()
-    loginOrigin = "login"
-    passwordOrigin = "password"
-    x = internalaccountsrepository.internalRepository()
-    x.add_account(loginOrigin, passwordOrigin)
+    extAccount = externalAccount("joao")
+    intAccount = internalAccount("ryan", "abc123", 100)
+    context = fake_context()
 
-    loginDestiny = "loginDestiny"
-    passwordDestiny = "passwordDestiny"
-    x.add_account(loginDestiny, passwordDestiny)
-    loggedAccount = x.authentication(loginOrigin, passwordOrigin).value
+    intRepository = contasFake({"ryan": intAccount}, {})
+    extRepository = fakeExternalRepository()
+    extRepository.add_account("joao", extAccount)
 
-    extC = externalaccountsinteractions.externalRepository(cursor)
+    useCase = transferFundsBetweenAccountsUseCase(intRepository, extRepository, context)
 
     try:
-        transferFundsBetweenAccountsUseCase.transferFundsBetweenAccountsUseCase(x, extC).execute(loggedAccount, loginDestiny, 0)
+        useCase.execute(intAccount, "joao", 0)
         assert False
 
-    except internalAccount.invalidValueToTransfer as e:
+    except invalidValueToTransfer as e:
         assert e.value == 0
 
-    cursor.close()
-    conn.rollback()
-    conn.close()
-
-
 def test_transfer_negative_amount():
-    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123 host=localhost")
+    extAccount = externalAccount("joao")
+    intAccount = internalAccount("ryan", "abc123", 100)
+    context = fake_context()
 
-    cursor = conn.cursor()
-    loginOrigin = "login"
-    passwordOrigin = "password"
-    x = internalaccountsrepository.internalRepository()
-    x.add_account(loginOrigin, passwordOrigin)
+    intRepository = contasFake({"ryan": intAccount}, {})
+    extRepository = fakeExternalRepository()
+    extRepository.add_account("joao", extAccount)
 
-    loginDestiny = "loginDestiny"
-    passwordDestiny = "passwordDestiny"
-    x.add_account(loginDestiny, passwordDestiny)
-    loggedAccount = x.authentication(loginOrigin, passwordOrigin).value
-
-    extC = externalaccountsinteractions.externalRepository(cursor)
+    useCase = transferFundsBetweenAccountsUseCase(intRepository, extRepository, context)
 
     try:
-        transferFundsBetweenAccountsUseCase.transferFundsBetweenAccountsUseCase(x, extC).execute(loggedAccount, loginDestiny, -50)
+        useCase.execute(intAccount, "joao", -50)
         assert False
 
-    except internalAccount.invalidValueToTransfer as e:
+    except invalidValueToTransfer as e:
         assert e.value == -50
 
-    cursor.close()
-    conn.rollback()
-    conn.close()
-
-
 def test_transfer_not_existing_login_destiny():
-    conn = psycopg2.connect("dbname=test user=ryanbanco password=abc123 host=localhost")
-    cursor = conn.cursor()
-    cursor.execute("CREATE TABLE IF NOT EXISTS accounts (login text, password text, balance int)")
-    loginOrigin = "login"
-    passwordOrigin = "password"
-    x = internalaccountsrepository.internalRepository()
-    x.add_account(loginOrigin, passwordOrigin)
+    extAccount = externalAccount("joao")
+    intAccount = internalAccount("ryan", "abc123", 100)
+    context = fake_context()
 
-    loginDestiny = "loginDestiny"
-    loggedAccount = x.authentication(loginOrigin, passwordOrigin).value
+    intRepository = contasFake({"ryan": intAccount}, {})
+    extRepository = fakeExternalRepository()
+    extRepository.add_account("joao", extAccount)
 
-    extC = externalaccountsinteractions.externalRepository(cursor)
+    useCase = transferFundsBetweenAccountsUseCase(intRepository, extRepository, context)
 
     try:
-        transferFundsBetweenAccountsUseCase.transferFundsBetweenAccountsUseCase(x, extC).execute(loggedAccount, loginDestiny, -20)
+        useCase.execute(intAccount, "henio", 50)
         assert False
-    except transferFundsBetweenAccountsUseCase.accountDoesNotExists as e:
-        assert e.destinyLogin == loginDestiny
-
-    cursor.close()
-    conn.rollback()
-    conn.close()
+    except accountDoesNotExists as e:
+        assert e.destinyLogin == "henio"
 
 
 if __name__ == "__main__":
     test_transfer_correct2()
+
+
+
+

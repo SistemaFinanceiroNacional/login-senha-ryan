@@ -10,7 +10,7 @@ class dbTransactionContext(transactioncontext):
         self.errors: list[Any] = []
 
     def __enter__(self):
-        connection = self.connection_pool.get_connection(self.identifier)
+        self.connection_pool.get_connection(self.identifier)
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
