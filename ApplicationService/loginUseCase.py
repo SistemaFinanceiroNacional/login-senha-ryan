@@ -1,6 +1,7 @@
 import maybe
 from ApplicationService.repositories.internalaccountsrepository import internalAccountsRepository
 from ApplicationService.transactioncontext import transactioncontext
+from password import password as pw
 import logging
 
 logger = logging.getLogger("ApplicationService.loginUseCase")
@@ -10,7 +11,7 @@ class loginUseCase:
         self.account_repository = account_repository
         self.transactional_context = transactional_context
 
-    def execute(self, username: str, password: str):
+    def execute(self, username: str, password: pw):
         logger.debug("Execute method called.")
         with self.transactional_context:
             logger.debug("Inside the context on with statement.")

@@ -1,5 +1,6 @@
 import maybe
-import internalAccount
+from ApplicationService.internalAccount import internalAccount
+from password import password as pw
 from ApplicationService.connection_pool import connection_pool as cpool
 from ApplicationService.identity import identity
 from ApplicationService.repositories.internalaccountsrepository import internalAccountsRepository
@@ -13,7 +14,7 @@ class internalRepository(internalAccountsRepository):
         self.connection_pool = connection_pool
         self.identifier = identifier
 
-    def add_account(self, new_login: str, new_password: str) -> bool:
+    def add_account(self, new_login: str, new_password: pw) -> bool:
         cursor = self.connection_pool.get_cursor(self.identifier)
         cursor.execute("SELECT * FROM accounts WHERE login = %s ", (new_login,))
         account_query_result = cursor.fetchone()
@@ -23,7 +24,7 @@ class internalRepository(internalAccountsRepository):
 
         return not account_query_result
 
-    def authentication(self, login, password) -> maybe.maybe:
+    def authentication(self, login: str, password: pw) -> maybe.maybe:
         logger.debug("Entered on authentication.")
         cursor = self.connection_pool.get_cursor(self.identifier)
         logger.debug("Got cursor.")
@@ -32,8 +33,7 @@ class internalRepository(internalAccountsRepository):
         find_login_list = cursor.fetchone()
         if find_login_list is not None:
             logger.debug("Account found.")
-            return maybe.just(
-                internalAccount.internalAccount(find_login_list[0], find_login_list[1], find_login_list[2]))
+            return maybe.just(internalAccount(find_login_list[0], find_login_list[1], find_login_list[2]))
         logger.debug("Account not found.")
         return maybe.nothing()
 

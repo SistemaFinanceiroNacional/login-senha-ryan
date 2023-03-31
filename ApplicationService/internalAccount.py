@@ -1,5 +1,9 @@
+from ApplicationService.externalAccount import externalAccount
+from ApplicationService.repositories.internalaccountsrepository import internalAccountsRepository
+from password import password as pw
+
 class internalAccount:
-    def __init__(self, login, password, balance):
+    def __init__(self, login: str, password: pw, balance: float):
         self.m_login = login
         self.m_password = password
         self.m_balance = balance
@@ -7,7 +11,7 @@ class internalAccount:
     def balance(self):
         return self.m_balance
 
-    def transfer(self, intoAccount, value):
+    def transfer(self, intoAccount: externalAccount, value: float):
         if value <= 0:
             raise invalidValueToTransfer(value)
 
@@ -21,16 +25,16 @@ class internalAccount:
     def login(self):
         return self.m_login
 
-    def update(self, repository):
+    def update(self, repository: internalAccountsRepository):
         repository.update_balance(self.m_login, self.m_balance)
 
 class insufficientFundsException(Exception):
-    def __init__(self,balance,value):
+    def __init__(self, balance: float, value: float):
         self.balance = balance
         self.value = value
         super().__init__(f"{self.balance} is insufficient to get {self.value}")
 
 class invalidValueToTransfer(Exception):
-    def __init__(self, value):
+    def __init__(self, value: float):
         self.value = value
         super().__init__(f"{self.value} is a non-positive value to transfer.")

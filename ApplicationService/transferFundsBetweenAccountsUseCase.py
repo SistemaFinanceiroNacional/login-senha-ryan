@@ -1,6 +1,7 @@
 from ApplicationService.transactioncontext import transactioncontext
 from ApplicationService.repositories.internalaccountsrepository import internalAccountsRepository
 from ApplicationService.repositories.externalaccountsrepository import externalAccountsRepository
+from ApplicationService.internalAccount import internalAccount as iAccount
 
 class transferFundsBetweenAccountsUseCase:
     def __init__(self, internalRepository: internalAccountsRepository, externalRepository: externalAccountsRepository, transactional_context: transactioncontext):
@@ -8,7 +9,7 @@ class transferFundsBetweenAccountsUseCase:
         self.externalRepository = externalRepository
         self.transactional_context = transactional_context
 
-    def execute(self, internalAccount, destinyLogin, amount):
+    def execute(self, internalAccount: iAccount, destinyLogin: str, amount):
         with self.transactional_context:
             extAccount = self.externalRepository.get_by_login(destinyLogin).orElseThrow(accountDoesNotExists(destinyLogin))
             internalAccount.transfer(extAccount, amount)
