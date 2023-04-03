@@ -8,7 +8,7 @@ class cursor(Protocol):
     def execute(self):
         raise NotImplementedError
 
-    def fetchone(self):
+    def fetchone(self) -> None or tuple:
         raise NotImplementedError
 
 class connection(Protocol):
