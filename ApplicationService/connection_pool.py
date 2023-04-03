@@ -1,35 +1,8 @@
 import os
 import psycopg2
 import threading
-from typing import Protocol, Callable
-from ApplicationService.threadIdentity import identity
-
-class cursor(Protocol):
-    def execute(self):
-        raise NotImplementedError
-
-    def fetchone(self) -> None or tuple:
-        raise NotImplementedError
-
-class connection(Protocol):
-    def cursor(self) -> cursor:
-        raise NotImplementedError
-
-    def commit(self):
-        raise NotImplementedError
-
-    def rollback(self):
-        raise NotImplementedError
-
-class connection_pool:
-    def get_connection(self, identifier: identity) -> connection:
-        raise NotImplementedError()
-
-    def get_cursor(self, identifier: identity):
-        raise NotImplementedError()
-
-    def refund(self, identifier: identity):
-        raise NotImplementedError()
+from typing import Callable
+from ApplicationService.repositories.connectionInterface import *
 
 class postgresql_connection_pool(connection_pool):
     def __init__(self, createConnection=None, max_connections=1, condition=None):
