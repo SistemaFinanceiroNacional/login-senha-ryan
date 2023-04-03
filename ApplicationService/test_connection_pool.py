@@ -1,9 +1,9 @@
 import threading
 from time import sleep
-from ApplicationService import connection_pool, identity
+from ApplicationService import connection_pool
+from ApplicationService.repositories.identity import identity
 
-
-class fake_identity(identity.identity):
+class fake_identity(identity):
     def __init__(self, iden):
         self.iden = iden
 

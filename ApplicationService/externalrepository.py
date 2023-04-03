@@ -1,7 +1,7 @@
 from ApplicationService.externalAccount import externalAccount
 import maybe
 from ApplicationService.connection_pool import connection_pool
-from ApplicationService.identity import identity
+from ApplicationService.threadIdentity import identity
 from ApplicationService.repositories.externalaccountsrepository import externalAccountsRepository
 
 class externalRepository(externalAccountsRepository):

@@ -3,7 +3,7 @@ import ApplicationService.connection_pool as cpool
 import ApplicationService.loginUseCase as lCase
 import ApplicationService.dbtransactioncontext as ctxt
 import ApplicationService.transferFundsBetweenAccountsUseCase as tfba
-import ApplicationService.identity as identifier
+import ApplicationService.threadIdentity as identifier
 import ApplicationService.openAccountUseCase as open_acc
 from ApplicationService import externalrepository as eai, internalrepository as iar
 import inputIO.inputIO as io
