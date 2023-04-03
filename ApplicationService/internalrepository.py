@@ -2,7 +2,7 @@ import maybe
 from ApplicationService.internalAccount import internalAccount
 from password import password as pw
 from ApplicationService.connection_pool import connection_pool as cpool
-from ApplicationService.identity import identity
+from ApplicationService.threadIdentity import identity
 from ApplicationService.repositories.internalaccountsrepository import internalAccountsRepository
 import logging
 

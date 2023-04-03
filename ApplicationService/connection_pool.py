@@ -2,7 +2,7 @@ import os
 import psycopg2
 import threading
 from typing import Protocol, Callable
-from ApplicationService.identity import identity
+from ApplicationService.threadIdentity import identity
 
 class cursor(Protocol):
     def execute(self):
