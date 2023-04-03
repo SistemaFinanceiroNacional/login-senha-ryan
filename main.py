@@ -1,5 +1,4 @@
 from drivers.Web import server
-from drivers.Cli import command_line_interface as cli
 from drivers.Cli import config
 import argparse
 import logging
@@ -36,7 +35,6 @@ def initlog(logs):
     for log in logs:
         logger = logging.getLogger(log)
         logger.disabled = False
-
 
 
 if __name__ == "__main__":

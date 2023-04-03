@@ -1,7 +1,6 @@
 import drivers.Web.lexer as lexer
 import drivers.Web.parser as parser
 
-import pytest
 
 def fake_lexer_function():
     raise NotImplemented()
@@ -140,4 +139,3 @@ def test_parser_child_template_till_parser_len_of_third_statement_block():
     aux_lexer = lexer.auxiliar_lexer(lxer)
     parser_obj = parser.parser(aux_lexer, lexer_function)
     assert len(parser_obj.statements.statements) == 3
-
