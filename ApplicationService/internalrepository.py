@@ -8,7 +8,6 @@ import logging
 
 logger = logging.getLogger("internalAccountsRepository")
 
-
 class internalRepository(internalAccountsRepository):
     def __init__(self, connection_pool: cpool, identifier: identity):
         self.connection_pool = connection_pool
@@ -25,16 +24,13 @@ class internalRepository(internalAccountsRepository):
         return not account_query_result
 
     def authentication(self, login: str, password: pw) -> maybe.maybe:
-        logger.debug("Entered on authentication.")
         cursor = self.connection_pool.get_cursor(self.identifier)
-        logger.debug("Got cursor.")
         cursor.execute("SELECT login, password, balance FROM accounts WHERE login=%s AND password=%s", (login, str(password)))
-        logger.debug("Cursor execute ran.")
         find_login_list = cursor.fetchone()
+
         if find_login_list is not None:
-            logger.debug("Account found.")
             return maybe.just(internalAccount(find_login_list[0], find_login_list[1], find_login_list[2]))
-        logger.debug("Account not found.")
+
         return maybe.nothing()
 
     def update_balance(self, login: str, new_balance: float) -> None:

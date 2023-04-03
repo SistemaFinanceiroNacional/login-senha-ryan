@@ -1,15 +1,15 @@
 class maybe:
-    def map(self,function):
+    def map(self, function):
         raise NotImplementedError
 
-    def orElse(self,default):
+    def orElse(self, default):
         raise NotImplementedError
 
     def orElseThrow(self, value):
         raise NotImplementedError
 
 class just(maybe):
-    def __init__(self,value):
+    def __init__(self, value):
         self.value = value
 
     def map(self, function):

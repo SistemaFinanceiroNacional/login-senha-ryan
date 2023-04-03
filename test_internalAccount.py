@@ -1,8 +1,8 @@
 from ApplicationService import externalAccount, internalAccount
-
+import password
 
 def test_transfer1():
-    x = internalAccount.internalAccount("ryan", "abc123", 20)
+    x = internalAccount.internalAccount("ryan", password.password("abc123"), 20)
     y = externalAccount.externalAccount("pedro")
     x.transfer(y, 10)
     assert x.balance() == 10
@@ -16,16 +16,16 @@ def test_incrementBalance1():
         assert True
 
 def test_transfer_poor_ryan():
-    x = internalAccount.internalAccount("ryan", "abc123", 10)
+    x = internalAccount.internalAccount("ryan", password.password("abc123"), 10)
     y = externalAccount.externalAccount("pedro")
     try:
-        x.transfer(y,20)
+        x.transfer(y, 20)
         assert False
     except internalAccount.insufficientFundsException:
         assert True
 
 def test_incrementBalance2():
-    x = internalAccount.internalAccount("ryan", "abc123", 10)
+    x = internalAccount.internalAccount("ryan", password.password("abc123"), 10)
     y = externalAccount.externalAccount("pedro")
     x.transfer(y, 10)
     assert y.getIncrementBalance() == 10

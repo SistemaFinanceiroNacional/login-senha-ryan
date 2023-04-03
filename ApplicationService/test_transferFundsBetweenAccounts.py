@@ -1,5 +1,5 @@
-import psycopg2
 import maybe
+import password
 from ApplicationService.transferFundsBetweenAccountsUseCase import transferFundsBetweenAccountsUseCase, accountDoesNotExists
 from ApplicationService.transactioncontext import transactioncontext
 from ApplicationService.repositories.externalaccountsrepository import externalAccountsRepository
@@ -43,7 +43,7 @@ class fakeExternalRepository(externalAccountsRepository):
 
 def test_transfer_correct():
     extAccount = externalAccount("joao")
-    intAccount = internalAccount("ryan", "abc123", 300)
+    intAccount = internalAccount("ryan", password.password("abc123"), 300)
     context = fake_context()
 
     intRepository = contasFake({"ryan": intAccount}, {})
@@ -57,7 +57,7 @@ def test_transfer_correct():
 
 def test_transfer_correct2():
     extAccount = externalAccount("joao")
-    intAccount = internalAccount("ryan", "abc123", 100)
+    intAccount = internalAccount("ryan", password.password("abc123"), 100)
     context = fake_context()
 
     intRepository = contasFake({"ryan": intAccount}, {})
@@ -72,7 +72,7 @@ def test_transfer_correct2():
 
 def test_transfer_zero_amout():
     extAccount = externalAccount("joao")
-    intAccount = internalAccount("ryan", "abc123", 100)
+    intAccount = internalAccount("ryan", password.password("abc123"), 100)
     context = fake_context()
 
     intRepository = contasFake({"ryan": intAccount}, {})
@@ -90,7 +90,7 @@ def test_transfer_zero_amout():
 
 def test_transfer_negative_amount():
     extAccount = externalAccount("joao")
-    intAccount = internalAccount("ryan", "abc123", 100)
+    intAccount = internalAccount("ryan", password.password("abc123"), 100)
     context = fake_context()
 
     intRepository = contasFake({"ryan": intAccount}, {})
@@ -108,7 +108,7 @@ def test_transfer_negative_amount():
 
 def test_transfer_not_existing_login_destiny():
     extAccount = externalAccount("joao")
-    intAccount = internalAccount("ryan", "abc123", 100)
+    intAccount = internalAccount("ryan", password.password("abc123"), 100)
     context = fake_context()
 
     intRepository = contasFake({"ryan": intAccount}, {})
@@ -126,7 +126,3 @@ def test_transfer_not_existing_login_destiny():
 
 if __name__ == "__main__":
     test_transfer_correct2()
-
-
-
-

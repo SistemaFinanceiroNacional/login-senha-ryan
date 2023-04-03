@@ -1,11 +1,7 @@
 import threading
 from time import sleep
-
-import pytest
-
 from ApplicationService import connection_pool, identity
 
-import asyncio
 
 class fake_identity(identity.identity):
     def __init__(self, iden):
@@ -67,7 +63,7 @@ def test_connection_pool_postgresql_accessing_connections_tuple():
 
     psql_conn.get_connection(id1)
 
-    assert isinstance(psql_conn.connections[id1.value()], tuple)
+    assert isinstance(psql_conn.allocated_connections[id1.value()], tuple)
 
 def test_connection_pool_postgresql_verifying_if_the_second_tuple_item_is_not_none():
     psql_conn = connection_pool.postgresql_connection_pool(fake_connection)
@@ -76,7 +72,7 @@ def test_connection_pool_postgresql_verifying_if_the_second_tuple_item_is_not_no
 
     psql_conn.get_connection(id1)
 
-    assert psql_conn.connections[id1.value()][1] is not None
+    assert psql_conn.allocated_connections[id1.value()][1] is not None
 
 def test_connection_pool_refund_same_connection():
     psql_conn_pool = connection_pool.postgresql_connection_pool(fake_connection)
