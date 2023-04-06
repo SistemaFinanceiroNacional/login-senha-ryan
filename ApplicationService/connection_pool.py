@@ -2,14 +2,15 @@ import os
 import psycopg2
 import threading
 from typing import Callable
-from ApplicationService.repositories.connectionInterface import *
+from ApplicationService.repositories.identity import identity
+from ApplicationService.repositories.connectionInterface import cursor, connection, connection_pool
 
 class postgresql_connection_pool(connection_pool):
     def __init__(self, createConnection=None, max_connections=1, condition=None):
         self.create_connection: Callable[[], connection] = createConnection or psycopg2_create_connection
-        self.allocated_connections: dict[int, tuple[connection, connection.cursor]] = dict()
+        self.allocated_connections: dict[int, tuple[connection, cursor]] = dict()
         self.max_connections: int = max_connections
-        self.free_connections: list[tuple[connection, connection.cursor]] = []
+        self.free_connections: list[tuple[connection, cursor]] = []
         self.condition = condition() if condition else threading.Condition()
 
     def get_connection(self, identifier: identity) -> connection:
