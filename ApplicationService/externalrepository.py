@@ -1,5 +1,5 @@
-from ApplicationService.externalAccount import externalAccount
 import maybe
+from ApplicationService.externalAccount import externalAccount
 from ApplicationService.connection_pool import connection_pool
 from ApplicationService.threadIdentity import identity
 from ApplicationService.repositories.externalaccountsrepository import externalAccountsRepository

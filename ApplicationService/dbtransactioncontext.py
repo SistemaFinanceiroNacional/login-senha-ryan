@@ -1,13 +1,13 @@
-from typing import Any
 from ApplicationService.threadIdentity import identity
 from ApplicationService.connection_pool import connection_pool as cpool
 from ApplicationService.transactioncontext import transactioncontext
+from ApplicationService.contexterrors.businesserror import BusinessError
 
 class dbTransactionContext(transactioncontext):
     def __init__(self, connection_pool: cpool, identifier: identity):
         self.connection_pool = connection_pool
         self.identifier = identifier
-        self.errors: list[Any] = []
+        self.errors: list[BusinessError] = []
 
     def __enter__(self):
         self.connection_pool.get_connection(self.identifier)
@@ -24,5 +24,5 @@ class dbTransactionContext(transactioncontext):
 
         self.connection_pool.refund(self.identifier)
 
-    def get_errors(self):
+    def get_errors(self) -> list[BusinessError]:
         return self.errors
