@@ -1,4 +1,9 @@
-class maybe:
+from typing import Generic, TypeVar
+
+T = TypeVar('T')
+
+
+class maybe(Generic[T]):
     def map(self, function):
         raise NotImplementedError
 
@@ -8,29 +13,32 @@ class maybe:
     def orElseThrow(self, value):
         raise NotImplementedError
 
-class just(maybe):
-    def __init__(self, value):
+
+class just(maybe[T]):
+    def __init__(self, value: T):
         self.value = value
 
     def map(self, function):
         return just(function(self.value))
 
-    def orElse(self, default):
+    def orElse(self, default: T):
         return self.value
 
     def orElseThrow(self, value):
         return self.value
 
-class nothing(maybe):
+
+class nothing(maybe[T]):
 
     def map(self, function):
         return self
 
-    def orElse(self, default):
+    def orElse(self, default: T):
         return default()
 
     def orElseThrow(self, value):
         raise value
+
 
 def getFirstNotEmpty(possible_not_empties):
     for possible in possible_not_empties:

@@ -1,10 +1,14 @@
-from ApplicationService import internalAccount
+from ApplicationService.internalAccount import internalAccount, insufficientFundsException, invalidValueToTransfer
 import password
 import logging
+from inputIO.inputIO import inputIO
+from ApplicationService.loginUseCase import loginUseCase
+from ApplicationService.transferFundsBetweenAccountsUseCase import transferFundsBetweenAccountsUseCase
+from ApplicationService.openAccountUseCase import openAccountUseCase
 
 logger = logging.getLogger("drivers.Cli.command_line_interface")
 
-def repl(userIO, acc, transfer_use_case):
+def repl(userIO: inputIO, acc: internalAccount, transfer_use_case: transferFundsBetweenAccountsUseCase):
     comando = ""
     while comando != "logout":
         comando = userIO.input("->")
@@ -16,13 +20,17 @@ def repl(userIO, acc, transfer_use_case):
             try:
                 transfer_use_case.execute(acc, destinationAccount, value)
                 userIO.print("Successful transaction.")
-            except internalAccount.insufficientFundsException:
+            except insufficientFundsException:
                 userIO.print("Insufficient funds.")
-            except internalAccount.invalidValueToTransfer as e:
+            except invalidValueToTransfer as e:
                 userIO.print(f"{e.value} is a non-positive value to transfer.")
 
 
-def main(userIO, login_use_case, transfer_use_case, open_account_use_case):
+def main(userIO: inputIO,
+         login_use_case: loginUseCase,
+         transfer_use_case: transferFundsBetweenAccountsUseCase,
+         open_account_use_case: openAccountUseCase):
+
     choose = userIO.input("Would you like to Sign In (1) or Create a new account (2)? ")
     if choose == "1":
         login = userIO.input("Enter your username: ")
