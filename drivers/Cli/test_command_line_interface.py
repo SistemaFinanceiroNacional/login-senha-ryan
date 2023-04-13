@@ -4,14 +4,15 @@ from ApplicationService.loginUseCase import loginUseCase
 from ApplicationService.transactioncontext import transactioncontext
 from ApplicationService.transferFundsBetweenAccountsUseCase import transferFundsBetweenAccountsUseCase
 from ApplicationService.repositories.externalaccountsrepository import externalAccountsRepository
-from ApplicationService.externalAccount import externalAccount
+from ApplicationService.external_account import externalAccount
 from ApplicationService.openAccountUseCase import openAccountUseCase
+from inputIO.inputIO import inputIO
 import maybe
 import password
-from ApplicationService.internalAccount import internalAccount
+from ApplicationService.internal_account import internalAccount
 
 
-class inputfake:
+class inputfake(inputIO):
     def __init__(self, lista):
         self.inputlist = lista
         self.outputlist = []
@@ -57,10 +58,13 @@ class contasFake(internalAccountsRepository):
 
         # return new_login  and new_login in self.newAccounts and str(hashsenha) == str(new_password)
 
-    def update_balance(self, login: str, balance: float):
+    def update_balance(self, intAccount: internalAccount):
+        login = intAccount.get_login()
+        balance = intAccount.get_balance()
+
         if login in self.actualAccounts:
             account = self.actualAccounts.get(login)
-            account.m_balance = balance
+            account._balance = balance
             self.actualAccounts[login] = account
 
 def existing_pedros_account():

@@ -24,17 +24,17 @@ class home_handler(routes.method_dispatcher):
 
         return response
 
-    def post(self, request):
+    def post(self, request: httpRequest.httpRequest) -> httpResponse.httpResponse:
         body = request.getBody().decode("utf-8")
         logger.debug(f"Body-Content: {body}")
         queryParameters = httpRequest.makeQueryParameters(body)
-        user_login = queryParameters["login"]
+        user_login = queryParameters["_login"]
         response = httpResponse.httpResponse({"Set-Cookie": f"loggedUsername={user_login}", "Location": "/"}, "", 303)
         return response
 
 
 class logged_handler(routes.method_dispatcher):
-    def post(self, request):
+    def post(self, request: httpRequest.httpRequest) -> httpResponse.httpResponse:
         response = httpResponse.httpResponse({"Set-Cookie": "loggedUsername=; Expires=Thursday, 1 January 1970 00:00:00 GMT", "Location": "/"}, "", 303)
         return response
 

@@ -1,32 +1,29 @@
-from ApplicationService.externalAccount import externalAccount
-from ApplicationService.repositories.internalaccountsrepository import internalAccountsRepository
+from ApplicationService.external_account import externalAccount
 from password import password as pw
 
 class internalAccount:
     def __init__(self, login: str, password: pw, balance: float):
-        self.m_login = login
-        self.m_password = password
-        self.m_balance = balance
+        self._login = login
+        self._password = password
+        self._balance = balance
 
-    def balance(self):
-        return self.m_balance
+    def get_balance(self):
+        return self._balance
 
     def transfer(self, intoAccount: externalAccount, value: float):
         if value <= 0:
             raise invalidValueToTransfer(value)
 
-        if self.m_balance < value:
-            raise insufficientFundsException(self.m_balance, value)
+        if self._balance < value:
+            raise insufficientFundsException(self._balance, value)
 
         else:
-            self.m_balance -= value
-            intoAccount.incrementBalance(value)
+            self._balance -= value
+            intoAccount.increment_balance(value)
 
-    def login(self):
-        return self.m_login
+    def get_login(self):
+        return self._login
 
-    def update(self, repository: internalAccountsRepository):
-        repository.update_balance(self.m_login, self.m_balance)
 
 class insufficientFundsException(Exception):
     def __init__(self, balance: float, value: float):
