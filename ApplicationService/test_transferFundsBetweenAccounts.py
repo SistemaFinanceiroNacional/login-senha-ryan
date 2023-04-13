@@ -1,6 +1,7 @@
 import maybe
 import password
-from ApplicationService.transferFundsBetweenAccountsUseCase import transferFundsBetweenAccountsUseCase, accountDoesNotExists
+from ApplicationService.contexterrors.accountdoesnotexistserror import AccountDoesNotExistsError
+from ApplicationService.transferFundsBetweenAccountsUseCase import transferFundsBetweenAccountsUseCase
 from ApplicationService.transactioncontext import transactioncontext
 from ApplicationService.repositories.externalaccountsrepository import externalAccountsRepository
 from drivers.Cli.test_command_line_interface import contasFake, fake_context
@@ -120,7 +121,7 @@ def test_transfer_not_existing_login_destiny():
     try:
         useCase.execute(intAccount, "henio", 50)
         assert False
-    except accountDoesNotExists as e:
+    except AccountDoesNotExistsError as e:
         assert e.destinyLogin == "henio"
 
 
