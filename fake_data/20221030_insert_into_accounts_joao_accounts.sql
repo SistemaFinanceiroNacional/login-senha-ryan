@@ -1,1 +1,2 @@
+-- accounts 'joao' has password 'ab123'
 INSERT INTO accounts (login, password) VALUES ('joao', '35ca097a8dab8ede4d632f41c909a3516a259e3b954f55b081f76e627d8a85cb81e91504a8fafc25e3a9074657550f6649029dca4b8c4253a67254b57b04131c');

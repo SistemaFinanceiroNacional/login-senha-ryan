@@ -1,5 +1,5 @@
 import maybe
-from ApplicationService.internalAccount import internalAccount
+from ApplicationService.internal_account import internalAccount
 from password import password as pw
 from ApplicationService.connection_pool import connection_pool as cpool
 from ApplicationService.threadIdentity import identity
@@ -33,6 +33,9 @@ class internalRepository(internalAccountsRepository):
 
         return maybe.nothing()
 
-    def update_balance(self, login: str, new_balance: float) -> None:
+    def update_balance(self, intAccount: internalAccount) -> None:
+        login = intAccount.get_login()
+        new_balance = intAccount.get_balance()
+
         cursor = self.connection_pool.get_cursor(self.identifier)
         cursor.execute("UPDATE accounts SET balance=%s WHERE login=%s", (new_balance, login))

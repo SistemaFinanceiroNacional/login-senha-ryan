@@ -1,31 +1,32 @@
-from ApplicationService import externalAccount, internalAccount
+from ApplicationService.external_account import externalAccount, negativeIncrementException
+from ApplicationService.internal_account import internalAccount, insufficientFundsException
 import password
 
 def test_transfer1():
-    x = internalAccount.internalAccount("ryan", password.password("abc123"), 20)
-    y = externalAccount.externalAccount("pedro")
+    x = internalAccount("ryan", password.password("abc123"), 20)
+    y = externalAccount("pedro")
     x.transfer(y, 10)
-    assert x.balance() == 10
+    assert x.get_balance() == 10
 
 def test_incrementBalance1():
-    x = externalAccount.externalAccount("pedro")
+    x = externalAccount("pedro")
     try:
-        x.incrementBalance(-20)
+        x.increment_balance(-20)
         assert False
-    except externalAccount.negativeIncrementException:
+    except negativeIncrementException:
         assert True
 
 def test_transfer_poor_ryan():
-    x = internalAccount.internalAccount("ryan", password.password("abc123"), 10)
-    y = externalAccount.externalAccount("pedro")
+    x = internalAccount("ryan", password.password("abc123"), 10)
+    y = externalAccount("pedro")
     try:
         x.transfer(y, 20)
         assert False
-    except internalAccount.insufficientFundsException:
+    except insufficientFundsException:
         assert True
 
 def test_incrementBalance2():
-    x = internalAccount.internalAccount("ryan", password.password("abc123"), 10)
-    y = externalAccount.externalAccount("pedro")
+    x = internalAccount("ryan", password.password("abc123"), 10)
+    y = externalAccount("pedro")
     x.transfer(y, 10)
-    assert y.getIncrementBalance() == 10
+    assert y.get_increment_balance() == 10

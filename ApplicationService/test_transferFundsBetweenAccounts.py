@@ -5,8 +5,8 @@ from ApplicationService.transferFundsBetweenAccountsUseCase import transferFunds
 from ApplicationService.transactioncontext import transactioncontext
 from ApplicationService.repositories.externalaccountsrepository import externalAccountsRepository
 from drivers.Cli.test_command_line_interface import contasFake, fake_context
-from ApplicationService.externalAccount import externalAccount
-from ApplicationService.internalAccount import internalAccount, invalidValueToTransfer
+from ApplicationService.external_account import externalAccount
+from ApplicationService.internal_account import internalAccount, invalidValueToTransfer
 
 
 class fakeContext(transactioncontext):
@@ -32,7 +32,10 @@ class fakeExternalRepository(externalAccountsRepository):
             return maybe.just(account)
         return maybe.nothing()
 
-    def update(self, login: str, balance: float):
+    def update(self, extAccount: externalAccount):
+        login = extAccount.get_login()
+        balance = extAccount.get_increment_balance()
+
         if login in self.accounts:
             account = self.accounts.get(login)
             account.balanceIncrement = balance
@@ -68,10 +71,10 @@ def test_transfer_correct2():
     useCase = transferFundsBetweenAccountsUseCase(intRepository, extRepository, context)
     useCase.execute(intAccount, "joao", 100)
 
-    assert intRepository.actualAccounts["ryan"].m_balance == 0 and extRepository.accounts["joao"].balanceIncrement == 100
+    assert intRepository.actualAccounts["ryan"]._balance == 0 and extRepository.accounts["joao"]._balanceIncrement == 100
 
 
-def test_transfer_zero_amout():
+def test_transfer_zero_amount():
     extAccount = externalAccount("joao")
     intAccount = internalAccount("ryan", password.password("abc123"), 100)
     context = fake_context()

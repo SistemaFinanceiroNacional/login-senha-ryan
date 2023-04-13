@@ -1,4 +1,4 @@
-from ApplicationService.internalAccount import internalAccount, insufficientFundsException, invalidValueToTransfer
+from ApplicationService.internal_account import internalAccount, insufficientFundsException, invalidValueToTransfer
 import password
 import logging
 from inputIO.inputIO import inputIO
@@ -13,7 +13,7 @@ def repl(userIO: inputIO, acc: internalAccount, transfer_use_case: transferFunds
     while comando != "logout":
         comando = userIO.input("->")
         if comando == "balance":
-            userIO.print(acc.balance())
+            userIO.print(acc.get_balance())
         elif comando == "transfer":
             destinationAccount = userIO.input("Enter the destination account: ")
             value = int(userIO.input("How much do you want to transfer? "))
