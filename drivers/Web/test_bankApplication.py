@@ -36,7 +36,7 @@ def test_post_status_303():
     header = {}
     resource = httpRequest.http_resource("/", {})
     method = "POST"
-    body = b"_login=ryanbanco&password=abc123"
+    body = b"login=ryanbanco&password=abc123"
     version = "1.1"
     request = httpRequest.httpRequest(header, body, method, resource, version)
     bankApplicationReturn = bankApplication.root(request)

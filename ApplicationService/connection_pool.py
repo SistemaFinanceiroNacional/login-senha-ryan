@@ -1,6 +1,6 @@
-import os
-import psycopg2
-import threading
+from os import getenv
+from psycopg2 import connect
+from threading import Condition
 from typing import Callable
 from ApplicationService.repositories.identity import identity
 from ApplicationService.repositories.connectionInterface import cursor, connection, connection_pool
@@ -11,7 +11,7 @@ class postgresql_connection_pool(connection_pool):
         self.allocated_connections: dict[int, tuple[connection, cursor]] = dict()
         self.max_connections: int = max_connections
         self.free_connections: list[tuple[connection, cursor]] = []
-        self.condition = condition() if condition else threading.Condition()
+        self.condition = condition() if condition else Condition()
 
     def get_connection(self, identifier: identity) -> connection:
         id_conn = identifier.value()
@@ -51,4 +51,4 @@ class postgresql_connection_pool(connection_pool):
 
 
 def psycopg2_create_connection() -> connection:
-    return psycopg2.connect(os.getenv("DB_STRING_CONNECTION"))
+    return connect(getenv("DB_STRING_CONNECTION"))

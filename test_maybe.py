@@ -14,4 +14,4 @@ def test_getFirstNotEmpty_one_just():
 
 def test_getFirstNotEmpty_two_just():
     possible = maybe.getFirstNotEmpty([maybe.nothing(), maybe.just(10), maybe.just(3)])
-    assert possible.value == 10
+    assert isinstance(possible, maybe.just) and possible.value == 10

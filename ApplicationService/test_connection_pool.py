@@ -1,4 +1,4 @@
-import threading
+from threading import Thread
 from time import sleep
 from ApplicationService import connection_pool
 from ApplicationService.repositories.identity import identity
@@ -93,13 +93,13 @@ def test_connection_pool_refund_trying_to_create_conn_but_max_has_reached():
     def get_conn(id_conn):
         return psql_conn.get_connection(id_conn)
 
-    thread1 = threading.Thread(target=get_conn, args=(id1,))
+    thread1 = Thread(target=get_conn, args=(id1,))
     print("Task1 created")
     thread1.start()
 
     sleep(1)
 
-    thread2 = threading.Thread(target=get_conn, args=(id2,))
+    thread2 = Thread(target=get_conn, args=(id2,))
     print("Task2 created")
     thread2.start()
 

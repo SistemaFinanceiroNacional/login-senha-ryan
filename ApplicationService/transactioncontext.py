@@ -1,3 +1,5 @@
+from ApplicationService.contexterrors.businesserror import BusinessError
+
 class transactioncontext:
     def __enter__(self):
         raise NotImplementedError
@@ -5,5 +7,5 @@ class transactioncontext:
     def __exit__(self, exc_type, exc_val, exc_tb):
         raise NotImplementedError
 
-    def get_errors(self):
+    def get_errors(self) -> list[BusinessError]:
         raise NotImplementedError
