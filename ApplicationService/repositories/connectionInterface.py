@@ -2,7 +2,7 @@ from typing import Protocol
 from ApplicationService.repositories.identity import identity
 
 class cursor(Protocol):
-    def execute(self):
+    def execute(self) -> None:
         raise NotImplementedError
 
     def fetchone(self) -> None or tuple:
@@ -12,18 +12,18 @@ class connection(Protocol):
     def cursor(self) -> cursor:
         raise NotImplementedError
 
-    def commit(self):
+    def commit(self) -> None:
         raise NotImplementedError
 
-    def rollback(self):
+    def rollback(self) -> None:
         raise NotImplementedError
 
 class connection_pool:
     def get_connection(self, identifier: identity) -> connection:
         raise NotImplementedError()
 
-    def get_cursor(self, identifier: identity):
+    def get_cursor(self, identifier: identity) -> cursor:
         raise NotImplementedError()
 
-    def refund(self, identifier: identity):
+    def refund(self, identifier: identity) -> None:
         raise NotImplementedError()
