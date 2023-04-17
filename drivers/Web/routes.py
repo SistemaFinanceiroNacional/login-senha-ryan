@@ -1,28 +1,28 @@
-import maybe
+from maybe import nothing, maybe, just
 from drivers.Web.httpResponse import httpResponse
 from drivers.Web.httpRequest import httpRequest
 from drivers.Web.routeInterface import route
+
 
 class endpointRoute(route):
     def __init__(self, endpoint, handler):
         self.endpoint = endpoint
         self.handler = handler
 
-    def __call__(self, request: httpRequest) -> maybe.maybe[httpResponse]:
+    def __call__(self, request: httpRequest) -> maybe[httpResponse]:
         if request.getResource().getEndpoint().startswith(self.endpoint):
-            return maybe.just(self.handler(request))
-        return maybe.nothing()
-
+            return just(self.handler(request))
+        return nothing()
 
 class fixed_route(route):
     def __init__(self, fixed_url, handler):
         self.fixed_url = fixed_url
         self.handler = handler
 
-    def __call__(self, request: httpRequest) -> maybe.maybe[httpResponse]:
+    def __call__(self, request: httpRequest) -> maybe[httpResponse]:
         if request.getResource().getEndpoint() == self.fixed_url:
-            return maybe.just(self.handler(request))
-        return maybe.nothing()
+            return just(self.handler(request))
+        return nothing()
 
 class method_dispatcher:
     def __call__(self, request: httpRequest) -> httpResponse:

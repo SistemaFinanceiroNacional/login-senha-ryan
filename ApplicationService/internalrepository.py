@@ -1,4 +1,4 @@
-import maybe
+from maybe import maybe, just, nothing
 from ApplicationService.internal_account import internalAccount
 from password import password as pw
 from ApplicationService.connection_pool import connection_pool as cpool
@@ -23,15 +23,15 @@ class internalRepository(internalAccountsRepository):
 
         return not account_query_result
 
-    def authentication(self, login: str, password: pw) -> maybe.maybe:
+    def authentication(self, login: str, password: pw) -> maybe[internalAccount]:
         cursor = self.connection_pool.get_cursor(self.identifier)
         cursor.execute("SELECT login, password, balance FROM accounts WHERE login=%s AND password=%s", (login, str(password)))
         find_login_list = cursor.fetchone()
 
         if find_login_list is not None:
-            return maybe.just(internalAccount(find_login_list[0], find_login_list[1], find_login_list[2]))
+            return just(internalAccount(find_login_list[0], find_login_list[1], find_login_list[2]))
 
-        return maybe.nothing()
+        return nothing()
 
     def update_balance(self, intAccount: internalAccount) -> None:
         login = intAccount.get_login()

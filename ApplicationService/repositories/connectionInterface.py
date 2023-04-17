@@ -2,7 +2,7 @@ from typing import Protocol
 from ApplicationService.repositories.identity import identity
 
 class cursor(Protocol):
-    def execute(self) -> None:
+    def execute(self, *args) -> None:
         raise NotImplementedError
 
     def fetchone(self) -> None or tuple:
