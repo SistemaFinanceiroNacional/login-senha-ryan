@@ -1,4 +1,4 @@
-import maybe
+from maybe import nothing, maybe, just
 from ApplicationService.external_account import externalAccount
 from ApplicationService.connection_pool import connection_pool
 from ApplicationService.threadIdentity import identity
@@ -9,15 +9,15 @@ class externalRepository(externalAccountsRepository):
         self.connection_pool = cpool
         self.identifier = identifier
 
-    def get_by_login(self, login: str) -> maybe.maybe[externalAccount]:
+    def get_by_login(self, login: str) -> maybe[externalAccount]:
         cursor = self.connection_pool.get_cursor(self.identifier)
         cursor.execute("SELECT _login FROM accounts WHERE _login=%s", (login,))
         possibleLogin = cursor.fetchone()
         if possibleLogin is not None:
-            return maybe.just(externalAccount(possibleLogin[0]))
+            return just(externalAccount(possibleLogin[0]))
 
         else:
-            return maybe.nothing()
+            return nothing()
 
     def update(self, extAccount: externalAccount) -> None:
         incrementBalance = extAccount.get_increment_balance()

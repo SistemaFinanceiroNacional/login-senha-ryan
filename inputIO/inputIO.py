@@ -4,7 +4,7 @@ class inputIO:
     def input(self, prompt: str) -> str:
         return input(prompt)
 
-    def inputoccult(self, prompt: str) -> getpass:
+    def inputoccult(self, prompt: str) -> str:
         return getpass(prompt)
 
     def print(self, prompt: str) -> None:
