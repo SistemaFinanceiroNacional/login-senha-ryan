@@ -1,5 +1,5 @@
-from drivers.Web import server
-from drivers.Cli import config
+from drivers.Web import config as web_config
+from drivers.Cli import config as cli_config
 import argparse
 import logging
 
@@ -16,10 +16,10 @@ def main():
         print("Two options cannot be used at the same time.")
 
     elif args.cli and not args.web:
-        config.config().run_ui()
+        cli_config.config().run_ui()
 
     elif not args.cli and args.web:
-        server.main()
+        web_config.config().run_ui()
 
     else:
         print("No option has been passed.")
