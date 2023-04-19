@@ -86,5 +86,4 @@ class ui:
         return router(
             fixed_route("/", home_handler(self.login_use_case)),
             fixed_route("/logout", logged_handler()),
-            fixed_route("/openaccount", open_account_handler(self.open_use_case))
-        )(request)
+            fixed_route("/openaccount", open_account_handler(self.open_use_case)))(request)
