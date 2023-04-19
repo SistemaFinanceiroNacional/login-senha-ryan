@@ -7,11 +7,15 @@ from drivers.Web.httpRequest import httpRequest, makeQueryParameters
 from ApplicationService.transferFundsBetweenAccountsUseCase import transferFundsBetweenAccountsUseCase
 from ApplicationService.loginUseCase import loginUseCase
 from ApplicationService.openAccountUseCase import openAccountUseCase
+from password import password
 
 logger = logging.getLogger("drivers.Web.bankApplication")
 
 
 class home_handler(method_dispatcher):
+    def __init__(self, loginCase: loginUseCase):
+        self.login_use_case = loginCase
+
     def get(self, request: httpRequest) -> httpResponse:
         cookie = request.getHeaders().get("Cookie", "")
         if "loggedUsername=" in cookie:
@@ -36,8 +40,12 @@ class home_handler(method_dispatcher):
         logger.debug(f"Body-Content: {body}")
         queryParameters = makeQueryParameters(body)
         user_login = queryParameters["login"]
-        response = httpResponse({"Set-Cookie": f"loggedUsername={user_login}", "Location": "/"}, "", 303)
-        return response
+        user_password = password(queryParameters["password"])
+        possible_account = self.login_use_case.execute(user_login, user_password)
+        return possible_account \
+            .map(lambda account: httpResponse({"Set-Cookie": f"loggedUsername={account.get_login()}",
+                                               "Location": "/"}, "", 303)) \
+            .orElse(lambda: httpResponse({"Location": "/"}, "", 303))
 
 
 class logged_handler(method_dispatcher):
@@ -56,12 +64,6 @@ class ui:
 
     def __call__(self, request: httpRequest):
         return router(
-            fixed_route("/", home_handler()),
+            fixed_route("/", home_handler(self.login_use_case)),
             fixed_route("/logout", logged_handler())
         )(request)
-
-
-root = router(
-    fixed_route("/", home_handler()),
-    fixed_route("/logout", logged_handler())
-)

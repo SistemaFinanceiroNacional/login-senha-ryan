@@ -1,6 +1,7 @@
-import maybe
+from maybe import maybe, nothing
 from ApplicationService.repositories.internalaccountsrepository import internalAccountsRepository
 from ApplicationService.transactioncontext import transactioncontext
+from ApplicationService.internal_account import internalAccount
 from password import password as pw
 import logging
 
@@ -11,12 +12,12 @@ class loginUseCase:
         self.account_repository = account_repository
         self.transactional_context = transactional_context
 
-    def execute(self, username: str, password: pw):
+    def execute(self, username: str, password: pw) -> maybe[internalAccount]:
         with self.transactional_context:
             possible_account = self.account_repository.authentication(username, password)
 
         if self.transactional_context.get_errors():
-            return maybe.nothing()
+            return nothing()
 
         else:
             return possible_account

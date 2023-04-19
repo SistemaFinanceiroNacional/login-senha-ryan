@@ -12,7 +12,7 @@ from ApplicationService.dbtransactioncontext import dbTransactionContext
 
 class config:
     def run_ui(self):
-        conn_pool = postgresql_connection_pool(5)
+        conn_pool = postgresql_connection_pool(max_connections=5)
         thread_id = thread_identity()
         int_accounts_rep = internalRepository(conn_pool, thread_id)
         ext_accounts_rep = externalRepository(conn_pool, thread_id)
