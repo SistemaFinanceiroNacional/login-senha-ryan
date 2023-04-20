@@ -1,4 +1,3 @@
-import logging
 from drivers.Web.template import render_template
 from drivers.Web.router import router
 from drivers.Web.routes import method_dispatcher, fixed_route
@@ -8,6 +7,7 @@ from ApplicationService.transferFundsBetweenAccountsUseCase import transferFunds
 from ApplicationService.loginUseCase import loginUseCase
 from ApplicationService.openAccountUseCase import openAccountUseCase
 from password import password
+import logging
 
 logger = logging.getLogger("drivers.Web.bankApplication")
 
