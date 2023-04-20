@@ -1,21 +1,7 @@
 from threading import Thread
 from time import sleep
 from ApplicationService import connection_pool
-from ApplicationService.repositories.identity import identity
-
-class fake_identity(identity):
-    def __init__(self, iden):
-        self.iden = iden
-
-    def value(self):
-        return self.iden
-
-class fake_connection:
-    def cursor(self):
-        return fake_cursor()
-
-class fake_cursor:
-    pass
+from fake_config.fakes import fake_identity, fake_connection, fake_cursor
 
 
 def test_connection_pool_postgresql_with_two_different_identities_returning_two_different_connections():
