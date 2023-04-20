@@ -28,7 +28,7 @@ class home_handler(method_dispatcher):
                 username = cookie[username_start_index:username_end_index + 1]
             html_content = render_template("loggedPage.html", {"user": username})
             response = httpResponse({"Content-Type": "text/html"}, html_content, 200)
-
+        # elif to verify newUsername in cookie?
         else:
             html_content = render_template("index.html", {})
             response = httpResponse({"Content-Type": "text/html"}, html_content, 200)
@@ -55,8 +55,25 @@ class logged_handler(method_dispatcher):
         return response
 
 class open_account_handler(method_dispatcher):
+    def __init__(self, use_case: openAccountUseCase):
+        self.open_account_use_case = use_case
+
+    def get(self, request):
+        html_content = render_template("openAccount.html", {})
+        response = httpResponse({"Content-type": "text/html"}, html_content, 200)
+        return response
+
     def post(self, request: httpRequest) -> httpResponse:
-        pass
+        body = request.getBody().decode("utf-8")
+        queryParameters = makeQueryParameters(body)
+        new_username = queryParameters["newUsername"]
+        new_password = password(queryParameters["newPassword"])
+        opened = self.open_account_use_case.execute(new_username, new_password)
+        if opened:
+            response = httpResponse({"Location": "/"}, "", 303)
+        else:
+            response = httpResponse({"Location": "/openaccount"}, "", 303)
+        return response
 
 class ui:
     def __init__(self, login_use_case: loginUseCase,
@@ -69,5 +86,5 @@ class ui:
         return router(
             fixed_route("/", home_handler(self.login_use_case)),
             fixed_route("/logout", logged_handler()),
-            fixed_route("/openAccount", open_account_handler())
+            fixed_route("/openaccount", open_account_handler(self.open_use_case))
         )(request)
