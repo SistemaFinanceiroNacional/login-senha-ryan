@@ -5,17 +5,9 @@ import pytest
 
 import logging
 
+from fake_config.fakes import fakeSocket
+
 logging.basicConfig(level=logging.DEBUG)
-
-
-class fakeSocket:
-    def __init__(self, content):
-        self.content = content
-
-    def recv(self, bufsize):
-        requiredContent = self.content[0:bufsize]
-        self.content = self.content[bufsize:]
-        return requiredContent
 
 
 def test_http_request_1():
@@ -70,31 +62,31 @@ def test_http_request_getFirstLine_version():
 
 def test_http_request_getBody():
     oneTagHeader = {'Content-Length': '20'}
-    socket = fakeSocket(b'a'*20)
+    socket = fakeSocket(b'a' * 20)
     body = httpRequest.getBody(socket, oneTagHeader)
     assert body == b'a'*20
 
 def test_http_request_getBody2():
     oneTagHeader = {'Content-Length': '20'}
-    socket = fakeSocket(b'a'*50)
+    socket = fakeSocket(b'a' * 50)
     body = httpRequest.getBody(socket, oneTagHeader)
     assert body == b'a'*20
 
 def test_http_request_getBody3():
     oneTagHeader = {'Content-Length': '20'}
-    socket = fakeSocket(b'a'*15)
+    socket = fakeSocket(b'a' * 15)
     with pytest.raises(IncompleteHttpRequest.IncompleteHttpRequest):
         httpRequest.getBody(socket, oneTagHeader)
 
 def test_http_request_getBody4():
     oneTagHeader = {b'Content-Length': b'0'}
-    socket = fakeSocket(b'a'*15)
+    socket = fakeSocket(b'a' * 15)
     body = httpRequest.getBody(socket, oneTagHeader)
     assert body == b''
 
 def test_http_request_getBody_noContentLength():
     oneTagHeader = {}
-    socket = fakeSocket(b'a'*15)
+    socket = fakeSocket(b'a' * 15)
     body = httpRequest.getBody(socket, oneTagHeader)
     assert body == b''
 

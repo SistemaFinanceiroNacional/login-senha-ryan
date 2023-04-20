@@ -7,7 +7,6 @@ def test_lexer_END_TOKEN_raising_StopIteration():
     with pytest.raises(StopIteration):
         next(lxer)
 
-
 def test_lexer_string_no_keys_with_percent():
     lxer = lexer.lexer("string no keys and percent")
     nxt = next(lxer)

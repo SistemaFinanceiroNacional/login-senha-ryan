@@ -5,8 +5,13 @@ from typing import Callable
 from ApplicationService.repositories.identity import identity
 from ApplicationService.repositories.connectionInterface import cursor, connection, connection_pool
 
+
 class postgresql_connection_pool(connection_pool):
-    def __init__(self, createConnection=None, max_connections=1, condition=None):
+    createConnections: Callable
+    max_connection: int
+    condition: Condition
+
+    def __init__(self, createConnection: Callable[[], connection] = None, max_connections: int = 1, condition=None):
         self.create_connection: Callable[[], connection] = createConnection or psycopg2_create_connection
         self.allocated_connections: dict[int, tuple[connection, cursor]] = dict()
         self.max_connections: int = max_connections

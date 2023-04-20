@@ -1,48 +1,9 @@
-import maybe
 import password
 from ApplicationService.contexterrors.accountdoesnotexistserror import AccountDoesNotExistsError
 from ApplicationService.transferFundsBetweenAccountsUseCase import transferFundsBetweenAccountsUseCase
-from ApplicationService.transactioncontext import transactioncontext
-from ApplicationService.repositories.externalaccountsrepository import externalAccountsRepository
-from drivers.Cli.test_command_line_interface import contasFake, fake_context
 from ApplicationService.external_account import externalAccount
 from ApplicationService.internal_account import internalAccount, invalidValueToTransfer
-
-
-class fakeContext(transactioncontext):
-    def __init__(self):
-        self.errors = []
-
-    def __enter__(self):
-        pass
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        pass
-
-    def get_errors(self):
-        return self.errors
-
-class fakeExternalRepository(externalAccountsRepository):
-    def __init__(self):
-        self.accounts = dict()
-
-    def get_by_login(self, login: str):
-        if login in self.accounts:
-            account = self.accounts.get(login)
-            return maybe.just(account)
-        return maybe.nothing()
-
-    def update(self, extAccount: externalAccount):
-        login = extAccount.get_login()
-        balance = extAccount.get_increment_balance()
-
-        if login in self.accounts:
-            account = self.accounts.get(login)
-            account.balanceIncrement = balance
-            self.accounts[login] = account
-
-    def add_account(self, login, account):
-        self.accounts[login] = account
+from fake_config.fakes import fakeExternalRepository, contasFake, fake_context
 
 
 def test_transfer_correct():
