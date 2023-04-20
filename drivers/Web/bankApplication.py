@@ -54,6 +54,9 @@ class logged_handler(method_dispatcher):
             {"Set-Cookie": "loggedUsername=; Expires=Thursday, 1 January 1970 00:00:00 GMT", "Location": "/"}, "", 303)
         return response
 
+class open_account_handler(method_dispatcher):
+    def post(self, request: httpRequest) -> httpResponse:
+        pass
 
 class ui:
     def __init__(self, login_use_case: loginUseCase,
@@ -64,6 +67,7 @@ class ui:
 
     def __call__(self, request: httpRequest):
         return router(
-            fixed_route("/", home_handler(self.login_use_case)),
-            fixed_route("/logout", logged_handler())
+            fixed_route("/", home_handler()),
+            fixed_route("/logout", logged_handler()),
+            fixed_route("/openAccount", open_account_handler())
         )(request)
