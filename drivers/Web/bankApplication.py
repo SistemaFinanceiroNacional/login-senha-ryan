@@ -67,7 +67,7 @@ class ui:
 
     def __call__(self, request: httpRequest):
         return router(
-            fixed_route("/", home_handler()),
+            fixed_route("/", home_handler(self.login_use_case)),
             fixed_route("/logout", logged_handler()),
             fixed_route("/openAccount", open_account_handler())
         )(request)
