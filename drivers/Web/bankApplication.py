@@ -58,7 +58,7 @@ class open_account_handler(method_dispatcher):
     def __init__(self, use_case: openAccountUseCase):
         self.open_account_use_case = use_case
 
-    def get(self, request):
+    def get(self, request: httpRequest) -> httpResponse:
         html_content = render_template("openAccount.html", {})
         response = httpResponse({"Content-type": "text/html"}, html_content, 200)
         return response
