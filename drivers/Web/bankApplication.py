@@ -28,7 +28,6 @@ class home_handler(method_dispatcher):
                 username = cookie[username_start_index:username_end_index + 1]
             html_content = render_template("loggedPage.html", {"user": username})
             response = httpResponse({"Content-Type": "text/html"}, html_content, 200)
-        # elif to verify newUsername in cookie?
         else:
             html_content = render_template("index.html", {})
             response = httpResponse({"Content-Type": "text/html"}, html_content, 200)

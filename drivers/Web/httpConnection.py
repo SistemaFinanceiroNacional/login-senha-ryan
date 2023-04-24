@@ -1,4 +1,3 @@
-
 from drivers.Web import httpRequest, httpResponse, IncompleteHttpRequest
 
 import logging
