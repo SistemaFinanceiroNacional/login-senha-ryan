@@ -4,6 +4,7 @@ import logging
 
 logger = logging.getLogger("drivers.Web.httpRequest")
 
+
 class httpRequest:
     headers: dict[str, str]
 
@@ -29,6 +30,7 @@ class httpRequest:
     def getVersion(self):
         return self.version
 
+
 class http_resource:
     def __init__(self, endpoint, queryParameters):
         self.endpoint = endpoint
@@ -39,6 +41,7 @@ class http_resource:
 
     def getQueryParameters(self):
         return self.queryParameters
+
 
 def makeResource(rawResource: str) -> http_resource:
     splitRawResource = rawResource.split("?")
@@ -52,6 +55,7 @@ def makeResource(rawResource: str) -> http_resource:
 
     return http_resource(endpoint, queryParameters)
 
+
 def makeQueryParameters(string):
     logger.debug(f"String: {string}")
     keysAndValues = string.split("&")
@@ -62,6 +66,7 @@ def makeQueryParameters(string):
 
     return queryParameters
 
+
 def getNextHttpRequest(socket):
     method, resource, version = getFirstLine(socket)
     logger.debug(f"Method: {method}; Resource: {resource}; Version: {version}")
@@ -70,6 +75,7 @@ def getNextHttpRequest(socket):
     request = httpRequest(headers, body, method, resource, version)
 
     return request
+
 
 def getFirstLine(socket):
     methodState = 0
@@ -82,7 +88,9 @@ def getFirstLine(socket):
 
     while state != finalState:
         nextByte = socket.recv(1)
-        logger.debug(f"GetFirstLine: state = {state} & actual byte = {nextByte}")
+        logger.debug(
+            f"GetFirstLine: state = {state} & actual byte = {nextByte}"
+        )
 
         if nextByte == b'':
             break
@@ -112,7 +120,9 @@ def getFirstLine(socket):
     if state != finalState:
         raise IncompleteHttpRequest.IncompleteHttpRequest()
 
-    return method.decode("UTF-8"), makeResource(resource.decode("UTF-8")), version.decode("UTF-8")
+    return method.decode("UTF-8"),\
+        makeResource(resource.decode("UTF-8")),\
+        version.decode("UTF-8")
 
 
 def getHeaders(socket):
@@ -185,17 +195,23 @@ def getHeaders(socket):
 
     return headers
 
+
 def getBody(socket, headers):
     defaultLength = '0'
     length = int(headers.get('Content-Length', defaultLength))
     body = socket.recv(length)
     howManyBytes = len(body)
-    logger.debug(f"GetBody: length = {length} & actual body = {body} & actual body's size = {howManyBytes}")
+    logger.debug(f"GetBody: length = {length}"
+                 f" & actual body = {body}"
+                 f" & actual body's size = {howManyBytes}"
+                 )
 
     while howManyBytes < length:
         difference = length - howManyBytes
         rest = socket.recv(difference)
-        logger.debug(f"GetBody: While statement: actual rest = {rest} & actual difference = {difference}")
+        logger.debug(f"GetBody: While statement: actual rest = {rest}"
+                     f" & actual difference = {difference}"
+                     )
         if rest == b'':
             raise IncompleteHttpRequest.IncompleteHttpRequest()
 

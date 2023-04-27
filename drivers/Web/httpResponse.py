@@ -1,4 +1,3 @@
-
 class httpResponse:
     def __init__(self, headers, body, status):
         self.headers = headers
@@ -21,8 +20,15 @@ def responseAsBytes(response):
     headers["Content-length"] = len(body)
     status = response.getStatus()
     version = "1.1"
-    mappingStatus = {200: "OK", 303: "See Other", 404: "Not Found", 405: "Method Not Allowed"}
-    responseToBytes = f"HTTP/{version} {status} {mappingStatus.get(status, '')}\r\n"
+    mappingStatus = {
+        200: "OK",
+        303: "See Other",
+        404: "Not Found",
+        405: "Method Not Allowed"
+    }
+    responseToBytes = f"HTTP/{version}" \
+                      f" {status}" \
+                      f" {mappingStatus.get(status, '')}\r\n"
     for key in headers:
         responseToBytes += f"{key}: {headers[key]}\r\n"
 

@@ -1,9 +1,12 @@
-from ApplicationService.repositories.internalaccountsrepository import internalAccountsRepository
-from ApplicationService.transactioncontext import transactioncontext
+from ApplicationService.repositories.internalaccountsrepository\
+    import internalAccountsRepository as iar
+from ApplicationService.transactioncontext\
+    import transactioncontext as cntx
 from password import password as pw
 
+
 class openAccountUseCase:
-    def __init__(self, accounts_repository: internalAccountsRepository, transactional_context: transactioncontext):
+    def __init__(self, accounts_repository: iar, transactional_context: cntx):
         self.accounts_repository = accounts_repository
         self.transactional_context = transactional_context
 

@@ -1,5 +1,6 @@
 from ApplicationService.contexterrors.businesserror import BusinessError
 
+
 class transactioncontext:
     def __enter__(self):
         raise NotImplementedError

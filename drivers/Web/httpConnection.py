@@ -4,6 +4,7 @@ import logging
 
 logger = logging.getLogger("drivers.Web.httpConnection")
 
+
 class httpConnection:
     def __init__(self, socket):
         self.socket = socket
@@ -15,7 +16,8 @@ class httpConnection:
             except IncompleteHttpRequest.IncompleteHttpRequest:
                 break
 
-            logger.info(f"Resource: {request.getResource()}; Method: {request.getMethod()}")
+            logger.info(f"Resource: {request.getResource()};"
+                        f" Method: {request.getMethod()}")
             response = handler(request)
             self.socket.sendall(httpResponse.responseAsBytes(response))
             if request.getHeaders().get('Connection', '') == "close":

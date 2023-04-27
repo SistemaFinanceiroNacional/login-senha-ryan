@@ -2,7 +2,9 @@ from maybe import nothing, maybe, just
 from ApplicationService.external_account import externalAccount
 from ApplicationService.connection_pool import connection_pool
 from ApplicationService.threadIdentity import identity
-from ApplicationService.repositories.externalaccountsrepository import externalAccountsRepository
+from ApplicationService.repositories.externalaccountsrepository\
+    import externalAccountsRepository
+
 
 class externalRepository(externalAccountsRepository):
     def __init__(self, cpool: connection_pool, identifier: identity):
@@ -24,4 +26,5 @@ class externalRepository(externalAccountsRepository):
         login = extAccount.get_login()
 
         cursor = self.connection_pool.get_cursor(self.identifier)
-        cursor.execute("UPDATE accounts SET balance=balance+%s WHERE _login=%s", (incrementBalance, login))
+        query = "UPDATE accounts SET balance=balance+%s WHERE _login=%s"
+        cursor.execute(query, (incrementBalance, login))

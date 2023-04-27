@@ -2,9 +2,11 @@ import maybe
 import password
 from ApplicationService.external_account import externalAccount
 from ApplicationService.internal_account import internalAccount
-from ApplicationService.repositories.externalaccountsrepository import externalAccountsRepository
+from ApplicationService.repositories.externalaccountsrepository\
+    import externalAccountsRepository
 from ApplicationService.repositories.identity import identity
-from ApplicationService.repositories.internalaccountsrepository import internalAccountsRepository
+from ApplicationService.repositories.internalaccountsrepository\
+    import internalAccountsRepository
 from ApplicationService.transactioncontext import transactioncontext
 from inputIO.inputIO import inputIO
 
@@ -96,8 +98,10 @@ class contasFake(internalAccountsRepository):
 
     def authentication(self, login, user_password):
         hashsenha = password.password(self.actualAccounts[login][0])
-        if login in self.actualAccounts and str(hashsenha) == str(user_password):
-            return maybe.just(internalAccount(login, user_password, self.actualAccounts[login][1]))
+        password_comparison = str(hashsenha) == str(user_password)
+        if login in self.actualAccounts and password_comparison:
+            balance = self.actualAccounts[login][1]
+            return maybe.just(internalAccount(login, user_password, balance))
         else:
             return maybe.nothing()
 
@@ -108,8 +112,6 @@ class contasFake(internalAccountsRepository):
             return True
         else:
             return False
-
-        # return new_login  and new_login in self.newAccounts and str(hashsenha) == str(new_password)
 
     def update_balance(self, intAccount: internalAccount):
         login = intAccount.get_login()
@@ -122,11 +124,11 @@ class contasFake(internalAccountsRepository):
 
 
 def existing_pedros_account():
-    return contasFake(actualAccounts={"pedro": ("abc123", "400")}, newAccounts={})
+    return contasFake({"pedro": ("abc123", "400")}, {})
 
 
 def waiting_pedro_account():
-    return contasFake(newAccounts={"pedro": "abc123"}, actualAccounts={})
+    return contasFake({}, {"pedro": "abc123"})
 
 
 class fake_context(transactioncontext):

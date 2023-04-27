@@ -1,9 +1,10 @@
 from drivers.Cli import command_line_interface
 from ApplicationService.loginUseCase import loginUseCase
-from ApplicationService.transferFundsBetweenAccountsUseCase import transferFundsBetweenAccountsUseCase
+from ApplicationService.transferFundsUseCase import transferFundsUseCase
 from ApplicationService.openAccountUseCase import openAccountUseCase
-from fake_config.fakes import inputfake, contasExternasFake, existing_pedros_account, waiting_pedro_account, \
-    fake_context
+from fake_config.fakes import inputfake,\
+    contasExternasFake, existing_pedros_account,\
+    waiting_pedro_account, fake_context
 
 
 def test_main_with_repl():
@@ -12,7 +13,7 @@ def test_main_with_repl():
     extC = contasExternasFake({})
 
     loginCase = loginUseCase(c, context)
-    transferCase = transferFundsBetweenAccountsUseCase(c, extC, context)
+    transferCase = transferFundsUseCase(c, extC, context)
     openCase = openAccountUseCase(c, context)
 
     i = inputfake(["3", "logout", "balance", "abc123", "pedro", "1"])
@@ -27,7 +28,7 @@ def test_main_choose_2_already_exist():
     extC = contasExternasFake({})
 
     loginCase = loginUseCase(c, context)
-    transferCase = transferFundsBetweenAccountsUseCase(c, extC, context)
+    transferCase = transferFundsUseCase(c, extC, context)
     openCase = openAccountUseCase(c, context)
 
     i = inputfake(["3", "abc123", "pedro", "2"])
@@ -42,7 +43,7 @@ def test_verify_correct_content_using_different_password():
     extC = contasExternasFake({})
 
     loginCase = loginUseCase(c, context)
-    transferCase = transferFundsBetweenAccountsUseCase(c, extC, context)
+    transferCase = transferFundsUseCase(c, extC, context)
     openCase = openAccountUseCase(c, context)
 
     i = inputfake(["3", "abc123", "pedro", "2"])

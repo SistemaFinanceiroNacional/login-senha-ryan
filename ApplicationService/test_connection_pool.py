@@ -1,10 +1,14 @@
 from threading import Thread
 from time import sleep
+
+import pytest
+
 from ApplicationService import connection_pool
 from fake_config.fakes import fake_identity, fake_connection, fake_cursor
 
 
-def test_connection_pool_postgresql_with_two_different_identities_returning_two_different_connections():
+@pytest.mark.psql_conn_pool
+def test_two_different_identities_returning_two_different_connections():
     psql_conn = connection_pool.postgresql_connection_pool(fake_connection, 2)
     id1 = fake_identity(141)
     id2 = fake_identity(555)
@@ -14,7 +18,9 @@ def test_connection_pool_postgresql_with_two_different_identities_returning_two_
 
     assert connection_id1 != connection_id2
 
-def test_connection_pool_postgresql_with_one_id_returning_the_same_connection_obj():
+
+@pytest.mark.psql_conn_pool
+def test_one_id_returning_the_same_connection_obj():
     psql_conn = connection_pool.postgresql_connection_pool(fake_connection)
     id1 = fake_identity(141)
 
@@ -23,7 +29,9 @@ def test_connection_pool_postgresql_with_one_id_returning_the_same_connection_ob
 
     assert connection_id1 == second_connection_id1
 
-def test_connection_pool_postgresql_verifying_cursor_class():
+
+@pytest.mark.psql_conn_pool
+def test_verifying_cursor_class():
     psql_conn = connection_pool.postgresql_connection_pool(fake_connection)
 
     id1 = fake_identity(141)
@@ -32,7 +40,9 @@ def test_connection_pool_postgresql_verifying_cursor_class():
 
     assert isinstance(cursor_id1, fake_cursor)
 
-def test_connection_pool_postgresql_obtaining_the_cursor():
+
+@pytest.mark.psql_conn_pool
+def test_obtaining_the_cursor():
     psql_conn = connection_pool.postgresql_connection_pool(fake_connection)
 
     id1 = fake_identity(141)
@@ -42,36 +52,44 @@ def test_connection_pool_postgresql_obtaining_the_cursor():
 
     assert cursor_id1 == second_cursor_id1
 
-def test_connection_pool_postgresql_accessing_connections_tuple():
+
+@pytest.mark.psql_conn_pool
+def test_accessing_connections_tuple():
     psql_conn = connection_pool.postgresql_connection_pool(fake_connection)
 
     id1 = fake_identity(141)
 
     psql_conn.get_connection(id1)
 
-    assert isinstance(psql_conn.allocated_connections[id1.value()], tuple)
+    assert isinstance(psql_conn.used_connections[id1.value()], tuple)
 
-def test_connection_pool_postgresql_verifying_if_the_second_tuple_item_is_not_none():
+
+@pytest.mark.psql_conn_pool
+def test_verifying_if_the_second_tuple_item_is_not_none():
     psql_conn = connection_pool.postgresql_connection_pool(fake_connection)
 
     id1 = fake_identity(141)
 
     psql_conn.get_connection(id1)
 
-    assert psql_conn.allocated_connections[id1.value()][1] is not None
+    assert psql_conn.used_connections[id1.value()][1] is not None
 
-def test_connection_pool_refund_same_connection():
-    psql_conn_pool = connection_pool.postgresql_connection_pool(fake_connection)
+
+@pytest.mark.psql_conn_pool
+def test_refund_same_connection():
+    psql_pool = connection_pool.postgresql_connection_pool(fake_connection)
     id1 = fake_identity(141)
-    conn1 = psql_conn_pool.get_connection(id1)
+    conn1 = psql_pool.get_connection(id1)
 
-    psql_conn_pool.refund(id1)
+    psql_pool.refund(id1)
     id2 = fake_identity(500)
-    conn2 = psql_conn_pool.get_connection(id2)
+    conn2 = psql_pool.get_connection(id2)
 
     assert conn1 == conn2
 
-def test_connection_pool_refund_trying_to_create_conn_but_max_has_reached():
+
+@pytest.mark.psql_conn_pool
+def test_trying_to_create_conn_but_max_has_reached():
     psql_conn = connection_pool.postgresql_connection_pool(fake_connection)
     id1 = fake_identity(141)
     id2 = fake_identity(555)

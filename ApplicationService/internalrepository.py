@@ -1,12 +1,14 @@
 from maybe import maybe, just, nothing
-from ApplicationService.internal_account import internalAccount
 from password import password as pw
+from ApplicationService.internal_account import internalAccount as ia
 from ApplicationService.connection_pool import connection_pool as cpool
 from ApplicationService.threadIdentity import identity
-from ApplicationService.repositories.internalaccountsrepository import internalAccountsRepository
+from ApplicationService.repositories.internalaccountsrepository\
+    import internalAccountsRepository
 import logging
 
 logger = logging.getLogger("internalAccountsRepository")
+
 
 class internalRepository(internalAccountsRepository):
     def __init__(self, connection_pool: cpool, identifier: identity):
@@ -15,27 +17,37 @@ class internalRepository(internalAccountsRepository):
 
     def add_account(self, new_login: str, new_password: pw) -> bool:
         cursor = self.connection_pool.get_cursor(self.identifier)
-        cursor.execute("SELECT * FROM accounts WHERE login = %s ", (new_login,))
+        query = "SELECT * FROM accounts WHERE login = %s"
+        cursor.execute(query, (new_login,))
         account_query_result = cursor.fetchone()
 
         if not account_query_result:
-            cursor.execute("INSERT INTO accounts (login,password,balance) VALUES (%s,%s,%s)", (new_login, str(new_password), 0))
+            query = "INSERT INTO accounts (login,password,balance)" \
+                    " VALUES (%s,%s,%s)"
+            cursor.execute(query, (new_login, str(new_password), 0))
 
         return not account_query_result
 
-    def authentication(self, login: str, password: pw) -> maybe[internalAccount]:
+    def authentication(self, login: str, password: pw) -> maybe[ia]:
         cursor = self.connection_pool.get_cursor(self.identifier)
-        cursor.execute("SELECT login, password, balance FROM accounts WHERE login=%s AND password=%s", (login, str(password)))
+        query = "SELECT login, password, balance " \
+                "FROM accounts " \
+                "WHERE login=%s AND password=%s"
+        cursor.execute(query, (login, str(password)))
         find_login_list = cursor.fetchone()
 
         if find_login_list is not None:
-            return just(internalAccount(find_login_list[0], find_login_list[1], find_login_list[2]))
+            user_login = find_login_list[0]
+            user_password = find_login_list[1]
+            user_balance = find_login_list[2]
+            return just(ia(user_login, user_password, user_balance))
 
         return nothing()
 
-    def update_balance(self, intAccount: internalAccount) -> None:
+    def update_balance(self, intAccount: ia) -> None:
         login = intAccount.get_login()
         new_balance = intAccount.get_balance()
 
         cursor = self.connection_pool.get_cursor(self.identifier)
-        cursor.execute("UPDATE accounts SET balance=%s WHERE login=%s", (new_balance, login))
+        query = "UPDATE accounts SET balance=%s WHERE login=%s"
+        cursor.execute(query, (new_balance, login))
