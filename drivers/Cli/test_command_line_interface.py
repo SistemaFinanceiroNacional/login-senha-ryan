@@ -15,7 +15,7 @@ def test_main_with_repl():
     transferCase = transferFundsBetweenAccountsUseCase(c, extC, context)
     openCase = openAccountUseCase(c, context)
 
-    i = inputfake(["logout", "balance", "abc123", "pedro", "1"])
+    i = inputfake(["3", "logout", "balance", "abc123", "pedro", "1"])
 
     command_line_interface.main(i, loginCase, transferCase, openCase)
     assert i.outputlist[0] == "400"
@@ -30,7 +30,7 @@ def test_main_choose_2_already_exist():
     transferCase = transferFundsBetweenAccountsUseCase(c, extC, context)
     openCase = openAccountUseCase(c, context)
 
-    i = inputfake(["abc123", "pedro", "2"])
+    i = inputfake(["3", "abc123", "pedro", "2"])
 
     command_line_interface.main(i, loginCase, transferCase, openCase)
     assert i.outputlist[0] == "Your account has been successfully created!"
@@ -45,7 +45,7 @@ def test_verify_correct_content_using_different_password():
     transferCase = transferFundsBetweenAccountsUseCase(c, extC, context)
     openCase = openAccountUseCase(c, context)
 
-    i = inputfake(["abc123", "pedro", "2"])
+    i = inputfake(["3", "abc123", "pedro", "2"])
 
     command_line_interface.main(i, loginCase, transferCase, openCase)
 
