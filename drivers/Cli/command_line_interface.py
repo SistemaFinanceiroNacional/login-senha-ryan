@@ -31,18 +31,22 @@ def main(userIO: inputIO,
          transfer_use_case: transferFundsBetweenAccountsUseCase,
          open_account_use_case: openAccountUseCase):
 
-    choose = userIO.input("Would you like to Sign In (1) or Create a new account (2)? ")
-    if choose == "1":
-        login = userIO.input("Enter your username: ")
-        senha = password.password(userIO.inputoccult("Enter your password: "))
-        logger.debug("Going to verify the account...")
-        possible_account = login_use_case.execute(login, senha)
-        possible_account.map(lambda acc: repl(userIO, acc, transfer_use_case)).orElse(lambda: userIO.print("You are not logged in!"))
+    while True:
+        choice = userIO.input("Would you like to Sign In (1), Create a new account (2) or Exit(3)? ")
+        if choice == "1":
+            login = userIO.input("Enter your username: ")
+            senha = password.password(userIO.inputoccult("Enter your password: "))
+            logger.debug("Going to verify the account...")
+            possible_account = login_use_case.execute(login, senha)
+            possible_account.map(lambda acc: repl(userIO, acc, transfer_use_case)).orElse(lambda: userIO.print("You are not logged in!"))
 
-    elif choose == "2":
-        loginFromUser = userIO.input("Enter your new username: ")
-        passwordFromUser = password.password(userIO.inputoccult("Enter your new password: "))
-        if open_account_use_case.execute(loginFromUser, passwordFromUser):
-            userIO.print("Your account has been successfully created!")
-        else:
-            userIO.print("Account already exists. Try another username.")
+        elif choice == "2":
+            loginFromUser = userIO.input("Enter your new username: ")
+            passwordFromUser = password.password(userIO.inputoccult("Enter your new password: "))
+            if open_account_use_case.execute(loginFromUser, passwordFromUser):
+                userIO.print("Your account has been successfully created!")
+            else:
+                userIO.print("Account already exists. Try another username.")
+
+        elif choice == "3":
+            break
