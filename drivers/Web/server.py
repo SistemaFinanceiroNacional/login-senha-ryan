@@ -1,8 +1,6 @@
-
 import logging
 import socket
 import threading
-
 from drivers.Web import httpConnection
 
 logger = logging.getLogger("drivers.Web.server")
@@ -16,6 +14,6 @@ def main(app):
         logger.info("serverSocket listened")
         while True:
             clientSocket, addr = serverSocket.accept()
-            logger.debug(f"Client connected on IP {clientSocket.getpeername()}")
+            logger.debug(f"Client-IP {clientSocket.getpeername()}")
             connection = httpConnection.httpConnection(clientSocket)
             threading.Thread(target=connection.process, args=(app,)).run()

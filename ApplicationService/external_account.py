@@ -15,6 +15,7 @@ class externalAccount:
     def get_login(self) -> str:
         return self._login
 
+
 class negativeIncrementException(Exception):
     def __init__(self, value):
         self.value = value

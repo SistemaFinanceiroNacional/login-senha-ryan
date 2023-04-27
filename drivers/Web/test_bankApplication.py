@@ -3,19 +3,19 @@ import pytest
 from drivers.Web import httpRequest, bankApplication
 from fake_config import fakes
 from ApplicationService.loginUseCase import loginUseCase
-from ApplicationService.transferFundsBetweenAccountsUseCase import transferFundsBetweenAccountsUseCase
+from ApplicationService.transferFundsUseCase import transferFundsUseCase
 from ApplicationService.openAccountUseCase import openAccountUseCase
 
 
 @pytest.fixture
 def ui_example():
     context = fakes.fake_context()
-    intRepository = fakes.contasFake({"ryanbanco": ["abc123", 300]}, {})
-    extRepository = fakes.fakeExternalRepository()
+    intRepo = fakes.contasFake({"ryanbanco": ["abc123", 300]}, {})
+    extRepo = fakes.fakeExternalRepository()
 
-    login_use_case = loginUseCase(intRepository, context)
-    transfer_use_case = transferFundsBetweenAccountsUseCase(intRepository, extRepository, context)
-    open_use_case = openAccountUseCase(intRepository, context)
+    login_use_case = loginUseCase(intRepo, context)
+    transfer_use_case = transferFundsUseCase(intRepo, extRepo, context)
+    open_use_case = openAccountUseCase(intRepo, context)
 
     return bankApplication.ui(login_use_case, transfer_use_case, open_use_case)
 

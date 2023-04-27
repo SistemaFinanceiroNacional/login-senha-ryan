@@ -1,6 +1,7 @@
 from ApplicationService.external_account import externalAccount
 from password import password as pw
 
+
 class internalAccount:
     def __init__(self, login: str, password: pw, balance: float):
         self._login = login
@@ -30,6 +31,7 @@ class insufficientFundsException(Exception):
         self.balance = balance
         self.value = value
         super().__init__(f"{self.balance} is insufficient to get {self.value}")
+
 
 class invalidValueToTransfer(Exception):
     def __init__(self, value: float):

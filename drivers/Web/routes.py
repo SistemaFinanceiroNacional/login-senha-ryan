@@ -14,6 +14,7 @@ class endpointRoute(route):
             return just(self.handler(request))
         return nothing()
 
+
 class fixed_route(route):
     def __init__(self, fixed_url, handler):
         self.fixed_url = fixed_url
@@ -23,6 +24,7 @@ class fixed_route(route):
         if request.getResource().getEndpoint() == self.fixed_url:
             return just(self.handler(request))
         return nothing()
+
 
 class method_dispatcher:
     def __call__(self, request: httpRequest) -> httpResponse:
@@ -39,7 +41,9 @@ class method_dispatcher:
         possible_methods = ["get", "post", "head"]
         allowed_methods_list = []
         for method in possible_methods:
-            if getattr(type(self), method) != getattr(method_dispatcher, method):
+            type_1 = getattr(type(self), method)
+            type_2 = getattr(method_dispatcher, method)
+            if type_1 != type_2:
                 allowed_methods_list.append(method.upper())
 
         return ", ".join(allowed_methods_list)

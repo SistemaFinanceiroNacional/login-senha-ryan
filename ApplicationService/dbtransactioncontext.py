@@ -3,6 +3,7 @@ from ApplicationService.connection_pool import connection_pool as cpool
 from ApplicationService.transactioncontext import transactioncontext
 from ApplicationService.contexterrors.businesserror import BusinessError
 
+
 class dbTransactionContext(transactioncontext):
     def __init__(self, connection_pool: cpool, identifier: identity):
         self.connection_pool = connection_pool

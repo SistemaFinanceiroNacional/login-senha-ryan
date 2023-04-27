@@ -3,7 +3,7 @@ from drivers.Web.router import router
 from drivers.Web.routes import method_dispatcher, fixed_route
 from drivers.Web.httpResponse import httpResponse
 from drivers.Web.httpRequest import httpRequest, makeQueryParameters
-from ApplicationService.transferFundsBetweenAccountsUseCase import transferFundsBetweenAccountsUseCase
+from ApplicationService.transferFundsUseCase import transferFundsUseCase
 from ApplicationService.loginUseCase import loginUseCase
 from ApplicationService.openAccountUseCase import openAccountUseCase
 from password import password
@@ -26,11 +26,22 @@ class home_handler(method_dispatcher):
                 username = cookie[username_start_index:]
             else:
                 username = cookie[username_start_index:username_end_index + 1]
-            html_content = render_template("loggedPage.html", {"user": username})
-            response = httpResponse({"Content-Type": "text/html"}, html_content, 200)
+            html_content = render_template(
+                "loggedPage.html",
+                {"user": username}
+            )
+            response = httpResponse(
+                {"Content-Type": "text/html"},
+                html_content,
+                200
+            )
         else:
             html_content = render_template("index.html", {})
-            response = httpResponse({"Content-Type": "text/html"}, html_content, 200)
+            response = httpResponse(
+                {"Content-Type": "text/html"},
+                html_content,
+                200
+            )
 
         return response
 
@@ -40,18 +51,37 @@ class home_handler(method_dispatcher):
         queryParameters = makeQueryParameters(body)
         user_login = queryParameters["login"]
         user_password = password(queryParameters["password"])
-        possible_account = self.login_use_case.execute(user_login, user_password)
-        return possible_account \
-            .map(lambda account: httpResponse({"Set-Cookie": f"loggedUsername={account.get_login()}",
-                                               "Location": "/"}, "", 303)) \
-            .orElse(lambda: httpResponse({"Location": "/"}, "", 303))
+        possible_account = self.login_use_case.execute(
+            user_login,
+            user_password
+        )
+        return possible_account.map(lambda account: httpResponse(
+            {
+                "Set-Cookie": f"loggedUsername={account.get_login()}",
+                "Location": "/"
+            },
+            "",
+            303
+        )).orElse(
+            lambda: httpResponse(
+                {"Location": "/"},
+                "",
+                303
+            ))
 
 
 class logged_handler(method_dispatcher):
     def post(self, request: httpRequest) -> httpResponse:
+        expires_date = "Thursday, 1 January 1970 00:00:00 GMT"
         response = httpResponse(
-            {"Set-Cookie": "loggedUsername=; Expires=Thursday, 1 January 1970 00:00:00 GMT", "Location": "/"}, "", 303)
+            {
+                "Set-Cookie": f"loggedUsername=; Expires={expires_date}",
+                "Location": "/"
+            },
+            "",
+            303)
         return response
+
 
 class open_account_handler(method_dispatcher):
     def __init__(self, use_case: openAccountUseCase):
@@ -59,7 +89,13 @@ class open_account_handler(method_dispatcher):
 
     def get(self, request: httpRequest) -> httpResponse:
         html_content = render_template("openAccount.html", {})
-        response = httpResponse({"Content-type": "text/html"}, html_content, 200)
+        response = httpResponse(
+            {
+                "Content-type": "text/html"
+            },
+            html_content,
+            200
+        )
         return response
 
     def post(self, request: httpRequest) -> httpResponse:
@@ -74,9 +110,13 @@ class open_account_handler(method_dispatcher):
             response = httpResponse({"Location": "/openaccount"}, "", 303)
         return response
 
+
 class ui:
-    def __init__(self, login_use_case: loginUseCase,
-                 transfer_use_case: transferFundsBetweenAccountsUseCase, open_use_case: openAccountUseCase):
+    def __init__(self,
+                 login_use_case: loginUseCase,
+                 transfer_use_case: transferFundsUseCase,
+                 open_use_case: openAccountUseCase
+                 ):
         self.transfer_use_case = transfer_use_case
         self.login_use_case = login_use_case
         self.open_use_case = open_use_case
@@ -85,4 +125,7 @@ class ui:
         return router(
             fixed_route("/", home_handler(self.login_use_case)),
             fixed_route("/logout", logged_handler()),
-            fixed_route("/openaccount", open_account_handler(self.open_use_case)))(request)
+            fixed_route(
+                "/openaccount",
+                open_account_handler(self.open_use_case)
+            ))(request)

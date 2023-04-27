@@ -1,5 +1,6 @@
 from ApplicationService.contexterrors.businesserror import BusinessError
 
+
 class AccountDoesNotExistsError(BusinessError):
     def __init__(self, destinyLogin):
         self.destinyLogin = destinyLogin

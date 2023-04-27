@@ -3,6 +3,7 @@ from typing import Generic, TypeVar, Callable, Iterable
 T = TypeVar('T')
 U = TypeVar('U')
 
+
 class maybe(Generic[T]):
     def map(self, function: Callable[[T], U]):
         raise NotImplementedError
