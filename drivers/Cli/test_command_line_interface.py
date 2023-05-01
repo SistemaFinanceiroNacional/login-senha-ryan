@@ -2,9 +2,13 @@ from drivers.Cli import command_line_interface
 from ApplicationService.loginUseCase import loginUseCase
 from ApplicationService.transferFundsUseCase import transferFundsUseCase
 from ApplicationService.openAccountUseCase import openAccountUseCase
-from fake_config.fakes import inputfake,\
-    contasExternasFake, existing_pedros_account,\
-    waiting_pedro_account, fake_context
+from fake_config.fakes import (
+    inputfake,
+    contasExternasFake,
+    existing_pedros_account,
+    waiting_pedro_account,
+    fake_context
+)
 
 
 def test_main_with_repl():

@@ -2,8 +2,9 @@ from maybe import nothing, maybe, just
 from ApplicationService.external_account import externalAccount
 from ApplicationService.connection_pool import connection_pool
 from ApplicationService.threadIdentity import identity
-from ApplicationService.repositories.externalaccountsrepository\
-    import externalAccountsRepository
+from ApplicationService.repositories.externalaccountsrepository import (
+    externalAccountsRepository
+)
 
 
 class externalRepository(externalAccountsRepository):

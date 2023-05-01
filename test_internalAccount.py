@@ -1,7 +1,11 @@
-from ApplicationService.external_account\
-    import externalAccount, negativeIncrementException
-from ApplicationService.internal_account\
-    import internalAccount, insufficientFundsException
+from ApplicationService.external_account import (
+    externalAccount,
+    negativeIncrementException
+)
+from ApplicationService.internal_account import (
+    internalAccount,
+    insufficientFundsException
+)
 from password import password
 
 

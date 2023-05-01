@@ -1,8 +1,6 @@
 from threading import Thread
 from time import sleep
-
 import pytest
-
 from ApplicationService import connection_pool
 from fake_config.fakes import fake_identity, fake_connection, fake_cursor
 

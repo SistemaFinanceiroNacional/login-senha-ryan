@@ -1,12 +1,20 @@
 import password
-from ApplicationService.contexterrors.accountdoesnotexistserror\
-    import AccountDoesNotExistsError
-from ApplicationService.transferFundsUseCase\
-    import transferFundsUseCase
+from ApplicationService.contexterrors.accountdoesnotexistserror import (
+    AccountDoesNotExistsError
+)
+from ApplicationService.transferFundsUseCase import (
+    transferFundsUseCase
+)
 from ApplicationService.external_account import externalAccount
-from ApplicationService.internal_account\
-    import internalAccount, invalidValueToTransfer
-from fake_config.fakes import fakeExternalRepository, contasFake, fake_context
+from ApplicationService.internal_account import (
+    internalAccount,
+    invalidValueToTransfer
+)
+from fake_config.fakes import (
+    fakeExternalRepository,
+    contasFake,
+    fake_context
+)
 
 
 def test_transfer_correct():

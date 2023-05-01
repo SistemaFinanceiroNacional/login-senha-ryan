@@ -3,8 +3,9 @@ from password import password as pw
 from ApplicationService.internal_account import internalAccount as ia
 from ApplicationService.connection_pool import connection_pool as cpool
 from ApplicationService.threadIdentity import identity
-from ApplicationService.repositories.internalaccountsrepository\
-    import internalAccountsRepository
+from ApplicationService.repositories.internalaccountsrepository import (
+    internalAccountsRepository
+)
 import logging
 
 logger = logging.getLogger("internalAccountsRepository")

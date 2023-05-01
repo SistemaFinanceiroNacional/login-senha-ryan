@@ -1,11 +1,14 @@
 from ApplicationService.transactioncontext import transactioncontext
-from ApplicationService.repositories.internalaccountsrepository \
-    import internalAccountsRepository as iar
-from ApplicationService.repositories.externalaccountsrepository \
-    import externalAccountsRepository as exar
+from ApplicationService.repositories.internalaccountsrepository import (
+    internalAccountsRepository as iar
+)
+from ApplicationService.repositories.externalaccountsrepository import (
+    externalAccountsRepository as exar
+)
 from ApplicationService.internal_account import internalAccount as iAccount
-from ApplicationService.contexterrors.accountdoesnotexistserror \
-    import AccountDoesNotExistsError
+from ApplicationService.contexterrors.accountdoesnotexistserror import (
+    AccountDoesNotExistsError
+)
 
 
 class transferFundsUseCase:
