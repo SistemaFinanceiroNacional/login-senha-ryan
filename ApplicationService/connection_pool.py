@@ -3,8 +3,11 @@ from psycopg2 import connect
 from threading import Condition
 from typing import Callable
 from ApplicationService.repositories.identity import identity
-from ApplicationService.repositories.connectionInterface \
-    import cursor, connection, connection_pool
+from ApplicationService.repositories.connectionInterface import (
+    cursor,
+    connection,
+    connection_pool
+)
 
 
 class postgresql_connection_pool(connection_pool):

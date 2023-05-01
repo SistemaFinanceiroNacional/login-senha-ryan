@@ -1,8 +1,10 @@
 from maybe import maybe, nothing
-from ApplicationService.repositories.internalaccountsrepository\
-    import internalAccountsRepository as iar
-from ApplicationService.transactioncontext \
-    import transactioncontext as cntx
+from ApplicationService.repositories.internalaccountsrepository import (
+    internalAccountsRepository as iar
+)
+from ApplicationService.transactioncontext import (
+    transactioncontext as cntx
+)
 from ApplicationService.internal_account import internalAccount
 from password import password as pw
 import logging

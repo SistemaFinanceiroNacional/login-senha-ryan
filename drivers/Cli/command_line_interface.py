@@ -1,6 +1,8 @@
-from ApplicationService.internal_account \
-    import internalAccount as ia,\
-    insufficientFundsException, invalidValueToTransfer
+from ApplicationService.internal_account import (
+    internalAccount as ia,
+    insufficientFundsException,
+    invalidValueToTransfer
+)
 from password import password as pw
 import logging
 from inputIO.inputIO import inputIO
