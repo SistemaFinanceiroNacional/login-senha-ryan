@@ -1,8 +1,14 @@
+from typing import Callable
+
 from drivers.Web import IncompleteHttpRequest
 
 import logging
 
 logger = logging.getLogger("drivers.Web.httpRequest")
+State = int
+PushlineIncrementer = tuple[bytes, bytes, bytes]
+StateTransition = Callable[[bytes], tuple[State, PushlineIncrementer]]
+StateTransitionTable = dict[State, StateTransition]
 
 
 class httpRequest:
@@ -86,6 +92,33 @@ def getFirstLine(socket):
     method, resource, version = b'', b'', b''
     state = 0
 
+    def method_state(b: bytes) -> tuple[State, PushlineIncrementer]:
+        if b == b' ':
+            return resourceState, (b'', b'', b'')
+        return methodState, (b, b'', b'')
+
+    def resource_state(b: bytes) -> tuple[State, PushlineIncrementer]:
+        if b == b' ':
+            return versionState, (b'', b'', b'')
+        return resourceState, (b'', b, b'')
+
+    def version_state(b: bytes) -> tuple[State, PushlineIncrementer]:
+        if b == b' ' or b in b'HTTP/':
+            return versionState, (b'', b'', b'')
+        return versionState, (b'', b'', b)
+
+    def carriageReturn_state(b: bytes) -> tuple[State, PushlineIncrementer]:
+        if b == b'\n':
+            return finalState, (b'', b'', b'')
+        return carriageReturnState, (b'', b'', b'')
+
+    transition_states: StateTransitionTable = {
+        methodState: method_state,
+        resourceState: resource_state,
+        versionState: version_state,
+        carriageReturnState: carriageReturn_state
+    }
+
     while state != finalState:
         nextByte = socket.recv(1)
         logger.debug(
@@ -98,24 +131,12 @@ def getFirstLine(socket):
         elif nextByte == b'\r':
             state = carriageReturnState
 
-        elif nextByte == b'\n':
-            state = finalState
-
-        elif nextByte != b' ' and state == methodState:
-            method += nextByte
-
-        elif nextByte == b' ' and state == methodState:
-            state = resourceState
-
-        elif nextByte != b' ' and state == resourceState:
-            resource += nextByte
-
-        elif nextByte == b' ' and state == resourceState:
-            state = versionState
-
-        elif nextByte != b' ' and state == versionState:
-            if nextByte not in b'HTTP/':
-                version += nextByte
+        elif state in transition_states:
+            state, increments = transition_states[state](nextByte)
+            (methodInc, resourceInc, versionInc) = increments
+            method += methodInc
+            resource += resourceInc
+            version += versionInc
 
     if state != finalState:
         raise IncompleteHttpRequest.IncompleteHttpRequest()
