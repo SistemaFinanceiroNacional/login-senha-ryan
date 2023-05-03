@@ -21,10 +21,11 @@ class transferFundsUseCase:
         self.externalRepository = externalRepository
         self.transactional_context = transactional_context
 
-    def execute(self, internalAccount: iAccount, destinyLogin: str, amount):
+    def execute(self, internalAccount: iAccount, destLogin: str, amount):
         with self.transactional_context:
-            extAccount = self.externalRepository.get_by_login(destinyLogin).\
-                orElseThrow(AccountDoesNotExistsError(destinyLogin))
+            possible_account = self.externalRepository.get_by_login(destLogin)
+            exception = AccountDoesNotExistsError(destLogin)
+            extAccount = possible_account.orElseThrow(exception)
             internalAccount.transfer(extAccount, amount)
             self.internalRepository.update_balance(internalAccount)
             self.externalRepository.update(extAccount)

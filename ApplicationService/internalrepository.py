@@ -23,17 +23,19 @@ class internalRepository(internalAccountsRepository):
         account_query_result = cursor.fetchone()
 
         if not account_query_result:
-            query = "INSERT INTO accounts (login,password,balance)" \
-                    " VALUES (%s,%s,%s)"
+            columns = "(login,password,balance)"
+            values_statements = "VALUES (%s,%s,%s)"
+            query = f"INSERT INTO accounts {columns} {values_statements}"
             cursor.execute(query, (new_login, str(new_password), 0))
 
         return not account_query_result
 
     def authentication(self, login: str, password: pw) -> maybe[ia]:
         cursor = self.connection_pool.get_cursor(self.identifier)
-        query = "SELECT login, password, balance " \
-                "FROM accounts " \
-                "WHERE login=%s AND password=%s"
+        select = "login, password, balance"
+        table = "accounts"
+        conditions = "login=%s AND password=%s"
+        query = f"SELECT {select} FROM {table} WHERE {conditions}"
         cursor.execute(query, (login, str(password)))
         find_login_list = cursor.fetchone()
 

@@ -41,9 +41,9 @@ class method_dispatcher:
         possible_methods = ["get", "post", "head"]
         allowed_methods_list = []
         for method in possible_methods:
-            type_1 = getattr(type(self), method)
-            type_2 = getattr(method_dispatcher, method)
-            if type_1 != type_2:
+            derived_method = getattr(type(self), method)
+            base_method = getattr(method_dispatcher, method)
+            if derived_method != base_method:
                 allowed_methods_list.append(method.upper())
 
         return ", ".join(allowed_methods_list)

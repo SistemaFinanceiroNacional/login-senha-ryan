@@ -1,7 +1,8 @@
 from password import password as pw
 from maybe import maybe
-from ApplicationService.internal_account\
-    import internalAccount as ia
+from ApplicationService.internal_account import (
+    internalAccount as ia
+)
 
 
 class internalAccountsRepository:
