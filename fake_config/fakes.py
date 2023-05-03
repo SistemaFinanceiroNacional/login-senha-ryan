@@ -2,11 +2,13 @@ import maybe
 import password
 from ApplicationService.external_account import externalAccount
 from ApplicationService.internal_account import internalAccount
-from ApplicationService.repositories.externalaccountsrepository\
-    import externalAccountsRepository
+from ApplicationService.repositories.externalaccountsrepository import (
+    externalAccountsRepository
+)
 from ApplicationService.repositories.identity import identity
-from ApplicationService.repositories.internalaccountsrepository\
-    import internalAccountsRepository
+from ApplicationService.repositories.internalaccountsrepository import (
+    internalAccountsRepository
+)
 from ApplicationService.transactioncontext import transactioncontext
 from inputIO.inputIO import inputIO
 
@@ -98,8 +100,8 @@ class contasFake(internalAccountsRepository):
 
     def authentication(self, login, user_password):
         hashsenha = password.password(self.actualAccounts[login][0])
-        password_comparison = str(hashsenha) == str(user_password)
-        if login in self.actualAccounts and password_comparison:
+        is_password_equals = str(hashsenha) == str(user_password)
+        if login in self.actualAccounts and is_password_equals:
             balance = self.actualAccounts[login][1]
             return maybe.just(internalAccount(login, user_password, balance))
         else:

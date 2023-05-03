@@ -26,9 +26,9 @@ def responseAsBytes(response):
         404: "Not Found",
         405: "Method Not Allowed"
     }
-    responseToBytes = f"HTTP/{version}" \
-                      f" {status}" \
-                      f" {mappingStatus.get(status, '')}\r\n"
+    status_message = mappingStatus.get(status, '')
+    complete_status = f"{status} {status_message}"
+    responseToBytes = f"HTTP/{version} {complete_status}\r\n"
     for key in headers:
         responseToBytes += f"{key}: {headers[key]}\r\n"
 

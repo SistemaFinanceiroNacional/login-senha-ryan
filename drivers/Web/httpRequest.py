@@ -83,43 +83,49 @@ def getNextHttpRequest(socket):
     return request
 
 
+METHOD_STATE = 0
+RESOURCE_STATE = 1
+VERSION_STATE = 2
+CARRIAGE_RETURN_STATE = 3
+LINE_FINAL_STATE = 4
+
+
+def method_state(b: bytes) -> tuple[State, PushlineIncrementer]:
+    if b == b' ':
+        return RESOURCE_STATE, (b'', b'', b'')
+    return METHOD_STATE, (b, b'', b'')
+
+
+def resource_state(b: bytes) -> tuple[State, PushlineIncrementer]:
+    if b == b' ':
+        return VERSION_STATE, (b'', b'', b'')
+    return RESOURCE_STATE, (b'', b, b'')
+
+
+def version_state(b: bytes) -> tuple[State, PushlineIncrementer]:
+    if b == b' ' or b in b'HTTP/':
+        return VERSION_STATE, (b'', b'', b'')
+    return VERSION_STATE, (b'', b'', b)
+
+
+def carriageReturn_state(b: bytes) -> tuple[State, PushlineIncrementer]:
+    if b == b'\n':
+        return LINE_FINAL_STATE, (b'', b'', b'')
+    return CARRIAGE_RETURN_STATE, (b'', b'', b'')
+
+
 def getFirstLine(socket):
-    methodState = 0
-    resourceState = 1
-    versionState = 2
-    carriageReturnState = 3
-    finalState = 4
     method, resource, version = b'', b'', b''
     state = 0
 
-    def method_state(b: bytes) -> tuple[State, PushlineIncrementer]:
-        if b == b' ':
-            return resourceState, (b'', b'', b'')
-        return methodState, (b, b'', b'')
-
-    def resource_state(b: bytes) -> tuple[State, PushlineIncrementer]:
-        if b == b' ':
-            return versionState, (b'', b'', b'')
-        return resourceState, (b'', b, b'')
-
-    def version_state(b: bytes) -> tuple[State, PushlineIncrementer]:
-        if b == b' ' or b in b'HTTP/':
-            return versionState, (b'', b'', b'')
-        return versionState, (b'', b'', b)
-
-    def carriageReturn_state(b: bytes) -> tuple[State, PushlineIncrementer]:
-        if b == b'\n':
-            return finalState, (b'', b'', b'')
-        return carriageReturnState, (b'', b'', b'')
-
     transition_states: StateTransitionTable = {
-        methodState: method_state,
-        resourceState: resource_state,
-        versionState: version_state,
-        carriageReturnState: carriageReturn_state
+        METHOD_STATE: method_state,
+        RESOURCE_STATE: resource_state,
+        VERSION_STATE: version_state,
+        CARRIAGE_RETURN_STATE: carriageReturn_state
     }
 
-    while state != finalState:
+    while state != LINE_FINAL_STATE:
         nextByte = socket.recv(1)
         logger.debug(
             f"GetFirstLine: state = {state} & actual byte = {nextByte}"
@@ -129,7 +135,7 @@ def getFirstLine(socket):
             break
 
         elif nextByte == b'\r':
-            state = carriageReturnState
+            state = CARRIAGE_RETURN_STATE
 
         elif state in transition_states:
             state, increments = transition_states[state](nextByte)
@@ -138,12 +144,14 @@ def getFirstLine(socket):
             resource += resourceInc
             version += versionInc
 
-    if state != finalState:
+    if state != LINE_FINAL_STATE:
         raise IncompleteHttpRequest.IncompleteHttpRequest()
 
-    return method.decode("UTF-8"),\
-        makeResource(resource.decode("UTF-8")),\
-        version.decode("UTF-8")
+    decoded_method = method.decode("UTF-8")
+    decoded_resource = makeResource(resource.decode("UTF-8"))
+    decoded_version = version.decode("UTF-8")
+
+    return decoded_method, decoded_resource, decoded_version
 
 
 def getHeaders(socket):

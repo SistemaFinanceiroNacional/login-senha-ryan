@@ -159,7 +159,7 @@ def test_NO_queryParameters_no_interrogation_point():
 
 
 @pytest.mark.http_request_getBody
-def test_fakeSocket_getNextHttpRequest_complete():
+def test_getNextHttpRequest_complete():
     socket = fakeSocket(b'POST / HTTP/1.1\r\n'
                         b'Content-Length: 31\r\n'
                         b'\r\nlogin=ryanbanco&password=abc123')
@@ -168,9 +168,10 @@ def test_fakeSocket_getNextHttpRequest_complete():
 
 
 @pytest.mark.http_request_getMethod
-def test_fakeSocket_getNextHttpRequest_complete_getMethod():
-    socket = fakeSocket(b'POST / HTTP/1.1\r\nContent-Length: 31'
-                        b'\r\n\r\nlogin=ryanbanco&password=abc123')
+def test_getNextHttpRequest_complete_2():
+    socket = fakeSocket(b'POST / HTTP/1.1\r\n'
+                        b'Content-Length: 31\r\n'
+                        b'\r\nlogin=ryanbanco&password=abc123')
     request = httpRequest.getNextHttpRequest(socket)
     assert request.getMethod() == "POST"
 

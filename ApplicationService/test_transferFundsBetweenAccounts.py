@@ -31,7 +31,7 @@ def test_transfer_correct():
     assert useCase.execute(intAccount, "joao", 150)
 
 
-def test_transfer_correct2():
+def test_transfer_correct_ryan_balance():
     extAccount = externalAccount("joao")
     intAccount = internalAccount("ryan", password.password("abc123"), 100)
     context = fake_context()
@@ -43,8 +43,26 @@ def test_transfer_correct2():
     useCase = transferFundsUseCase(intRepository, extRepository, context)
     useCase.execute(intAccount, "joao", 100)
 
-    assert intRepository.actualAccounts["ryan"]._balance == 0 \
-           and extRepository.accounts["joao"]._balanceIncrement == 100
+    ryan_balance = intRepository.actualAccounts["ryan"]._balance
+
+    assert ryan_balance == 0
+
+
+def test_transfer_correct_veryfing_joaos_balance():
+    extAccount = externalAccount("joao")
+    intAccount = internalAccount("ryan", password.password("abc123"), 100)
+    context = fake_context()
+
+    intRepository = contasFake({"ryan": intAccount}, {})
+    extRepository = fakeExternalRepository()
+    extRepository.add_account("joao", extAccount)
+
+    useCase = transferFundsUseCase(intRepository, extRepository, context)
+    useCase.execute(intAccount, "joao", 100)
+
+    balance_increment_joao = extRepository.accounts["joao"]._balanceIncrement
+
+    assert balance_increment_joao == 100
 
 
 def test_transfer_zero_amount():
