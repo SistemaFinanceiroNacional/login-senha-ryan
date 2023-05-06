@@ -1,4 +1,8 @@
-from drivers.Web import httpRequest, httpResponse, IncompleteHttpRequest
+from drivers.Web import httpResponse
+from drivers.Web.HttpRequest import (
+    httpRequest,
+    IncompleteHttpRequest
+)
 
 import logging
 

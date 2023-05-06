@@ -1,13 +1,23 @@
-from drivers.Web import httpRequest
-from drivers.Web import IncompleteHttpRequest
-
+from drivers.Web.HttpRequest import (
+    httpRequest,
+    IncompleteHttpRequest,
+    FirstLine,
+    Resource
+)
+from fake_config.fakes import fakeSocket
 import pytest
-
 import logging
 
-from fake_config.fakes import fakeSocket
 
 logging.basicConfig(level=logging.DEBUG)
+
+
+def qmaker():
+    return httpRequest.makeQueryParameters
+
+
+def rmaker():
+    return Resource.makeResource
 
 
 @pytest.mark.http_request
@@ -55,35 +65,40 @@ def test_3_headers():
 @pytest.mark.http_request
 def test_getting_methodGet():
     socket = fakeSocket(b'GET /bank/Main-page HTTP/1.1\r\n')
-    method, _, _ = httpRequest.getFirstLine(socket)
+    q_maker, r_maker = qmaker(), rmaker()
+    method, _, _ = FirstLine.getFirstLine(socket, r_maker, q_maker)
     assert method == "GET"
 
 
 @pytest.mark.http_request
 def test_getting_methodPost():
     socket = fakeSocket(b'POST /bank/Main-page HTTP/1.1\r\n')
-    method, _, _ = httpRequest.getFirstLine(socket)
+    q_maker, r_maker = qmaker(), rmaker()
+    method, _, _ = FirstLine.getFirstLine(socket, r_maker, q_maker)
     assert method == "POST"
 
 
 @pytest.mark.http_request
 def test_resource_getEndpoint():
     socket = fakeSocket(b'GET /bank/Main-page HTTP/1.1\r\n')
-    _, resource, _ = httpRequest.getFirstLine(socket)
+    q_maker, r_maker = qmaker(), rmaker()
+    _, resource, _ = FirstLine.getFirstLine(socket, r_maker, q_maker)
     assert resource.getEndpoint() == "/bank/Main-page"
 
 
 @pytest.mark.http_request
 def test_resource_getQueryParameters():
     socket = fakeSocket(b'GET /bank/Main-page HTTP/1.1\r\n')
-    _, resource, _ = httpRequest.getFirstLine(socket)
+    q_maker, r_maker = qmaker(), rmaker()
+    _, resource, _ = FirstLine.getFirstLine(socket, r_maker, q_maker)
     assert resource.getQueryParameters() == {}
 
 
 @pytest.mark.http_request
 def test_getting_version():
     socket = fakeSocket(b'GET /bank/Main-page HTTP/1.1\r\n')
-    _, _, version = httpRequest.getFirstLine(socket)
+    q_maker, r_maker = qmaker(), rmaker()
+    _, _, version = FirstLine.getFirstLine(socket, r_maker, q_maker)
     assert version == "1.1"
 
 

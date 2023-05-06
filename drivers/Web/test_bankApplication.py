@@ -1,6 +1,8 @@
 import pytest
-
-from drivers.Web import httpRequest, bankApplication
+import drivers.Web.HttpRequest.Headers
+import drivers.Web.HttpRequest.Resource
+from drivers.Web import bankApplication
+from drivers.Web.HttpRequest import httpRequest
 from fake_config import fakes
 from ApplicationService.loginUseCase import loginUseCase
 from ApplicationService.transferFundsUseCase import transferFundsUseCase
@@ -24,7 +26,7 @@ def test_request_using_Users_as_resource_returns_404(ui_example):
     header = {}
     body = b''
     method = "GET"
-    resource = httpRequest.http_resource("/users", {})
+    resource = drivers.Web.HttpRequest.Resource.http_resource("/users", {})
     version = "1.1"
     request = httpRequest.httpRequest(header, body, method, resource, version)
 
@@ -36,7 +38,7 @@ def test_request_root_status_is_200(ui_example):
     header = {}
     body = ""
     method = "GET"
-    resource = httpRequest.http_resource("/", {})
+    resource = drivers.Web.HttpRequest.Resource.http_resource("/", {})
     version = "1.1"
     request = httpRequest.httpRequest(header, body, method, resource, version)
     bankApplicationReturn = ui_example(request)
@@ -47,7 +49,7 @@ def test_request_root_resource_is_html(ui_example):
     header = {}
     body = b''
     method = "GET"
-    resource = httpRequest.http_resource("/", {})
+    resource = drivers.Web.HttpRequest.Resource.http_resource("/", {})
     version = "1.1"
     request = httpRequest.httpRequest(header, body, method, resource, version)
     bankApplicationReturn = ui_example(request)
@@ -56,7 +58,7 @@ def test_request_root_resource_is_html(ui_example):
 
 def test_post_status_303(ui_example):
     header = {}
-    resource = httpRequest.http_resource("/", {})
+    resource = drivers.Web.HttpRequest.Resource.http_resource("/", {})
     method = "POST"
     body = b"login=ryanbanco&password=abc123"
     version = "1.1"
