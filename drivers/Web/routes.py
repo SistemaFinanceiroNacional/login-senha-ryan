@@ -1,6 +1,6 @@
 from maybe import nothing, maybe, just
 from drivers.Web.httpResponse import httpResponse
-from drivers.Web.httpRequest import httpRequest
+from drivers.Web.HttpRequest.httpRequest import httpRequest
 from drivers.Web.routeInterface import route
 
 

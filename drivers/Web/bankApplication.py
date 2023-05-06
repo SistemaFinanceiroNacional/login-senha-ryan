@@ -2,7 +2,10 @@ from drivers.Web.template import render_template
 from drivers.Web.router import router
 from drivers.Web.routes import method_dispatcher, fixed_route
 from drivers.Web.httpResponse import httpResponse
-from drivers.Web.httpRequest import httpRequest, makeQueryParameters
+from drivers.Web.HttpRequest.httpRequest import (
+    httpRequest,
+    makeQueryParameters
+)
 from ApplicationService.transferFundsUseCase import transferFundsUseCase
 from ApplicationService.loginUseCase import loginUseCase
 from ApplicationService.openAccountUseCase import openAccountUseCase
