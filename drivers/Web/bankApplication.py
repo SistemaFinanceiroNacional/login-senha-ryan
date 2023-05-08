@@ -9,7 +9,6 @@ from drivers.Web.HttpRequest.httpRequest import (
 from ApplicationService.transferFundsUseCase import transferFundsUseCase
 from ApplicationService.loginUseCase import loginUseCase
 from ApplicationService.openAccountUseCase import openAccountUseCase
-from password import password
 import logging
 
 logger = logging.getLogger("drivers.Web.bankApplication")
@@ -53,7 +52,7 @@ class home_handler(method_dispatcher):
         logger.debug(f"Body-Content: {body}")
         queryParameters = makeQueryParameters(body)
         user_login = queryParameters["login"]
-        user_password = password(queryParameters["password"])
+        user_password = queryParameters["password"]
         possible_account = self.login_use_case.execute(
             user_login,
             user_password

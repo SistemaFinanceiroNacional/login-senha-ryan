@@ -45,3 +45,11 @@ def getFirstNotEmpty(possible_not_empties: Iterable[maybe[T]]) -> maybe[T]:
         if isinstance(possible, just):
             return possible
     return nothing()
+
+
+def isJust(m: maybe):
+    return isinstance(m, just)
+
+
+def isNothing(m: maybe):
+    return isinstance(m, nothing)

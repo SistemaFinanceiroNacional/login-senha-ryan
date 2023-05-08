@@ -17,7 +17,7 @@ def test_main_with_repl():
     c = existing_pedros_account()
     extC = contasExternasFake({})
 
-    loginCase = loginUseCase(c, context)
+    loginCase = loginUseCase(c, context, password)
     transferCase = transferFundsUseCase(c, extC, context)
     openCase = openAccountUseCase(c, context, password)
 
@@ -32,7 +32,7 @@ def test_main_choose_2_already_exist():
     c = waiting_pedro_account()
     extC = contasExternasFake({})
 
-    loginCase = loginUseCase(c, context)
+    loginCase = loginUseCase(c, context, password)
     transferCase = transferFundsUseCase(c, extC, context)
     openCase = openAccountUseCase(c, context, password)
 
@@ -47,7 +47,7 @@ def test_verify_correct_content_using_different_password():
     c = existing_pedros_account()
     extC = contasExternasFake({})
 
-    loginCase = loginUseCase(c, context)
+    loginCase = loginUseCase(c, context, password)
     transferCase = transferFundsUseCase(c, extC, context)
     openCase = openAccountUseCase(c, context, password)
 

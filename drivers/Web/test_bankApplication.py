@@ -16,7 +16,7 @@ def ui_example():
     intRepo = fakes.contasFake({"ryanbanco": ["abc123", 300]}, {})
     extRepo = fakes.fakeExternalRepository()
 
-    login_use_case = loginUseCase(intRepo, context)
+    login_use_case = loginUseCase(intRepo, context, password)
     transfer_use_case = transferFundsUseCase(intRepo, extRepo, context)
     open_use_case = openAccountUseCase(intRepo, context, password)
 
