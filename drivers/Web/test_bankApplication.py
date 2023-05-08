@@ -7,6 +7,7 @@ from fake_config import fakes
 from ApplicationService.loginUseCase import loginUseCase
 from ApplicationService.transferFundsUseCase import transferFundsUseCase
 from ApplicationService.openAccountUseCase import openAccountUseCase
+from password import password
 
 
 @pytest.fixture
@@ -17,7 +18,7 @@ def ui_example():
 
     login_use_case = loginUseCase(intRepo, context)
     transfer_use_case = transferFundsUseCase(intRepo, extRepo, context)
-    open_use_case = openAccountUseCase(intRepo, context)
+    open_use_case = openAccountUseCase(intRepo, context, password)
 
     return bankApplication.ui(login_use_case, transfer_use_case, open_use_case)
 

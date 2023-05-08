@@ -9,6 +9,7 @@ from fake_config.fakes import (
     waiting_pedro_account,
     fake_context
 )
+from password import password
 
 
 def test_main_with_repl():
@@ -18,7 +19,7 @@ def test_main_with_repl():
 
     loginCase = loginUseCase(c, context)
     transferCase = transferFundsUseCase(c, extC, context)
-    openCase = openAccountUseCase(c, context)
+    openCase = openAccountUseCase(c, context, password)
 
     i = inputfake(["3", "logout", "balance", "abc123", "pedro", "1"])
 
@@ -33,7 +34,7 @@ def test_main_choose_2_already_exist():
 
     loginCase = loginUseCase(c, context)
     transferCase = transferFundsUseCase(c, extC, context)
-    openCase = openAccountUseCase(c, context)
+    openCase = openAccountUseCase(c, context, password)
 
     i = inputfake(["3", "abc123", "pedro", "2"])
 
@@ -48,7 +49,7 @@ def test_verify_correct_content_using_different_password():
 
     loginCase = loginUseCase(c, context)
     transferCase = transferFundsUseCase(c, extC, context)
-    openCase = openAccountUseCase(c, context)
+    openCase = openAccountUseCase(c, context, password)
 
     i = inputfake(["3", "abc123", "pedro", "2"])
 
