@@ -11,6 +11,7 @@ from ApplicationService.repositories.internalaccountsrepository import (
 )
 from ApplicationService.transactioncontext import transactioncontext
 from inputIO.inputIO import inputIO
+from password import password as pw
 
 
 class fake_identity(identity):
@@ -107,10 +108,9 @@ class contasFake(internalAccountsRepository):
         else:
             return maybe.nothing()
 
-    def add_account(self, new_login, new_password):
-        hashsenha = password.password(new_password)
+    def add_account(self, new_login, new_password: pw):
         if new_login not in self.actualAccounts:
-            self.actualAccounts[new_login] = (hashsenha, 0)
+            self.actualAccounts[new_login] = (new_password, 0)
             return True
         else:
             return False

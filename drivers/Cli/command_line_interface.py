@@ -53,8 +53,10 @@ def main(userIO: inputIO,
 
         elif choice == "2":
             user_login = userIO.input("Enter your new username: ")
-            user_password = pw(userIO.inputoccult("Enter your new password: "))
-            if open_account_use_case.execute(user_login, user_password):
+            user_password = userIO.inputoccult("Enter your new password: ")
+            if not user_login or not user_password:
+                userIO.print("Login and password should not be empty.")
+            elif open_account_use_case.execute(user_login, user_password):
                 userIO.print("Your account has been successfully created!")
             else:
                 userIO.print("Account already exists. Try another username.")

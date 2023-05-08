@@ -105,7 +105,7 @@ class open_account_handler(method_dispatcher):
         body = request.getBody().decode("utf-8")
         queryParameters = makeQueryParameters(body)
         new_username = queryParameters["newUsername"]
-        new_password = password(queryParameters["newPassword"])
+        new_password = queryParameters["newPassword"]
         opened = self.open_account_use_case.execute(new_username, new_password)
         if opened:
             response = httpResponse({"Location": "/"}, "", 303)

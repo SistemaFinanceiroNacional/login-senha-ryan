@@ -8,24 +8,25 @@ from ApplicationService.openAccountUseCase import openAccountUseCase
 from ApplicationService.externalrepository import externalRepository
 from ApplicationService.internalrepository import internalRepository
 from inputIO.inputIO import inputIO
+from password import password as pw
 
 
 class config:
     def run_ui(self):
         conn_pool = postgresql_connection_pool()
         thread_id = thread_identity()
-        int_accounts_rep = internalRepository(conn_pool, thread_id)
-        exp_accounts_rep = externalRepository(conn_pool, thread_id)
+        int_acc_rep = internalRepository(conn_pool, thread_id)
+        exp_acc_rep = externalRepository(conn_pool, thread_id)
 
         context = dbTransactionContext(conn_pool, thread_id)
 
         user_io = inputIO()
-        login_use_case = loginUseCase(int_accounts_rep, context)
+        login_use_case = loginUseCase(int_acc_rep, context)
         transfer_use_case = transferFundsUseCase(
-            int_accounts_rep,
-            exp_accounts_rep,
+            int_acc_rep,
+            exp_acc_rep,
             context
         )
-        open_account_use_case = openAccountUseCase(int_accounts_rep, context)
+        open_account_use_case = openAccountUseCase(int_acc_rep, context, pw)
 
         main(user_io, login_use_case, transfer_use_case, open_account_use_case)
