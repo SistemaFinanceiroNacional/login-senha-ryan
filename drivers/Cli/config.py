@@ -21,7 +21,7 @@ class config:
         context = dbTransactionContext(conn_pool, thread_id)
 
         user_io = inputIO()
-        login_use_case = loginUseCase(int_acc_rep, context)
+        login_use_case = loginUseCase(int_acc_rep, context, pw)
         transfer_use_case = transferFundsUseCase(
             int_acc_rep,
             exp_acc_rep,

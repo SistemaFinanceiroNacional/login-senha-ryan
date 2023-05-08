@@ -20,7 +20,7 @@ class config:
 
         context = dbTransactionContext(conn_pool, thread_id)
 
-        login_use_case = loginUseCase(int_acc_rep, context)
+        login_use_case = loginUseCase(int_acc_rep, context, password)
         transfer_use_case = transferFundsUseCase(
             int_acc_rep,
             ext_acc_rep,

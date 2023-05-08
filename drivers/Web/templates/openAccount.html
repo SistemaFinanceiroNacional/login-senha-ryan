@@ -66,9 +66,11 @@
             </div>
             <form action="/openaccount" method="post">
                 <input type="text" name="newUsername" placeholder="Username" autofocus required aria-required="true"
-                oninvalid="this.setCustomValidity('Please, enter a username here.')" oninput="this.setCustomValidity('')"/>
-                <input type="password" name="newPassword" placeholder="Password" autofocus required aria-required="true"
-                oninvalid="this.setCustomValidity('Please, enter a password here.')" oninput="this.setCustomValidity('')"/>
+                       oninvalid="this.setCustomValidity('Please, enter a username here.')"
+                       oninput="this.setCustomValidity('')"/>
+                <input type="password" name="newPassword" placeholder="Password" required aria-required="true"
+                       oninvalid="this.setCustomValidity('Please, enter a password here.')"
+                       oninput="this.setCustomValidity('')"/>
                 <input type="submit" value="Open Account"/>
             </form>
         </div>

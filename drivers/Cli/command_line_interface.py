@@ -3,7 +3,6 @@ from ApplicationService.internal_account import (
     insufficientFundsException,
     invalidValueToTransfer
 )
-from password import password as pw
 import logging
 from inputIO.inputIO import inputIO
 from ApplicationService.loginUseCase import loginUseCase
@@ -44,19 +43,22 @@ def main(userIO: inputIO,
                               " or Exit(3)? ")
         if choice == "1":
             login = userIO.input("Enter your username: ")
-            senha = pw(userIO.inputoccult("Enter your password: "))
-            logger.debug("Going to verify the account...")
-            possible_account = login_use_case.execute(login, senha)
-            possible_account.map(lambda acc: repl(
-                userIO, acc, transfer_use_case
-            )).orElse(lambda: userIO.print("You are not logged in!"))
+            senha = userIO.inputoccult("Enter your password: ")
+            if not login or not senha:
+                userIO.print("Login and password should not be empty.")
+            else:
+                logger.debug("Going to verify the account...")
+                possible_account = login_use_case.execute(login, senha)
+                possible_account.map(lambda acc: repl(
+                    userIO, acc, transfer_use_case
+                )).orElse(lambda: userIO.print("You are not logged in!"))
 
         elif choice == "2":
-            user_login = userIO.input("Enter your new username: ")
-            user_password = userIO.inputoccult("Enter your new password: ")
-            if not user_login or not user_password:
+            login = userIO.input("Enter your new username: ")
+            password = userIO.inputoccult("Enter your new password: ")
+            if not login or not password:
                 userIO.print("Login and password should not be empty.")
-            elif open_account_use_case.execute(user_login, user_password):
+            elif open_account_use_case.execute(login, password):
                 userIO.print("Your account has been successfully created!")
             else:
                 userIO.print("Account already exists. Try another username.")
