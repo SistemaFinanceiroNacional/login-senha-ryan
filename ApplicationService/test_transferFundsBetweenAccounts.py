@@ -5,42 +5,39 @@ from ApplicationService.contexterrors.accountdoesnotexistserror import (
 from ApplicationService.transferFundsUseCase import (
     transferFundsUseCase
 )
-from ApplicationService.external_account import externalAccount
+from ApplicationService.transaction import create_transaction
 from ApplicationService.internal_account import (
     internalAccount,
     invalidValueToTransfer
 )
 from fake_config.fakes import (
-    fakeExternalRepository,
     contasFake,
     fake_context
 )
 
 
 def test_transfer_correct():
-    extAccount = externalAccount("joao")
-    intAccount = internalAccount("ryan", password.password("abc123"), 300)
+    t = create_transaction("joao", "ryan", 300)
+    intAccount = internalAccount("ryan", password.password("abc123"), [t])
+    joao_acc = internalAccount("joao", password.password("ab123"), [t])
     context = fake_context()
 
-    intRepository = contasFake({"ryan": intAccount}, {})
-    extRepository = fakeExternalRepository()
-    extRepository.add_account("joao", extAccount)
+    intRepository = contasFake({"ryan": intAccount, "joao": joao_acc}, {})
 
-    useCase = transferFundsUseCase(intRepository, extRepository, context)
+    useCase = transferFundsUseCase(intRepository, context)
 
     assert useCase.execute(intAccount, "joao", 150)
 
 
 def test_transfer_correct_ryan_balance():
-    extAccount = externalAccount("joao")
-    intAccount = internalAccount("ryan", password.password("abc123"), 100)
+    t = create_transaction("joao", "ryan", 100)
+    intAccount = internalAccount("ryan", password.password("abc123"), [t])
+    joao_acc = internalAccount("joao", password.password("ab123"), [t])
     context = fake_context()
 
-    intRepository = contasFake({"ryan": intAccount}, {})
-    extRepository = fakeExternalRepository()
-    extRepository.add_account("joao", extAccount)
+    intRepository = contasFake({"ryan": intAccount, "joao": joao_acc}, {})
 
-    useCase = transferFundsUseCase(intRepository, extRepository, context)
+    useCase = transferFundsUseCase(intRepository, context)
     useCase.execute(intAccount, "joao", 100)
 
     ryan_balance = intRepository.actualAccounts["ryan"]._balance
@@ -48,33 +45,15 @@ def test_transfer_correct_ryan_balance():
     assert ryan_balance == 0
 
 
-def test_transfer_correct_veryfing_joaos_balance():
-    extAccount = externalAccount("joao")
-    intAccount = internalAccount("ryan", password.password("abc123"), 100)
-    context = fake_context()
-
-    intRepository = contasFake({"ryan": intAccount}, {})
-    extRepository = fakeExternalRepository()
-    extRepository.add_account("joao", extAccount)
-
-    useCase = transferFundsUseCase(intRepository, extRepository, context)
-    useCase.execute(intAccount, "joao", 100)
-
-    balance_increment_joao = extRepository.accounts["joao"]._balanceIncrement
-
-    assert balance_increment_joao == 100
-
-
 def test_transfer_zero_amount():
-    extAccount = externalAccount("joao")
-    intAccount = internalAccount("ryan", password.password("abc123"), 100)
+    t = create_transaction("joao", "ryan", 100)
+    intAccount = internalAccount("ryan", password.password("abc123"), [t])
+    joao_acc = internalAccount("joao", password.password("ab123"), [t])
     context = fake_context()
 
-    intRepository = contasFake({"ryan": intAccount}, {})
-    extRepository = fakeExternalRepository()
-    extRepository.add_account("joao", extAccount)
+    intRepository = contasFake({"ryan": intAccount, "joao": joao_acc}, {})
 
-    useCase = transferFundsUseCase(intRepository, extRepository, context)
+    useCase = transferFundsUseCase(intRepository, context)
 
     try:
         useCase.execute(intAccount, "joao", 0)
@@ -85,15 +64,14 @@ def test_transfer_zero_amount():
 
 
 def test_transfer_negative_amount():
-    extAccount = externalAccount("joao")
-    intAccount = internalAccount("ryan", password.password("abc123"), 100)
+    t = create_transaction("joao", "ryan", 100)
+    intAccount = internalAccount("ryan", password.password("abc123"), [t])
+    joao_acc = internalAccount("joao", password.password("ab123"), [t])
     context = fake_context()
 
-    intRepository = contasFake({"ryan": intAccount}, {})
-    extRepository = fakeExternalRepository()
-    extRepository.add_account("joao", extAccount)
+    intRepository = contasFake({"ryan": intAccount, "joao": joao_acc}, {})
 
-    useCase = transferFundsUseCase(intRepository, extRepository, context)
+    useCase = transferFundsUseCase(intRepository, context)
 
     try:
         useCase.execute(intAccount, "joao", -50)
@@ -104,15 +82,14 @@ def test_transfer_negative_amount():
 
 
 def test_transfer_not_existing_login_destiny():
-    extAccount = externalAccount("joao")
-    intAccount = internalAccount("ryan", password.password("abc123"), 100)
+    t = create_transaction("joao", "ryan", 100)
+    intAccount = internalAccount("ryan", password.password("abc123"), [t])
+    joao_acc = internalAccount("joao", password.password("ab123"), [t])
     context = fake_context()
 
-    intRepository = contasFake({"ryan": intAccount}, {})
-    extRepository = fakeExternalRepository()
-    extRepository.add_account("joao", extAccount)
+    intRepository = contasFake({"ryan": intAccount, "joao": joao_acc}, {})
 
-    useCase = transferFundsUseCase(intRepository, extRepository, context)
+    useCase = transferFundsUseCase(intRepository, context)
 
     try:
         useCase.execute(intAccount, "henio", 50)

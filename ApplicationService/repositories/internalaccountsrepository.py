@@ -14,3 +14,6 @@ class internalAccountsRepository:
 
     def update_balance(self, intAccount: ia) -> None:
         raise NotImplementedError
+
+    def exists(self, destLogin: str) -> bool:
+        raise NotImplementedError

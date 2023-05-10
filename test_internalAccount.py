@@ -1,33 +1,23 @@
-from ApplicationService.external_account import (
-    externalAccount,
-    negativeIncrementException
-)
 from ApplicationService.internal_account import (
     internalAccount,
     insufficientFundsException
 )
 from password import password
+from ApplicationService.transaction import create_transaction
 
 
 def test_transfer1():
-    x = internalAccount("ryan", password("abc123"), 20)
-    y = externalAccount("pedro")
+    t = create_transaction("pedro", "ryan", 20)
+    x = internalAccount("ryan", password("abc123"), [t])
+    y = "pedro"
     x.transfer(y, 10)
     assert x.get_balance() == 10
 
 
-def test_incrementBalance1():
-    x = externalAccount("pedro")
-    try:
-        x.increment_balance(-20)
-        assert False
-    except negativeIncrementException:
-        assert True
-
-
 def test_transfer_poor_ryan():
-    x = internalAccount("ryan", password("abc123"), 10)
-    y = externalAccount("pedro")
+    t = create_transaction("pedro", "ryan", 10)
+    x = internalAccount("ryan", password("abc123"), [t])
+    y = "pedro"
     try:
         x.transfer(y, 20)
         assert False
@@ -35,8 +25,23 @@ def test_transfer_poor_ryan():
         assert True
 
 
-def test_incrementBalance2():
-    x = internalAccount("ryan", password("abc123"), 10)
-    y = externalAccount("pedro")
+def test_transactions_static_size():
+    t = create_transaction("pedro", "ryan", 10)
+    x = internalAccount("ryan", password("abc123"), [t])
+    assert len(x._transactions) == 1
+
+
+def test_transactions_incremented_size():
+    t = create_transaction("pedro", "ryan", 10)
+    x = internalAccount("ryan", password("abc123"), [t])
+    y = "pedro"
     x.transfer(y, 10)
-    assert y.get_increment_balance() == 10
+    assert len(x._transactions) == 2
+
+
+def test_no_balance():
+    t = create_transaction("pedro", "ryan", 10)
+    x = internalAccount("ryan", password("abc123"), [t])
+    y = "pedro"
+    x.transfer(y, 10)
+    assert x.get_balance() == 0

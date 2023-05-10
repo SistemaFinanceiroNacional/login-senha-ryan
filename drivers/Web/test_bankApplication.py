@@ -14,10 +14,9 @@ from password import password
 def ui_example():
     context = fakes.fake_context()
     intRepo = fakes.contasFake({"ryanbanco": ["abc123", 300]}, {})
-    extRepo = fakes.fakeExternalRepository()
 
     login_use_case = loginUseCase(intRepo, context, password)
-    transfer_use_case = transferFundsUseCase(intRepo, extRepo, context)
+    transfer_use_case = transferFundsUseCase(intRepo, context)
     open_use_case = openAccountUseCase(intRepo, context, password)
 
     return bankApplication.ui(login_use_case, transfer_use_case, open_use_case)
