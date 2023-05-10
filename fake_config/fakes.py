@@ -1,14 +1,11 @@
 import maybe
 import password
-from ApplicationService.external_account import externalAccount
 from ApplicationService.internal_account import internalAccount
-from ApplicationService.repositories.externalaccountsrepository import (
-    externalAccountsRepository
-)
 from ApplicationService.repositories.identity import identity
 from ApplicationService.repositories.internalaccountsrepository import (
     internalAccountsRepository
 )
+from ApplicationService.transaction import create_transaction
 from ApplicationService.transactioncontext import transactioncontext
 from inputIO.inputIO import inputIO
 from password import password as pw
@@ -45,29 +42,6 @@ class fakeContext(transactioncontext):
         return self.errors
 
 
-class fakeExternalRepository(externalAccountsRepository):
-    def __init__(self):
-        self.accounts = dict()
-
-    def get_by_login(self, login: str):
-        if login in self.accounts:
-            account = self.accounts.get(login)
-            return maybe.just(account)
-        return maybe.nothing()
-
-    def update(self, extAccount: externalAccount):
-        login = extAccount.get_login()
-        balance = extAccount.get_increment_balance()
-
-        if login in self.accounts:
-            account = self.accounts.get(login)
-            account.balanceIncrement = balance
-            self.accounts[login] = account
-
-    def add_account(self, login, account):
-        self.accounts[login] = account
-
-
 class inputfake(inputIO):
     def __init__(self, lista):
         self.inputlist = lista
@@ -81,17 +55,6 @@ class inputfake(inputIO):
 
     def print(self, prompt):
         self.outputlist.append(prompt)
-
-
-class contasExternasFake(externalAccountsRepository):
-    def __init__(self, actualAccounts: dict[str, externalAccount]):
-        self.actualAccounts: dict = actualAccounts
-
-    def get_by_login(self, login: str) -> maybe.maybe:
-        if login in self.actualAccounts:
-            return maybe.just(externalAccount(login))
-        else:
-            return maybe.nothing()
 
 
 class contasFake(internalAccountsRepository):
@@ -124,9 +87,13 @@ class contasFake(internalAccountsRepository):
             account._balance = balance
             self.actualAccounts[login] = account
 
+    def exists(self, login):
+        return login in self.actualAccounts
+
 
 def existing_pedros_account():
-    return contasFake({"pedro": ("abc123", "400")}, {})
+    t = create_transaction("ryan", "pedro", 400)
+    return contasFake({"pedro": ("abc123", [t])}, {})
 
 
 def waiting_pedro_account():

@@ -54,3 +54,9 @@ class internalRepository(internalAccountsRepository):
         cursor = self.connection_pool.get_cursor(self.identifier)
         query = "UPDATE accounts SET balance=%s WHERE login=%s"
         cursor.execute(query, (new_balance, login))
+
+    def exists(self, login: str) -> bool:
+        cursor = self.connection_pool.get_cursor(self.identifier)
+        query = "SELECT * FROM accounts WHERE login=%s"
+        cursor.execute(query, (login,))
+        return cursor.fetchone() is not None
