@@ -1,4 +1,4 @@
-from typing import Protocol
+from typing import Protocol, Tuple, List
 from ApplicationService.repositories.identity import identity
 
 
@@ -6,7 +6,10 @@ class cursor(Protocol):
     def execute(self, *args) -> None:
         raise NotImplementedError
 
-    def fetchone(self) -> None or tuple:
+    def fetchone(self) -> None or Tuple:
+        raise NotImplementedError
+
+    def fetchall(self) -> List:
         raise NotImplementedError
 
 

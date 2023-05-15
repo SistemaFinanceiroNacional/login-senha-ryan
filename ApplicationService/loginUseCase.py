@@ -6,7 +6,7 @@ from ApplicationService.repositories.internalaccountsrepository import (
 from ApplicationService.transactioncontext import (
     transactioncontext as cntx
 )
-from ApplicationService.internal_account import internalAccount
+from ApplicationService.client import Client
 from password import password
 
 
@@ -23,7 +23,7 @@ class loginUseCase:
         self.transactional_context = transactional_context
         self.pw_maker = pw_maker
 
-    def execute(self, login: str, pw: str) -> maybe[internalAccount]:
+    def execute(self, login: str, pw: str) -> maybe[Client]:
         if not login or not pw:
             return nothing()
         made_pw = self.pw_maker(pw)

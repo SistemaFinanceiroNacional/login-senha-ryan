@@ -6,8 +6,8 @@ from ApplicationService.transferFundsUseCase import (
     transferFundsUseCase
 )
 from ApplicationService.transaction import create_transaction
-from ApplicationService.internal_account import (
-    internalAccount,
+from ApplicationService.account import (
+    Account,
     invalidValueToTransfer
 )
 from fake_config.fakes import (
@@ -18,8 +18,8 @@ from fake_config.fakes import (
 
 def test_transfer_correct():
     t = create_transaction("joao", "ryan", 300)
-    intAccount = internalAccount("ryan", password.password("abc123"), [t])
-    joao_acc = internalAccount("joao", password.password("ab123"), [t])
+    intAccount = Account("ryan", password.password("abc123"), [t])
+    joao_acc = Account("joao", password.password("ab123"), [t])
     context = fake_context()
 
     intRepository = contasFake({"ryan": intAccount, "joao": joao_acc}, {})
@@ -31,8 +31,8 @@ def test_transfer_correct():
 
 def test_transfer_correct_ryan_balance():
     t = create_transaction("joao", "ryan", 100)
-    intAccount = internalAccount("ryan", password.password("abc123"), [t])
-    joao_acc = internalAccount("joao", password.password("ab123"), [t])
+    intAccount = Account("ryan", password.password("abc123"), [t])
+    joao_acc = Account("joao", password.password("ab123"), [t])
     context = fake_context()
 
     intRepository = contasFake({"ryan": intAccount, "joao": joao_acc}, {})
@@ -47,8 +47,8 @@ def test_transfer_correct_ryan_balance():
 
 def test_transfer_zero_amount():
     t = create_transaction("joao", "ryan", 100)
-    intAccount = internalAccount("ryan", password.password("abc123"), [t])
-    joao_acc = internalAccount("joao", password.password("ab123"), [t])
+    intAccount = Account("ryan", password.password("abc123"), [t])
+    joao_acc = Account("joao", password.password("ab123"), [t])
     context = fake_context()
 
     intRepository = contasFake({"ryan": intAccount, "joao": joao_acc}, {})
@@ -65,8 +65,8 @@ def test_transfer_zero_amount():
 
 def test_transfer_negative_amount():
     t = create_transaction("joao", "ryan", 100)
-    intAccount = internalAccount("ryan", password.password("abc123"), [t])
-    joao_acc = internalAccount("joao", password.password("ab123"), [t])
+    intAccount = Account("ryan", password.password("abc123"), [t])
+    joao_acc = Account("joao", password.password("ab123"), [t])
     context = fake_context()
 
     intRepository = contasFake({"ryan": intAccount, "joao": joao_acc}, {})
@@ -83,8 +83,8 @@ def test_transfer_negative_amount():
 
 def test_transfer_not_existing_login_destiny():
     t = create_transaction("joao", "ryan", 100)
-    intAccount = internalAccount("ryan", password.password("abc123"), [t])
-    joao_acc = internalAccount("joao", password.password("ab123"), [t])
+    intAccount = Account("ryan", password.password("abc123"), [t])
+    joao_acc = Account("joao", password.password("ab123"), [t])
     context = fake_context()
 
     intRepository = contasFake({"ryan": intAccount, "joao": joao_acc}, {})

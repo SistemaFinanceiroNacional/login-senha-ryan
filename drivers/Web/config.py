@@ -3,8 +3,7 @@ from drivers.Web.server import main
 from ApplicationService.openAccountUseCase import openAccountUseCase
 from ApplicationService.loginUseCase import loginUseCase
 from ApplicationService.transferFundsUseCase import transferFundsUseCase
-from ApplicationService.internalrepository import internalRepository
-from ApplicationService.externalrepository import externalRepository
+from ApplicationService.accountsrepository import accountsRepository
 from ApplicationService.connection_pool import postgresql_connection_pool
 from ApplicationService.threadIdentity import thread_identity
 from ApplicationService.dbtransactioncontext import dbTransactionContext
@@ -15,15 +14,13 @@ class config:
     def run_ui(self):
         conn_pool = postgresql_connection_pool(max_connections=5)
         thread_id = thread_identity()
-        int_acc_rep = internalRepository(conn_pool, thread_id)
-        ext_acc_rep = externalRepository(conn_pool, thread_id)
+        int_acc_rep = accountsRepository(conn_pool, thread_id)
 
         context = dbTransactionContext(conn_pool, thread_id)
 
         login_use_case = loginUseCase(int_acc_rep, context, password)
         transfer_use_case = transferFundsUseCase(
             int_acc_rep,
-            ext_acc_rep,
             context
         )
         open_account_use_case = openAccountUseCase(

@@ -5,9 +5,15 @@ CREATE TABLE IF NOT EXISTS clients (
 );
 
 CREATE TABLE IF NOT EXISTS accounts (
+    id SERIAL PRIMARY KEY
+);
+
+CREATE TABLE IF NOT EXISTS clients_accounts (
     id SERIAL PRIMARY KEY,
-    client_id INT,
-    FOREIGN KEY (client_id) REFERENCES clients(id)
+    client_id INT UNIQUE,
+    account_id INT UNIQUE,
+    FOREIGN KEY (client_id) REFERENCES clients(id),
+    FOREIGN KEY (account_id) REFERENCES accounts(id)
 );
 
 CREATE TABLE IF NOT EXISTS transactions (
@@ -19,3 +25,6 @@ CREATE TABLE IF NOT EXISTS transactions (
     FOREIGN KEY (debit_account) REFERENCES accounts(id),
     FOREIGN KEY (credit_account) REFERENCES accounts(id)
 );
+
+-- Debit Account that represents money in Bank Deposits
+INSERT INTO accounts VALUES (default);
