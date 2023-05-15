@@ -1,6 +1,6 @@
 import maybe
 import password
-from ApplicationService.internal_account import internalAccount
+from ApplicationService.account import Account
 from ApplicationService.repositories.identity import identity
 from ApplicationService.repositories.internalaccountsrepository import (
     internalAccountsRepository
@@ -67,7 +67,7 @@ class contasFake(internalAccountsRepository):
         is_password_equals = str(hashsenha) == str(user_password)
         if login in self.actualAccounts and is_password_equals:
             balance = self.actualAccounts[login][1]
-            return maybe.just(internalAccount(login, user_password, balance))
+            return maybe.just(Account(login, user_password, balance))
         else:
             return maybe.nothing()
 
@@ -78,8 +78,8 @@ class contasFake(internalAccountsRepository):
         else:
             return False
 
-    def update_balance(self, intAccount: internalAccount):
-        login = intAccount.get_login()
+    def update_balance(self, intAccount: Account):
+        login = intAccount.get_id()
         balance = intAccount.get_balance()
 
         if login in self.actualAccounts:

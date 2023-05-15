@@ -1,5 +1,5 @@
-from ApplicationService.internal_account import (
-    internalAccount as ia,
+from ApplicationService.account import (
+    Account as ia,
     insufficientFundsException,
     invalidValueToTransfer
 )
@@ -39,7 +39,7 @@ def main(userIO: inputIO,
 
     while True:
         choice = userIO.input("Would you like to Sign In (1),"
-                              " Create a new account (2)"
+                              " Create a new client account (2)"
                               " or Exit(3)? ")
         if choice == "1":
             login = userIO.input("Enter your username: ")

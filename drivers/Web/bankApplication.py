@@ -59,7 +59,7 @@ class home_handler(method_dispatcher):
         )
         return possible_account.map(lambda account: httpResponse(
             {
-                "Set-Cookie": f"loggedUsername={account.get_login()}",
+                "Set-Cookie": f"loggedUsername={account.get_id()}",
                 "Location": "/"
             },
             "",
