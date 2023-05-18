@@ -15,48 +15,51 @@ from fake_config.fakes import (
     fake_context
 )
 
+defaultID = 1
+ryanID = 2
+joaoID = 3
+
 
 def test_transfer_correct():
-    t = create_transaction("joao", "ryan", 300)
-    intAccount = Account("ryan", password.password("abc123"), [t])
-    joao_acc = Account("joao", password.password("ab123"), [t])
+    t = create_transaction(defaultID, ryanID, 300)
+    ryan_acc = Account(ryanID, [t])
+    joao_acc = Account(joaoID, [])
     context = fake_context()
 
-    intRepository = contasFake({"ryan": intAccount, "joao": joao_acc}, {})
+    acc_repository = contasFake({ryanID: ryan_acc, joaoID: joao_acc}, {})
 
-    useCase = transferFundsUseCase(intRepository, context)
+    useCase = transferFundsUseCase(acc_repository, context)
 
-    assert useCase.execute(intAccount, "joao", 150)
+    assert useCase.execute(ryan_acc, joaoID, 150)
 
 
 def test_transfer_correct_ryan_balance():
-    t = create_transaction("joao", "ryan", 100)
-    intAccount = Account("ryan", password.password("abc123"), [t])
-    joao_acc = Account("joao", password.password("ab123"), [t])
+    t = create_transaction(defaultID, ryanID, 100)
+    ryan_acc = Account(ryanID, [t])
+    joao_acc = Account(joaoID, [])
     context = fake_context()
 
-    intRepository = contasFake({"ryan": intAccount, "joao": joao_acc}, {})
+    acc_repository = contasFake({ryanID: ryan_acc, joaoID: joao_acc}, {})
 
-    useCase = transferFundsUseCase(intRepository, context)
-    useCase.execute(intAccount, "joao", 100)
+    useCase = transferFundsUseCase(acc_repository, context)
+    useCase.execute(ryan_acc, joaoID, 100)
 
-    ryan_balance = intRepository.actualAccounts["ryan"]._balance
-
+    ryan_balance = acc_repository.actualAccounts[ryanID].get_balance()
     assert ryan_balance == 0
 
 
 def test_transfer_zero_amount():
-    t = create_transaction("joao", "ryan", 100)
-    intAccount = Account("ryan", password.password("abc123"), [t])
-    joao_acc = Account("joao", password.password("ab123"), [t])
+    t = create_transaction(defaultID, ryanID, 100)
+    ryan_acc = Account(ryanID, [t])
+    joao_acc = Account(joaoID, [])
     context = fake_context()
 
-    intRepository = contasFake({"ryan": intAccount, "joao": joao_acc}, {})
+    acc_repository = contasFake({ryanID: ryan_acc, joaoID: joao_acc}, {})
 
-    useCase = transferFundsUseCase(intRepository, context)
+    useCase = transferFundsUseCase(acc_repository, context)
 
     try:
-        useCase.execute(intAccount, "joao", 0)
+        useCase.execute(ryan_acc, joaoID, 0)
         assert False
 
     except invalidValueToTransfer as e:
@@ -64,17 +67,17 @@ def test_transfer_zero_amount():
 
 
 def test_transfer_negative_amount():
-    t = create_transaction("joao", "ryan", 100)
-    intAccount = Account("ryan", password.password("abc123"), [t])
-    joao_acc = Account("joao", password.password("ab123"), [t])
+    t = create_transaction(defaultID, ryanID, 100)
+    ryan_acc = Account(ryanID, [t])
+    joao_acc = Account(joaoID, [])
     context = fake_context()
 
-    intRepository = contasFake({"ryan": intAccount, "joao": joao_acc}, {})
+    acc_repository = contasFake({ryanID: ryan_acc, joaoID: joao_acc}, {})
 
-    useCase = transferFundsUseCase(intRepository, context)
+    useCase = transferFundsUseCase(acc_repository, context)
 
     try:
-        useCase.execute(intAccount, "joao", -50)
+        useCase.execute(ryan_acc, joaoID, -50)
         assert False
 
     except invalidValueToTransfer as e:
@@ -82,17 +85,18 @@ def test_transfer_negative_amount():
 
 
 def test_transfer_not_existing_login_destiny():
-    t = create_transaction("joao", "ryan", 100)
-    intAccount = Account("ryan", password.password("abc123"), [t])
-    joao_acc = Account("joao", password.password("ab123"), [t])
+    t = create_transaction(defaultID, ryanID, 100)
+    ryan_acc = Account(ryanID, [t])
+    joao_acc = Account(joaoID, [])
     context = fake_context()
 
-    intRepository = contasFake({"ryan": intAccount, "joao": joao_acc}, {})
+    acc_repository = contasFake({ryanID: ryan_acc, joaoID: joao_acc}, {})
 
-    useCase = transferFundsUseCase(intRepository, context)
+    useCase = transferFundsUseCase(acc_repository, context)
 
+    wrong_id = 4
     try:
-        useCase.execute(intAccount, "henio", 50)
+        useCase.execute(ryan_acc, wrong_id, 50)
         assert False
     except AccountDoesNotExistsError as e:
-        assert e.destinyLogin == "henio"
+        assert e.destinyID == 4

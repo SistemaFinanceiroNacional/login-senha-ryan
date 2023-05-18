@@ -8,7 +8,7 @@ class AccountsRepositoryInterface:
     def add_account(self, login: str, password: pw) -> bool:
         raise NotImplementedError
 
-    def exists(self, destLogin: str) -> bool:
+    def exists(self, destID: int) -> bool:
         raise NotImplementedError
 
     def update(self, account):

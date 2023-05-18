@@ -2,22 +2,29 @@ from drivers.Cli import command_line_interface
 from ApplicationService.loginUseCase import loginUseCase
 from ApplicationService.transferFundsUseCase import transferFundsUseCase
 from ApplicationService.openAccountUseCase import openAccountUseCase
+from ApplicationService.client import Client
 from fake_config.fakes import (
     inputfake,
     existing_pedros_account,
     waiting_pedro_account,
-    fake_context
+    fake_context,
+    clientsFake,
+    contasFake
 )
 from password import password
 
 
 def test_main_with_repl():
     context = fake_context()
-    c = existing_pedros_account()
+    joao_login = "joao"
+    joao_pw = password("ab123")
+    joao_acc = Client(joao_login, joao_pw, [])
+    c = clientsFake({joao_login: joao_acc})
+    a = contasFake({}, {})
 
     loginCase = loginUseCase(c, context, password)
-    transferCase = transferFundsUseCase(c, context)
-    openCase = openAccountUseCase(c, context, password)
+    transferCase = transferFundsUseCase(a, context)
+    openCase = openAccountUseCase(a, context, password)
 
     i = inputfake(["3", "logout", "balance", "abc123", "pedro", "1"])
 

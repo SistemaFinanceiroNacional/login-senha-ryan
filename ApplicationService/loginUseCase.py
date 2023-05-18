@@ -3,7 +3,9 @@ from maybe import maybe, nothing
 from ApplicationService.transactioncontext import (
     transactioncontext as cntx
 )
-from ApplicationService.clientsrepository import ClientsRepository as cr
+from ApplicationService.repositories.clientsrepositoryinterface import (
+    ClientsRepositoryInterface as cr
+)
 from password import password
 
 

@@ -7,17 +7,22 @@ from fake_config import fakes
 from ApplicationService.loginUseCase import loginUseCase
 from ApplicationService.transferFundsUseCase import transferFundsUseCase
 from ApplicationService.openAccountUseCase import openAccountUseCase
+from ApplicationService.client import Client
 from password import password
 
 
 @pytest.fixture
 def ui_example():
+    ryan_login = "ryan"
+    ryan_pw = password("abc123")
+    ryan_acc = Client(ryan_login, ryan_pw, [])
     context = fakes.fake_context()
-    intRepo = fakes.contasFake({"ryanbanco": ["abc123", 300]}, {})
+    clients_repo = fakes.clientsFake({ryan_login: ryan_acc})
+    accounts_repo = fakes.contasFake({}, {})
 
-    login_use_case = loginUseCase(intRepo, context, password)
-    transfer_use_case = transferFundsUseCase(intRepo, context)
-    open_use_case = openAccountUseCase(intRepo, context, password)
+    login_use_case = loginUseCase(clients_repo, context, password)
+    transfer_use_case = transferFundsUseCase(accounts_repo, context)
+    open_use_case = openAccountUseCase(accounts_repo, context, password)
 
     return bankApplication.ui(login_use_case, transfer_use_case, open_use_case)
 

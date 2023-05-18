@@ -1,10 +1,14 @@
-import maybe
+from maybe import just, nothing, maybe
 import password
 from ApplicationService.account import Account
 from ApplicationService.repositories.identityinterface import identityInterface
 from ApplicationService.repositories.accountsrepositoryinterface import (
     AccountsRepositoryInterface
 )
+from ApplicationService.repositories.clientsrepositoryinterface import (
+    ClientsRepositoryInterface
+)
+from ApplicationService.client import Client
 from ApplicationService.transaction import create_transaction
 from ApplicationService.transactioncontext import transactioncontext
 from inputIO.inputIO import inputIO
@@ -67,9 +71,9 @@ class contasFake(AccountsRepositoryInterface):
         is_password_equals = str(hashsenha) == str(user_password)
         if login in self.actualAccounts and is_password_equals:
             balance = self.actualAccounts[login][1]
-            return maybe.just(Account(login, user_password, balance))
+            return just(Account(login, user_password, balance))
         else:
-            return maybe.nothing()
+            return nothing()
 
     def add_account(self, new_login, new_password: pw):
         if new_login not in self.actualAccounts:
@@ -89,6 +93,16 @@ class contasFake(AccountsRepositoryInterface):
 
     def exists(self, login):
         return login in self.actualAccounts
+
+    def update(self, account: Account):
+        pass
+
+class clientsFake(ClientsRepositoryInterface):
+    def __init__(self, clients: dict[str, Client]):
+        self.c = clients
+
+    def get_by_credentials(self, login: str, password: pw) -> maybe[Client]:
+        return just(self.c[login]) if login in self.c else nothing()
 
 
 def existing_pedros_account():
