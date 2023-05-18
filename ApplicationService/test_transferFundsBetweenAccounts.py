@@ -1,4 +1,3 @@
-import password
 from ApplicationService.contexterrors.accountdoesnotexistserror import (
     AccountDoesNotExistsError
 )
