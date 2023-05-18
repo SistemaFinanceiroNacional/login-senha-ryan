@@ -48,8 +48,8 @@ def main(userIO: inputIO,
                 userIO.print("Login and password should not be empty.")
             else:
                 logger.debug("Going to verify the account...")
-                possible_account = login_use_case.execute(login, senha)
-                possible_account.map(lambda acc: repl(
+                possible_client_id = login_use_case.execute(login, senha)
+                possible_client_id.map(lambda acc: repl(
                     userIO, acc, transfer_use_case
                 )).orElse(lambda: userIO.print("You are not logged in!"))
 

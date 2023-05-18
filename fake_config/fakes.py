@@ -1,9 +1,9 @@
 import maybe
 import password
 from ApplicationService.account import Account
-from ApplicationService.repositories.identity import identity
-from ApplicationService.repositories.internalaccountsrepository import (
-    internalAccountsRepository
+from ApplicationService.repositories.identityinterface import identityInterface
+from ApplicationService.repositories.accountsrepositoryinterface import (
+    AccountsRepositoryInterface
 )
 from ApplicationService.transaction import create_transaction
 from ApplicationService.transactioncontext import transactioncontext
@@ -11,7 +11,7 @@ from inputIO.inputIO import inputIO
 from password import password as pw
 
 
-class fake_identity(identity):
+class fake_identity(identityInterface):
     def __init__(self, iden):
         self.iden = iden
 
@@ -57,7 +57,7 @@ class inputfake(inputIO):
         self.outputlist.append(prompt)
 
 
-class contasFake(internalAccountsRepository):
+class contasFake(AccountsRepositoryInterface):
     def __init__(self, actualAccounts, newAccounts):
         self.actualAccounts = actualAccounts
         self.newAccounts = newAccounts

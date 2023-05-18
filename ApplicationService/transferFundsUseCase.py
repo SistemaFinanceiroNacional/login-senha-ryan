@@ -1,6 +1,6 @@
 from ApplicationService.transactioncontext import transactioncontext
-from ApplicationService.repositories.internalaccountsrepository import (
-    internalAccountsRepository as iar
+from ApplicationService.repositories.accountsrepositoryinterface import (
+    AccountsRepositoryInterface as iar
 )
 from ApplicationService.account import Account as acc
 from ApplicationService.contexterrors.accountdoesnotexistserror import (
@@ -23,7 +23,7 @@ class transferFundsUseCase:
                 exception = AccountDoesNotExistsError(destLogin)
                 raise exception
             account.transfer(destLogin, amount)
-
+            self.internalRepository.update(account)
         if self.transactional_context.get_errors():
             return False
         else:

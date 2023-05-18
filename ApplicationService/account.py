@@ -19,7 +19,7 @@ class Account:
                 balance += t.value
         return balance
 
-    def transfer(self, destiny_id: int, value: float):
+    def transfer(self, destiny_id: int, value: float) -> None:
         if value <= 0:
             raise invalidValueToTransfer(value)
 
@@ -32,6 +32,9 @@ class Account:
 
     def get_id(self):
         return self._id
+
+    def get_transactions(self):
+        return self._transactions
 
 
 class insufficientFundsException(Exception):

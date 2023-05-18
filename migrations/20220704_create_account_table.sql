@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS accounts (
 
 CREATE TABLE IF NOT EXISTS clients_accounts (
     id SERIAL PRIMARY KEY,
-    client_id INT UNIQUE,
+    client_id INT,
     account_id INT UNIQUE,
     FOREIGN KEY (client_id) REFERENCES clients(id),
     FOREIGN KEY (account_id) REFERENCES accounts(id)
