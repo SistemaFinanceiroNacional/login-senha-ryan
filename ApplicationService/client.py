@@ -15,3 +15,6 @@ class Client:
 
     def get_accounts(self):
         return self._accounts
+
+    def get_login(self):
+        return self._login

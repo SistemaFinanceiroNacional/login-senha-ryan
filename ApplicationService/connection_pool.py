@@ -2,7 +2,7 @@ from os import getenv
 from psycopg2 import connect
 from threading import Condition
 from typing import Callable
-from ApplicationService.repositories.identity import identity
+from ApplicationService.repositories.identityinterface import identityInterface
 from ApplicationService.repositories.connectionInterface import (
     cursor,
     connection,
@@ -23,7 +23,7 @@ class postgresql_connection_pool(connection_pool):
         self.free_connections: list[tuple[connection, cursor]] = []
         self.condition = condition() if condition else Condition()
 
-    def get_connection(self, identifier: identity) -> connection:
+    def get_connection(self, identifier: identityInterface) -> connection:
         id_conn = identifier.value()
         with self.condition:
             if id_conn not in self.used_connections.keys():
@@ -43,7 +43,7 @@ class postgresql_connection_pool(connection_pool):
 
             return self.used_connections[id_conn][0]
 
-    def get_cursor(self, identifier: identity) -> cursor:
+    def get_cursor(self, identifier: identityInterface) -> cursor:
         id_conn = identifier.value()
         with self.condition:
             if id_conn not in self.used_connections.keys():
@@ -52,7 +52,7 @@ class postgresql_connection_pool(connection_pool):
 
         return self.used_connections[id_conn][1]
 
-    def refund(self, identifier: identity) -> None:
+    def refund(self, identifier: identityInterface) -> None:
         with self.condition:
             if identifier.value() in self.used_connections.keys():
                 conn = self.used_connections.pop(identifier.value())

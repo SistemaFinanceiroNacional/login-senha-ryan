@@ -1,5 +1,5 @@
 from typing import Protocol, Tuple, List
-from ApplicationService.repositories.identity import identity
+from ApplicationService.repositories.identityinterface import identityInterface
 
 
 class cursor(Protocol):
@@ -25,11 +25,11 @@ class connection(Protocol):
 
 
 class connection_pool:
-    def get_connection(self, identifier: identity) -> connection:
+    def get_connection(self, identifier: identityInterface) -> connection:
         raise NotImplementedError()
 
-    def get_cursor(self, identifier: identity) -> cursor:
+    def get_cursor(self, identifier: identityInterface) -> cursor:
         raise NotImplementedError()
 
-    def refund(self, identifier: identity) -> None:
+    def refund(self, identifier: identityInterface) -> None:
         raise NotImplementedError()

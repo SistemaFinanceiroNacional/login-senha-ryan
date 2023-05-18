@@ -1,6 +1,6 @@
 from typing import Callable
-from ApplicationService.repositories.internalaccountsrepository import (
-    internalAccountsRepository as iar
+from ApplicationService.repositories.accountsrepositoryinterface import (
+    AccountsRepositoryInterface as iar
 )
 from ApplicationService.transactioncontext import (
     transactioncontext as cntx
