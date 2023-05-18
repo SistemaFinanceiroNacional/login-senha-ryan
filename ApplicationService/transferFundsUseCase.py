@@ -16,13 +16,13 @@ class transferFundsUseCase:
         self.internalRepository = internalRepository
         self.transactional_context = transactional_context
 
-    def execute(self, account: acc, destLogin: str, amount):
+    def execute(self, account: acc, destID: int, amount):
         with self.transactional_context:
-            existence = self.internalRepository.exists(destLogin)
+            existence = self.internalRepository.exists(destID)
             if not existence:
-                exception = AccountDoesNotExistsError(destLogin)
+                exception = AccountDoesNotExistsError(destID)
                 raise exception
-            account.transfer(destLogin, amount)
+            account.transfer(destID, amount)
             self.internalRepository.update(account)
         if self.transactional_context.get_errors():
             return False
