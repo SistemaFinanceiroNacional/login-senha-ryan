@@ -1,5 +1,4 @@
 from maybe import just, nothing, maybe
-import password
 from ApplicationService.account import Account
 from ApplicationService.repositories.identityinterface import identityInterface
 from ApplicationService.repositories.accountsrepositoryinterface import (
@@ -66,15 +65,6 @@ class contasFake(AccountsRepositoryInterface):
         self.actualAccounts = actualAccounts
         self.newAccounts = newAccounts
 
-    def authentication(self, login, user_password):
-        hashsenha = password.password(self.actualAccounts[login][0])
-        is_password_equals = str(hashsenha) == str(user_password)
-        if login in self.actualAccounts and is_password_equals:
-            balance = self.actualAccounts[login][1]
-            return just(Account(login, user_password, balance))
-        else:
-            return nothing()
-
     def add_account(self, new_login, new_password: pw):
         if new_login not in self.actualAccounts:
             self.actualAccounts[new_login] = (new_password, 0)
@@ -97,6 +87,7 @@ class contasFake(AccountsRepositoryInterface):
     def update(self, account: Account):
         pass
 
+
 class clientsFake(ClientsRepositoryInterface):
     def __init__(self, clients: dict[str, Client]):
         self.c = clients
@@ -106,7 +97,7 @@ class clientsFake(ClientsRepositoryInterface):
 
 
 def existing_pedros_account():
-    t = create_transaction("ryan", "pedro", 400)
+    t = create_transaction(2, 3, 400)
     return contasFake({"pedro": ("abc123", [t])}, {})
 
 

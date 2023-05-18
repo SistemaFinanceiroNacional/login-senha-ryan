@@ -1,8 +1,8 @@
 from password import password as pw
-from maybe import maybe
 
 
 accountID = int
+
 
 class AccountsRepositoryInterface:
     def add_account(self, login: str, password: pw) -> bool:

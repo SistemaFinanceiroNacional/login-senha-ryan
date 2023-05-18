@@ -2,7 +2,6 @@ from ApplicationService.account import (
     Account,
     insufficientFundsException
 )
-from password import password
 from ApplicationService.transaction import create_transaction
 
 

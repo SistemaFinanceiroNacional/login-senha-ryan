@@ -17,6 +17,9 @@ from ApplicationService.repositories.identityinterface import identityInterface
 from ApplicationService.account import Account
 
 
+Transactions = List[Transaction]
+
+
 class ClientsRepository(ClientsRepositoryInterface):
     def __init__(self, connection_pool: cpool, identifier: identityInterface):
         self.connection_pool = connection_pool
@@ -60,7 +63,7 @@ class ClientsRepository(ClientsRepositoryInterface):
 
         return accounts
 
-    def _get_transactions(self, account_id: int, cursor: c) -> List[Transaction]:
+    def _get_transactions(self, account_id: int, cursor: c) -> Transactions:
         table = "transactions t"
         columns = "t.*"
         condition = "t.debit_account = a.id OR t.credit_account = a.id"

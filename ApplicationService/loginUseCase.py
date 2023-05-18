@@ -28,9 +28,10 @@ class loginUseCase:
             return nothing()
         made_pw = self.pw_maker(pw)
         with self.transactional_context:
-            possible_client = self.clients_repository.get_by_credentials(login, made_pw)
-
+            maybe_client = self.clients_repository.get_by_credentials(
+                login, made_pw
+            )
         if self.transactional_context.get_errors():
             return nothing()
         else:
-            return possible_client.map(lambda client: client.get_login())
+            return maybe_client.map(lambda client: client.get_login())
