@@ -1,30 +1,36 @@
-from ApplicationService.account import (
+from Domain.account import (
     Account as ia,
     insufficientFundsException,
     invalidValueToTransfer
 )
 import logging
 from inputIO.inputIO import inputIO
-from ApplicationService.loginUseCase import loginUseCase
-from ApplicationService.transferFundsUseCase import transferFundsUseCase
-from ApplicationService.openAccountUseCase import openAccountUseCase
+from ApplicationService.UnloggedUseCases import UnloggedUseCases
+from ApplicationService.loggedUseCases import LoggedUseCases
+from Infrastructure.authserviceinterface import authServiceInterface
 
 logger = logging.getLogger("drivers.Cli.command_line_interface")
+accountID = int
 
 
-def repl(userIO: inputIO, acc: ia, transfer_use_case: transferFundsUseCase):
-    comando = ""
-    while comando != "logout":
-        comando = userIO.input("->")
-        if comando == "balance":
-            userIO.print(acc.get_balance())
-        elif comando == "transfer":
+def accounts_repl(userIO: inputIO, acc_id: accountID, logged_cases: LoggedUseCases):
+    print("""
+                (1) See your balance
+                (2) Transfer money
+                (3) Exit account
+        """)
+    command = ""
+    while command != "3":
+        if command == "1":
+            balance = logged_cases.get_balance_use_case.execute(acc_id)
+            userIO.print(f"R${balance:.2f}")
+        elif command == "2":
             destinationAccount = userIO.input(
                 "Enter the destination account: "
             )
             value = int(userIO.input("How much do you want to transfer? "))
             try:
-                transfer_use_case.execute(acc, destinationAccount, value)
+                logged_cases.transfer_use_case.execute(acc, destinationAccount, value)
                 userIO.print("Successful transaction.")
             except insufficientFundsException:
                 userIO.print("Insufficient funds.")
@@ -32,33 +38,53 @@ def repl(userIO: inputIO, acc: ia, transfer_use_case: transferFundsUseCase):
                 userIO.print(f"{e.value} is a non-positive value to transfer.")
 
 
+def repl(userIO: inputIO, c_id: int, logged_cases: LoggedUseCases):
+    print("""
+            (1) Select account
+            (2) Logout
+    """)
+    command = ""
+    while command != "2":
+        command = userIO.input("->")
+        if command == "1":
+            accs = list(logged_cases.get_accounts_use_case.execute(c_id))
+            for acc in accs:
+                print(f"Account ID: {acc}")
+            select_acc = int(input("Choose one ID: "))
+            if select_acc in accs:
+                accounts_repl(userIO, select_acc)
+
+
 def main(userIO: inputIO,
-         login_use_case: loginUseCase,
-         transfer_use_case: transferFundsUseCase,
-         open_account_use_case: openAccountUseCase):
+         auth_service: authServiceInterface,
+         unlogged_cases: UnloggedUseCases,
+         logged_cases: LoggedUseCases
+         ):
 
     while True:
         choice = userIO.input("Would you like to Sign In (1),"
                               " Create a new client account (2)"
                               " or Exit(3)? ")
         if choice == "1":
-            login = userIO.input("Enter your username: ")
-            senha = userIO.inputoccult("Enter your password: ")
-            if not login or not senha:
+            username = userIO.input("Enter your username: ")
+            password = userIO.inputoccult("Enter your password: ")
+            if not username or not password:
                 userIO.print("Login and password should not be empty.")
             else:
                 logger.debug("Going to verify the account...")
-                possible_client_id = login_use_case.execute(login, senha)
-                possible_client_id.map(lambda acc: repl(
-                    userIO, acc, transfer_use_case
+                maybe_client_id = auth_service.authenticate(username, password)
+                maybe_client_id.map(lambda client_id: repl(
+                    userIO, client_id, logged_cases
                 )).orElse(lambda: userIO.print("You are not logged in!"))
 
         elif choice == "2":
-            login = userIO.input("Enter your new username: ")
+            username = userIO.input("Enter your new username: ")
             password = userIO.inputoccult("Enter your new password: ")
-            if not login or not password:
+            if not username or not password:
                 userIO.print("Login and password should not be empty.")
-            elif open_account_use_case.execute(login, password):
+
+            created = unlogged_cases.open_use_case.execute(username, password)
+            if created:
                 userIO.print("Your account has been successfully created!")
             else:
                 userIO.print("Account already exists. Try another username.")

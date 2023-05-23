@@ -1,7 +1,7 @@
 from faker import Faker
 import random
 import psycopg2
-from password import password as pw
+from password import Password as pw
 
 fake = Faker()
 

@@ -1,14 +1,14 @@
 from drivers.Web.template import render_template
 from drivers.Web.router import router
 from drivers.Web.routes import method_dispatcher, fixed_route
-from drivers.Web.httpResponse import httpResponse
+from drivers.Web.http_response import httpResponse
 from drivers.Web.HttpRequest.httpRequest import (
     httpRequest,
     makeQueryParameters
 )
-from ApplicationService.transferFundsUseCase import transferFundsUseCase
+from ApplicationService.TransferFundsUseCase import TransferFundsUseCase
 from ApplicationService.loginUseCase import loginUseCase
-from ApplicationService.openAccountUseCase import openAccountUseCase
+from ApplicationService.OpenAccountUseCase import OpenAccountUseCase
 import logging
 
 logger = logging.getLogger("drivers.Web.bankApplication")
@@ -86,7 +86,7 @@ class logged_handler(method_dispatcher):
 
 
 class open_account_handler(method_dispatcher):
-    def __init__(self, use_case: openAccountUseCase):
+    def __init__(self, use_case: OpenAccountUseCase):
         self.open_account_use_case = use_case
 
     def get(self, request: httpRequest) -> httpResponse:
@@ -116,8 +116,8 @@ class open_account_handler(method_dispatcher):
 class ui:
     def __init__(self,
                  login_use_case: loginUseCase,
-                 transfer_use_case: transferFundsUseCase,
-                 open_use_case: openAccountUseCase
+                 transfer_use_case: TransferFundsUseCase,
+                 open_use_case: OpenAccountUseCase
                  ):
         self.transfer_use_case = transfer_use_case
         self.login_use_case = login_use_case

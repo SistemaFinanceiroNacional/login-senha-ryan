@@ -1,4 +1,4 @@
-from drivers.Web import httpResponse
+from drivers.Web import http_response
 from drivers.Web.HttpRequest import (
     httpRequest,
     IncompleteHttpRequest

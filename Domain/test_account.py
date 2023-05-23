@@ -1,8 +1,8 @@
-from ApplicationService.account import (
+from Domain.account import (
     Account,
     insufficientFundsException
 )
-from ApplicationService.transaction import create_transaction
+from Domain.transaction import create_transaction
 
 
 def test_transfer1():

@@ -34,7 +34,7 @@ def main():
         print("Two options cannot be used at the same time.")
 
     elif args.cli and not args.web:
-        cli_config.config().run_ui()
+        cli_config.Config().run_ui()
 
     elif not args.cli and args.web:
         web_config.config().run_ui()

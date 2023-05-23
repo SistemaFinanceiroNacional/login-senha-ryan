@@ -1,7 +1,13 @@
 import logging
-from password import password as pw
-from ApplicationService.account import Account
-from ApplicationService.connection_pool import connection_pool as cpool
+from typing import Iterable, List
+
+from password import Password as pw
+from Domain.account import Account
+from Domain.transaction import Transaction, create_transaction_from_raw
+from Infrastructure.connection_pool import (
+    connection_pool as cpool,
+    cursor as c
+)
 from ApplicationService.repositories.identityinterface import (
     identityInterface
 )
@@ -9,12 +15,13 @@ from ApplicationService.repositories.accountsrepositoryinterface import (
     AccountsRepositoryInterface
 )
 
-
 logger = logging.getLogger("internalAccountsRepository")
-accountID = int
+AccountID = int
+ClientID = int
+Transactions = List[Transaction]
 
 
-class accountsRepository(AccountsRepositoryInterface):
+class AccountsRepository(AccountsRepositoryInterface):
     def __init__(self, connection_pool: cpool, identifier: identityInterface):
         self.connection_pool = connection_pool
         self.identifier = identifier
@@ -53,17 +60,6 @@ class accountsRepository(AccountsRepositoryInterface):
         cursor.execute(query, (destiny_id,))
         return cursor.fetchone() is not None
 
-    def get_account_id(self, client_login: str) -> accountID:
-        cursor = self.connection_pool.get_cursor(self.identifier)
-
-        query = "SELECT id FROM clients WHERE login=%s;"
-        cursor.execute(query, (client_login,))
-        client_id = cursor.fetchone()[0]
-        query = "SELECT account_id FROM clients_accounts WHERE client_id=%s;"
-        cursor.execute(query, (client_id,))
-        account_id = cursor.fetchone()[0]
-        return account_id
-
     def update(self, acc: Account) -> None:
         cursor = self.connection_pool.get_cursor(self.identifier)
         transactions = acc.get_transactions()
@@ -77,3 +73,36 @@ class accountsRepository(AccountsRepositoryInterface):
         for t in transactions:
             data = t.get_transaction_data()
             cursor.execute(query, data)
+
+    def get_by_client_id(self, client_id: ClientID) -> Iterable[AccountID]:
+        cursor = self.connection_pool.get_cursor(self.identifier)
+
+        query = "SELECT account_id FROM clients_accounts WHERE client_id=%s;"
+        cursor.execute(query, (client_id,))
+        accounts_ids_tuples = cursor.fetchall()
+        accounts_ids = map(lambda item: item[0], accounts_ids_tuples)
+        return accounts_ids
+
+    def get_balance(self, account_id: AccountID):
+        cursor = self.connection_pool.get_cursor(self.identifier)
+
+        transactions = self._get_transactions(account_id, cursor)
+        acc = Account(account_id, transactions)
+        return acc.get_balance()
+
+    def _get_transactions(self, account_id: int, cursor: c) -> Transactions:
+        table = "transactions t"
+        columns = "t.*"
+        condition = "t.debit_account = a.id OR t.credit_account = a.id"
+        where = "a.id = %s"
+        query = f"SELECT {columns} " \
+                f"FROM {table} " \
+                f"JOIN accounts a ON {condition} " \
+                f"WHERE {where};"
+        cursor.execute(query, (account_id,))
+        raw_transactions = cursor.fetchall()
+        transactions = []
+        for t in raw_transactions:
+            new_t = create_transaction_from_raw(t)
+            transactions.append(new_t)
+        return transactions

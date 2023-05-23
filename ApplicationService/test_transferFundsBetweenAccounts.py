@@ -1,11 +1,11 @@
 from ApplicationService.contexterrors.accountdoesnotexistserror import (
     AccountDoesNotExistsError
 )
-from ApplicationService.transferFundsUseCase import (
-    transferFundsUseCase
+from ApplicationService.TransferFundsUseCase import (
+    TransferFundsUseCase
 )
-from ApplicationService.transaction import create_transaction
-from ApplicationService.account import (
+from Domain.transaction import create_transaction
+from Domain.account import (
     Account,
     invalidValueToTransfer
 )
@@ -27,7 +27,7 @@ def test_transfer_correct():
 
     acc_repository = contasFake({ryanID: ryan_acc, joaoID: joao_acc}, {})
 
-    useCase = transferFundsUseCase(acc_repository, context)
+    useCase = TransferFundsUseCase(acc_repository, context)
 
     assert useCase.execute(ryan_acc, joaoID, 150)
 
@@ -40,7 +40,7 @@ def test_transfer_correct_ryan_balance():
 
     acc_repository = contasFake({ryanID: ryan_acc, joaoID: joao_acc}, {})
 
-    useCase = transferFundsUseCase(acc_repository, context)
+    useCase = TransferFundsUseCase(acc_repository, context)
     useCase.execute(ryan_acc, joaoID, 100)
 
     ryan_balance = acc_repository.actualAccounts[ryanID].get_balance()
@@ -55,7 +55,7 @@ def test_transfer_zero_amount():
 
     acc_repository = contasFake({ryanID: ryan_acc, joaoID: joao_acc}, {})
 
-    useCase = transferFundsUseCase(acc_repository, context)
+    useCase = TransferFundsUseCase(acc_repository, context)
 
     try:
         useCase.execute(ryan_acc, joaoID, 0)
@@ -73,7 +73,7 @@ def test_transfer_negative_amount():
 
     acc_repository = contasFake({ryanID: ryan_acc, joaoID: joao_acc}, {})
 
-    useCase = transferFundsUseCase(acc_repository, context)
+    useCase = TransferFundsUseCase(acc_repository, context)
 
     try:
         useCase.execute(ryan_acc, joaoID, -50)
@@ -91,7 +91,7 @@ def test_transfer_not_existing_login_destiny():
 
     acc_repository = contasFake({ryanID: ryan_acc, joaoID: joao_acc}, {})
 
-    useCase = transferFundsUseCase(acc_repository, context)
+    useCase = TransferFundsUseCase(acc_repository, context)
 
     wrong_id = 4
     try:

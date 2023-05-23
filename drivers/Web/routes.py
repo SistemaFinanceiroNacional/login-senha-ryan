@@ -1,7 +1,7 @@
 from maybe import nothing, maybe, just
-from drivers.Web.httpResponse import httpResponse
+from drivers.Web.http_response import httpResponse
 from drivers.Web.HttpRequest.httpRequest import httpRequest
-from drivers.Web.routeInterface import route
+from drivers.Web.route_interface import route
 
 
 class endpointRoute(route):

@@ -1,28 +1,28 @@
 import pytest
 import drivers.Web.HttpRequest.Headers
 import drivers.Web.HttpRequest.Resource
-from drivers.Web import bankApplication
+from drivers.Web import bank_application
 from drivers.Web.HttpRequest import httpRequest
 from fake_config import fakes
 from ApplicationService.loginUseCase import loginUseCase
-from ApplicationService.transferFundsUseCase import transferFundsUseCase
-from ApplicationService.openAccountUseCase import openAccountUseCase
-from ApplicationService.client import Client
-from password import password
+from ApplicationService.TransferFundsUseCase import TransferFundsUseCase
+from ApplicationService.OpenAccountUseCase import OpenAccountUseCase
+from Domain.client import Client
+from password import Password
 
 
 @pytest.fixture
 def ui_example():
     ryan_login = "ryan"
-    ryan_pw = password("abc123")
+    ryan_pw = Password("abc123")
     ryan_acc = Client(ryan_login, ryan_pw, [])
     context = fakes.fake_context()
     clients_repo = fakes.clientsFake({ryan_login: ryan_acc})
     accounts_repo = fakes.contasFake({}, {})
 
-    login_use_case = loginUseCase(clients_repo, context, password)
-    transfer_use_case = transferFundsUseCase(accounts_repo, context)
-    open_use_case = openAccountUseCase(accounts_repo, context, password)
+    login_use_case = loginUseCase(clients_repo, context, Password)
+    transfer_use_case = TransferFundsUseCase(accounts_repo, context)
+    open_use_case = OpenAccountUseCase(accounts_repo, context, Password)
 
     return bankApplication.ui(login_use_case, transfer_use_case, open_use_case)
 
