@@ -1,19 +1,19 @@
 from typing import Callable
 from ApplicationService.repositories.accountsrepositoryinterface import (
-    AccountsRepositoryInterface as iar
+    AccountsRepositoryInterface as repo
 )
-from ApplicationService.transactioncontext import (
+from ApplicationService.repositories.transactioncontext import (
     transactioncontext as cntx
 )
-from password import password
+from password import Password
 
 
-PasswordMaker = Callable[[str], password]
+PasswordMaker = Callable[[str], Password]
 
 
-class openAccountUseCase:
+class OpenAccountUseCase:
     def __init__(self,
-                 acc_repository: iar,
+                 acc_repository: repo,
                  trans_context: cntx,
                  pw_maker: PasswordMaker
                  ):

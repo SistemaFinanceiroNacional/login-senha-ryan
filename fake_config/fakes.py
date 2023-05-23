@@ -1,5 +1,5 @@
 from maybe import just, nothing, maybe
-from ApplicationService.account import Account
+from Domain.account import Account
 from ApplicationService.repositories.identityinterface import identityInterface
 from ApplicationService.repositories.accountsrepositoryinterface import (
     AccountsRepositoryInterface
@@ -7,11 +7,11 @@ from ApplicationService.repositories.accountsrepositoryinterface import (
 from ApplicationService.repositories.clientsrepositoryinterface import (
     ClientsRepositoryInterface
 )
-from ApplicationService.client import Client
-from ApplicationService.transaction import create_transaction
-from ApplicationService.transactioncontext import transactioncontext
+from Domain.client import Client
+from Domain.transaction import create_transaction
+from ApplicationService.repositories.transactioncontext import transactioncontext
 from inputIO.inputIO import inputIO
-from password import password as pw
+from password import Password as pw
 
 
 class fake_identity(identityInterface):

@@ -1,5 +1,5 @@
 from typing import List
-from ApplicationService.transaction import Transaction, create_transaction
+from Domain.transaction import Transaction, create_transaction
 
 
 class Account:

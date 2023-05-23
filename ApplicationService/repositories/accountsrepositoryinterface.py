@@ -1,7 +1,10 @@
-from password import password as pw
+from typing import Iterable
+
+from password import Password as pw
 
 
-accountID = int
+AccountID = int
+Balance = float
 
 
 class AccountsRepositoryInterface:
@@ -14,5 +17,8 @@ class AccountsRepositoryInterface:
     def update(self, account):
         raise NotImplementedError
 
-    def get_account_id(self, client_login: str) -> accountID:
+    def get_by_client_id(self, client_id: int) -> Iterable[AccountID]:
+        raise NotImplementedError
+
+    def get_balance(self, account_id: AccountID) -> Balance:
         raise NotImplementedError

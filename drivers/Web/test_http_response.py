@@ -1,5 +1,5 @@
 import pytest
-from drivers.Web import httpResponse
+from drivers.Web import http_response
 
 
 @pytest.fixture

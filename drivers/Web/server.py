@@ -1,7 +1,7 @@
 import logging
 import socket
 import threading
-from drivers.Web import httpConnection
+from drivers.Web import http_connection
 
 logger = logging.getLogger("drivers.Web.server")
 

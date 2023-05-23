@@ -1,16 +1,16 @@
-from ApplicationService.transactioncontext import transactioncontext
+from ApplicationService.repositories.transactioncontext import transactioncontext
 from ApplicationService.repositories.accountsrepositoryinterface import (
-    AccountsRepositoryInterface as iar
+    AccountsRepositoryInterface as repo
 )
-from ApplicationService.account import Account as acc
+from Domain.account import Account as acc
 from ApplicationService.contexterrors.accountdoesnotexistserror import (
     AccountDoesNotExistsError
 )
 
 
-class transferFundsUseCase:
+class TransferFundsUseCase:
     def __init__(self,
-                 internalRepository: iar,
+                 internalRepository: repo,
                  transactional_context: transactioncontext
                  ):
         self.internalRepository = internalRepository
