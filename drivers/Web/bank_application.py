@@ -6,17 +6,18 @@ from drivers.Web.HttpRequest.httpRequest import (
     httpRequest,
     makeQueryParameters
 )
-from ApplicationService.TransferFundsUseCase import TransferFundsUseCase
-from ApplicationService.loginUseCase import loginUseCase
 from ApplicationService.OpenAccountUseCase import OpenAccountUseCase
+from ApplicationService.unloggedUseCases import UnloggedUseCases
+from ApplicationService.loggedUseCases import LoggedUseCases
+from Infrastructure.authserviceinterface import AuthServiceInterface
 import logging
 
 logger = logging.getLogger("drivers.Web.bankApplication")
 
 
 class home_handler(method_dispatcher):
-    def __init__(self, loginCase: loginUseCase):
-        self.login_use_case = loginCase
+    def __init__(self, auth_service: AuthServiceInterface):
+        self.auth_service = auth_service
 
     def get(self, request: httpRequest) -> httpResponse:
         cookie = request.getHeaders().get("Cookie", "")
@@ -53,11 +54,11 @@ class home_handler(method_dispatcher):
         queryParameters = makeQueryParameters(body)
         user_login = queryParameters["login"]
         user_password = queryParameters["password"]
-        possible_account = self.login_use_case.execute(
+        possible_account = self.auth_service.authenticate(
             user_login,
             user_password
         )
-        return possible_account.map(lambda account: httpResponse(
+        return possible_account.map(lambda account: httpResponse(  # CLIENT ID RETURNED WHAT TO DO
             {
                 "Set-Cookie": f"loggedUsername={account.get_id()}",
                 "Location": "/"
@@ -86,8 +87,8 @@ class logged_handler(method_dispatcher):
 
 
 class open_account_handler(method_dispatcher):
-    def __init__(self, use_case: OpenAccountUseCase):
-        self.open_account_use_case = use_case
+    def __init__(self, open_use_case: OpenAccountUseCase):
+        self.open_account_use_case = open_use_case
 
     def get(self, request: httpRequest) -> httpResponse:
         html_content = render_template("openAccount.html", {})
@@ -115,19 +116,19 @@ class open_account_handler(method_dispatcher):
 
 class ui:
     def __init__(self,
-                 login_use_case: loginUseCase,
-                 transfer_use_case: TransferFundsUseCase,
-                 open_use_case: OpenAccountUseCase
+                 auth_service: AuthServiceInterface,
+                 unlogged_cases: UnloggedUseCases,
+                 logged_cases: LoggedUseCases
                  ):
-        self.transfer_use_case = transfer_use_case
-        self.login_use_case = login_use_case
-        self.open_use_case = open_use_case
+        self.auth_service = auth_service
+        self.unlogged_cases = unlogged_cases
+        self.logged_cases = logged_cases
 
     def __call__(self, request: httpRequest):
         return router(
-            fixed_route("/", home_handler(self.login_use_case)),
+            fixed_route("/", home_handler(self.auth_service)),
             fixed_route("/logout", logged_handler()),
             fixed_route(
                 "/openaccount",
-                open_account_handler(self.open_use_case)
+                open_account_handler(self.unlogged_cases.open_use_case)
             ))(request)

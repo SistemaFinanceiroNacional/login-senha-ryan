@@ -4,10 +4,6 @@ from ApplicationService.repositories.identityinterface import identityInterface
 from ApplicationService.repositories.accountsrepositoryinterface import (
     AccountsRepositoryInterface
 )
-from ApplicationService.repositories.clientsrepositoryinterface import (
-    ClientsRepositoryInterface
-)
-from Domain.client import Client
 from Domain.transaction import create_transaction
 from ApplicationService.repositories.transactioncontext import transactioncontext
 from inputIO.inputIO import inputIO
@@ -86,15 +82,6 @@ class contasFake(AccountsRepositoryInterface):
 
     def update(self, account: Account):
         pass
-
-
-class clientsFake(ClientsRepositoryInterface):
-    def __init__(self, clients: dict[str, Client]):
-        self.c = clients
-
-    def get_by_credentials(self, login: str, password: pw) -> maybe[Client]:
-        return just(self.c[login]) if login in self.c else nothing()
-
 
 def existing_pedros_account():
     t = create_transaction(2, 3, 400)

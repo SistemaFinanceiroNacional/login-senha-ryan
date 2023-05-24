@@ -1,7 +1,7 @@
 from password import Password as pw
 from maybe import maybe, just, nothing
-from authserviceinterface import (
-    authServiceInterface,
+from Infrastructure.authserviceinterface import (
+    AuthServiceInterface,
     ClientID
 )
 from ApplicationService.repositories.identityinterface import (
@@ -16,7 +16,7 @@ from Infrastructure.connection_pool import (
 )
 
 
-class authServiceDB(authServiceInterface):
+class AuthServiceDB(AuthServiceInterface):
     def __init__(self, context: cntx, conn_pool: c_pool, identifier: identityInterface):
         self.transactional_context = context
         self.conn_pool = conn_pool
