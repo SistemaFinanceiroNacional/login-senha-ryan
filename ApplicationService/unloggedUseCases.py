@@ -1,4 +1,4 @@
-from OpenAccountUseCase import OpenAccountUseCase as oauc
+from ApplicationService.OpenAccountUseCase import OpenAccountUseCase as oauc
 
 
 class UnloggedUseCases:

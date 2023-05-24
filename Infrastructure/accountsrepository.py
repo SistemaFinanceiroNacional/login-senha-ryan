@@ -2,22 +2,22 @@ import logging
 from typing import Iterable, List
 
 from password import Password as pw
-from Domain.account import Account
 from Domain.transaction import Transaction, create_transaction_from_raw
 from Infrastructure.connection_pool import (
     connection_pool as cpool,
-    cursor as c
 )
 from ApplicationService.repositories.identityinterface import (
     identityInterface
 )
 from ApplicationService.repositories.accountsrepositoryinterface import (
-    AccountsRepositoryInterface
+    AccountsRepositoryInterface,
+    Account,
+    AccountID,
+    Balance,
+    ClientID
 )
 
 logger = logging.getLogger("internalAccountsRepository")
-AccountID = int
-ClientID = int
 Transactions = List[Transaction]
 
 
@@ -83,14 +83,17 @@ class AccountsRepository(AccountsRepositoryInterface):
         accounts_ids = map(lambda item: item[0], accounts_ids_tuples)
         return accounts_ids
 
-    def get_balance(self, account_id: AccountID):
-        cursor = self.connection_pool.get_cursor(self.identifier)
-
-        transactions = self._get_transactions(account_id, cursor)
+    def get_by_id(self, account_id: AccountID) -> Account:
+        transactions = self._get_transactions(account_id)
         acc = Account(account_id, transactions)
+        return acc
+
+    def get_balance(self, account_id: AccountID) -> Balance:
+        acc = self.get_by_id(account_id)
         return acc.get_balance()
 
-    def _get_transactions(self, account_id: int, cursor: c) -> Transactions:
+    def _get_transactions(self, account_id: int) -> Transactions:
+        cursor = self.connection_pool.get_cursor(self.identifier)
         table = "transactions t"
         columns = "t.*"
         condition = "t.debit_account = a.id OR t.credit_account = a.id"

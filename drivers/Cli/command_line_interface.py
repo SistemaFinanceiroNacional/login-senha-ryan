@@ -1,13 +1,15 @@
+import logging
 from Domain.account import (
-    Account as ia,
     insufficientFundsException,
     invalidValueToTransfer
 )
-import logging
 from inputIO.inputIO import inputIO
-from ApplicationService.UnloggedUseCases import UnloggedUseCases
+from ApplicationService.unloggedUseCases import UnloggedUseCases
 from ApplicationService.loggedUseCases import LoggedUseCases
-from Infrastructure.authserviceinterface import authServiceInterface
+from ApplicationService.contexterrors.accountdoesnotexistserror import (
+    AccountDoesNotExistsError
+)
+from Infrastructure.authserviceinterface import AuthServiceInterface
 
 logger = logging.getLogger("drivers.Cli.command_line_interface")
 accountID = int
@@ -15,27 +17,31 @@ accountID = int
 
 def accounts_repl(userIO: inputIO, acc_id: accountID, logged_cases: LoggedUseCases):
     print("""
-                (1) See your balance
-                (2) Transfer money
-                (3) Exit account
+            (1) See your balance
+            (2) Transfer money
+            (3) Exit account
         """)
-    command = ""
-    while command != "3":
+    while True:
+        command = userIO.input("->")
         if command == "1":
             balance = logged_cases.get_balance_use_case.execute(acc_id)
             userIO.print(f"R${balance:.2f}")
         elif command == "2":
-            destinationAccount = userIO.input(
-                "Enter the destination account: "
-            )
+            destinationAccount = int(userIO.input(
+                "Enter the ID of the destination account: "
+            ))
             value = int(userIO.input("How much do you want to transfer? "))
             try:
-                logged_cases.transfer_use_case.execute(acc, destinationAccount, value)
+                logged_cases.transfer_use_case.execute(acc_id, destinationAccount, value)
                 userIO.print("Successful transaction.")
             except insufficientFundsException:
                 userIO.print("Insufficient funds.")
             except invalidValueToTransfer as e:
                 userIO.print(f"{e.value} is a non-positive value to transfer.")
+            except AccountDoesNotExistsError:
+                userIO.print("Invalid Account ID.")
+        elif command == "3":
+            break
 
 
 def repl(userIO: inputIO, c_id: int, logged_cases: LoggedUseCases):
@@ -43,8 +49,7 @@ def repl(userIO: inputIO, c_id: int, logged_cases: LoggedUseCases):
             (1) Select account
             (2) Logout
     """)
-    command = ""
-    while command != "2":
+    while True:
         command = userIO.input("->")
         if command == "1":
             accs = list(logged_cases.get_accounts_use_case.execute(c_id))
@@ -52,11 +57,16 @@ def repl(userIO: inputIO, c_id: int, logged_cases: LoggedUseCases):
                 print(f"Account ID: {acc}")
             select_acc = int(input("Choose one ID: "))
             if select_acc in accs:
-                accounts_repl(userIO, select_acc)
-
+                accounts_repl(userIO, select_acc, logged_cases)
+                print("""
+            (1) Select account
+            (2) Logout
+                    """)
+        elif command == "2":
+            break
 
 def main(userIO: inputIO,
-         auth_service: authServiceInterface,
+         auth_service: AuthServiceInterface,
          unlogged_cases: UnloggedUseCases,
          logged_cases: LoggedUseCases
          ):
