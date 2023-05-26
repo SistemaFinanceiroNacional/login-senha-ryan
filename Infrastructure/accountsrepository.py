@@ -26,7 +26,10 @@ class AccountsRepository(AccountsRepositoryInterface):
         self.connection_pool = connection_pool
         self.identifier = identifier
 
-    def add_account(self, new_login: str, new_password: pw) -> bool:
+    def add_account(self, client_id: ClientID) -> bool:
+        pass
+
+    def add_client(self, new_login: str, new_password: pw) -> bool:
         cursor = self.connection_pool.get_cursor(self.identifier)
         query = "SELECT * FROM clients WHERE login = %s;"
         cursor.execute(query, (new_login,))
