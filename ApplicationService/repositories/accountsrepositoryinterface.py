@@ -8,13 +8,16 @@ Balance = float
 
 
 class AccountsRepositoryInterface:
-    def add_account(self, login: str, password: pw) -> bool:
+    def add_client(self, login: str, password: pw) -> bool:
+        raise NotImplementedError
+
+    def add_account(self, client_id: ClientID) -> bool:
         raise NotImplementedError
 
     def exists(self, destID: int) -> bool:
         raise NotImplementedError
 
-    def update(self, account: Account):
+    def update(self, account: Account) -> None:
         raise NotImplementedError
 
     def get_by_client_id(self, client_id: ClientID) -> Iterable[AccountID]:
