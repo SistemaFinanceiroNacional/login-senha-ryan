@@ -1,34 +1,49 @@
 from drivers.Cli import command_line_interface
-from ApplicationService.loginUseCase import loginUseCase
 from ApplicationService.TransferFundsUseCase import TransferFundsUseCase
 from ApplicationService.OpenAccountUseCase import OpenAccountUseCase
-from Domain.client import Client
+from ApplicationService.loggedUseCases import LoggedUseCases
+from ApplicationService.unloggedUseCases import UnloggedUseCases
+from ApplicationService.getBalanceUseCase import GetBalanceUseCase
+from ApplicationService.getAccountsUseCase import GetAccountsUseCase
+from Infrastructure.authServiceDB import AuthServiceDB
+from Domain.account import Account
 from fake_config.fakes import (
     inputfake,
     existing_pedros_account,
     waiting_pedro_account,
     fake_context,
-    clientsFake,
-    contasFake
+    contasFake,
+    fake_connection,
+    fake_identity
 )
 from password import Password
 
 
 def test_main_with_repl():
     context = fake_context()
+    conn = fake_connection()
+    iden = fake_identity(1)
     joao_login = "joao"
     joao_pw = Password("ab123")
-    joao_acc = Client(joao_login, joao_pw, [])
-    c = clientsFake({joao_login: joao_acc})
     a = contasFake({}, {})
+    a.add_account(joao_login, joao_pw)
 
-    loginCase = loginUseCase(c, context, Password)
+    auth_service = AuthServiceDB(context, conn, iden)
     transferCase = TransferFundsUseCase(a, context)
     openCase = OpenAccountUseCase(a, context, Password)
+    get_balance_case = GetBalanceUseCase(a, context)
+    get_accounts_case = GetAccountsUseCase(a, context)
+
+    logged_cases = LoggedUseCases(
+        transferCase,
+        get_accounts_case,
+        get_balance_case
+    )
+    unlogged_cases = UnloggedUseCases(openCase)
 
     i = inputfake(["3", "logout", "balance", "abc123", "pedro", "1"])
 
-    command_line_interface.main(i, loginCase, transferCase, openCase)
+    command_line_interface.main(i, auth_service, unlogged_cases, logged_cases)
     assert i.outputlist[0] == 400
 
 

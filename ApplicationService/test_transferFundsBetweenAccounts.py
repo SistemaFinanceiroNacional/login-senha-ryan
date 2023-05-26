@@ -29,7 +29,7 @@ def test_transfer_correct():
 
     useCase = TransferFundsUseCase(acc_repository, context)
 
-    assert useCase.execute(ryan_acc, joaoID, 150)
+    assert useCase.execute(ryanID, joaoID, 150)
 
 
 def test_transfer_correct_ryan_balance():
@@ -41,7 +41,7 @@ def test_transfer_correct_ryan_balance():
     acc_repository = contasFake({ryanID: ryan_acc, joaoID: joao_acc}, {})
 
     useCase = TransferFundsUseCase(acc_repository, context)
-    useCase.execute(ryan_acc, joaoID, 100)
+    useCase.execute(ryanID, joaoID, 100)
 
     ryan_balance = acc_repository.actualAccounts[ryanID].get_balance()
     assert ryan_balance == 0
@@ -58,7 +58,7 @@ def test_transfer_zero_amount():
     useCase = TransferFundsUseCase(acc_repository, context)
 
     try:
-        useCase.execute(ryan_acc, joaoID, 0)
+        useCase.execute(ryanID, joaoID, 0)
         assert False
 
     except invalidValueToTransfer as e:
@@ -76,7 +76,7 @@ def test_transfer_negative_amount():
     useCase = TransferFundsUseCase(acc_repository, context)
 
     try:
-        useCase.execute(ryan_acc, joaoID, -50)
+        useCase.execute(ryanID, joaoID, -50)
         assert False
 
     except invalidValueToTransfer as e:
@@ -95,7 +95,7 @@ def test_transfer_not_existing_login_destiny():
 
     wrong_id = 4
     try:
-        useCase.execute(ryan_acc, wrong_id, 50)
+        useCase.execute(ryanID, wrong_id, 50)
         assert False
     except AccountDoesNotExistsError as e:
         assert e.destinyID == 4
