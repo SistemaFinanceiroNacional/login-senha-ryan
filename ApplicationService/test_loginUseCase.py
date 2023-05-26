@@ -1,20 +1,25 @@
-from ApplicationService.loginUseCase import loginUseCase
-from fake_config.fakes import contasFake, fake_context
-from password import Password
+from Infrastructure.authServiceDB import AuthServiceDB
+from fake_config.fakes import (
+    fake_context,
+    fake_connection,
+    fake_identity
+)
 from maybe import isNothing
 
 
 def test_login_with_no_password():
-    internal_rep = contasFake({}, {})
+    identifier = fake_identity(1)
+    conn = fake_connection()
     cntx = fake_context()
-    use_case = loginUseCase(internal_rep, cntx, Password)
+    auth = AuthServiceDB(cntx, conn, identifier)
 
-    assert isNothing(use_case.execute('ryan', ''))
+    assert isNothing(auth.authenticate('ryan', ''))
 
 
 def test_no_login():
-    internal_rep = contasFake({}, {})
+    identifier = fake_identity(1)
+    conn = fake_connection()
     cntx = fake_context()
-    use_case = loginUseCase(internal_rep, cntx, Password)
+    auth = AuthServiceDB(cntx, conn, identifier)
 
-    assert isNothing(use_case.execute('', 'abc123'))
+    assert isNothing(auth.authenticate('', 'abc123'))

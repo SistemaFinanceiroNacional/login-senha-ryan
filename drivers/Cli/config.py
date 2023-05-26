@@ -14,7 +14,7 @@ from inputIO.inputIO import inputIO
 from password import Password
 
 
-class Config:
+class config:
     def run_ui(self):
         conn_pool = postgresql_connection_pool()
         thread_id = thread_identity()

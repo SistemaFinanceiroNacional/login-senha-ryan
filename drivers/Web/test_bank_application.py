@@ -1,30 +1,41 @@
 import pytest
 import drivers.Web.HttpRequest.Headers
 import drivers.Web.HttpRequest.Resource
-from drivers.Web import bank_application
 from drivers.Web.HttpRequest import httpRequest
-from fake_config import fakes
-from ApplicationService.loginUseCase import loginUseCase
+from fake_config.fakes import (
+    fake_connection,
+    fake_context,
+    fake_identity,
+    contasFake
+)
+from ApplicationService.unloggedUseCases import UnloggedUseCases
+from ApplicationService.loggedUseCases import LoggedUseCases
 from ApplicationService.TransferFundsUseCase import TransferFundsUseCase
 from ApplicationService.OpenAccountUseCase import OpenAccountUseCase
-from Domain.client import Client
+from ApplicationService.getBalanceUseCase import GetBalanceUseCase
+from ApplicationService.getAccountsUseCase import GetAccountsUseCase
+from Infrastructure.authServiceDB import AuthServiceDB
+from drivers.Web import bank_application
 from password import Password
 
 
 @pytest.fixture
 def ui_example():
-    ryan_login = "ryan"
-    ryan_pw = Password("abc123")
-    ryan_acc = Client(ryan_login, ryan_pw, [])
-    context = fakes.fake_context()
-    clients_repo = fakes.clientsFake({ryan_login: ryan_acc})
-    accounts_repo = fakes.contasFake({}, {})
+    accounts_repo = contasFake({}, {})
+    context = fake_context()
+    conn = fake_connection()
+    iden = fake_identity(1)
 
-    login_use_case = loginUseCase(clients_repo, context, Password)
     transfer_use_case = TransferFundsUseCase(accounts_repo, context)
     open_use_case = OpenAccountUseCase(accounts_repo, context, Password)
+    get_accounts = GetBalanceUseCase(accounts_repo, context)
+    get_balance = GetAccountsUseCase(accounts_repo, context)
 
-    return bankApplication.ui(login_use_case, transfer_use_case, open_use_case)
+    auth = AuthServiceDB(context, conn, iden)
+    unlogged = UnloggedUseCases(open_use_case)
+    logged = LoggedUseCases(transfer_use_case, get_balance, get_accounts)
+
+    return bank_application.ui(auth, unlogged, logged)
 
 
 def test_request_using_Users_as_resource_returns_404(ui_example):

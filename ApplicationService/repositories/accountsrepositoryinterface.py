@@ -14,7 +14,7 @@ class AccountsRepositoryInterface:
     def exists(self, destID: int) -> bool:
         raise NotImplementedError
 
-    def update(self, account):
+    def update(self, account: Account):
         raise NotImplementedError
 
     def get_by_client_id(self, client_id: ClientID) -> Iterable[AccountID]:
