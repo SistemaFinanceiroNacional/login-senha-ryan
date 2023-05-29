@@ -1,11 +1,10 @@
 from drivers.Cli import command_line_interface
 from ApplicationService.TransferFundsUseCase import TransferFundsUseCase
-from ApplicationService.OpenAccountUseCase import OpenAccountUseCase
+from ApplicationService.openAccountUseCase import OpenAccountUseCase
 from ApplicationService.loggedUseCases import LoggedUseCases
 from ApplicationService.unloggedUseCases import UnloggedUseCases
 from ApplicationService.getBalanceUseCase import GetBalanceUseCase
 from ApplicationService.getAccountsUseCase import GetAccountsUseCase
-from Infrastructure.authServiceDB import AuthServiceDB
 from Domain.account import Account
 from fake_config.fakes import (
     inputfake,
@@ -13,22 +12,21 @@ from fake_config.fakes import (
     waiting_pedro_account,
     fake_context,
     contasFake,
-    fake_connection,
-    fake_identity
+    fake_authService
 )
 from password import Password
 
 
-def test_main_with_repl():
+def test_main_login_and_balance():
     context = fake_context()
-    conn = fake_connection()
-    iden = fake_identity(1)
     joao_login = "joao"
     joao_pw = Password("ab123")
-    a = contasFake({}, {})
-    a.add_account(joao_login, joao_pw)
+    joao_acc = Account(1, [])
+    a = contasFake({1: [joao_acc]}, {})
 
-    auth_service = AuthServiceDB(context, conn, iden)
+    auth_service = fake_authService()
+    auth_service.accounts[joao_login] = (joao_pw, 1)
+
     transferCase = TransferFundsUseCase(a, context)
     openCase = OpenAccountUseCase(a, context, Password)
     get_balance_case = GetBalanceUseCase(a, context)
@@ -41,36 +39,62 @@ def test_main_with_repl():
     )
     unlogged_cases = UnloggedUseCases(openCase)
 
-    i = inputfake(["3", "logout", "balance", "abc123", "pedro", "1"])
+    i = inputfake(["3", "2", "3", "1", "1", "1", "abc123", "joao", "1"])
 
     command_line_interface.main(i, auth_service, unlogged_cases, logged_cases)
-    assert i.outputlist[0] == 400
+
+    assert i.outputlist[2] == "R$0.00"
 
 
-def test_main_choose_2_already_exist():
+def test_main_registration():
     context = fake_context()
-    c = waiting_pedro_account()
+    a = contasFake({}, {})
 
-    loginCase = loginUseCase(c, context, Password)
-    transferCase = TransferFundsUseCase(c, context)
-    openCase = OpenAccountUseCase(c, context, Password)
+    auth_service = fake_authService()
+
+    transferCase = TransferFundsUseCase(a, context)
+    openCase = OpenAccountUseCase(a, context, Password)
+    get_balance_case = GetBalanceUseCase(a, context)
+    get_accounts_case = GetAccountsUseCase(a, context)
+
+    logged_cases = LoggedUseCases(
+        transferCase,
+        get_accounts_case,
+        get_balance_case
+    )
+    unlogged_cases = UnloggedUseCases(openCase)
 
     i = inputfake(["3", "abc123", "pedro", "2"])
 
-    command_line_interface.main(i, loginCase, transferCase, openCase)
+    command_line_interface.main(i, auth_service, unlogged_cases, logged_cases)
+
     assert i.outputlist[0] == "Your account has been successfully created!"
 
 
-def test_verify_correct_content_using_different_password():
+def test_trying_register_an_existed_account():
     context = fake_context()
-    c = existing_pedros_account()
+    joao_login = "joao"
+    joao_pw = Password("ab123")
+    joao_acc = Account(1, [])
+    a = contasFake({1: [joao_acc]}, {})
 
-    loginCase = loginUseCase(c, context, Password)
-    transferCase = TransferFundsUseCase(c, context)
-    openCase = OpenAccountUseCase(c, context, Password)
+    auth_service = fake_authService()
+    auth_service.accounts[joao_login] = (joao_pw, 1)
 
-    i = inputfake(["3", "abc123", "pedro", "2"])
+    transferCase = TransferFundsUseCase(a, context)
+    openCase = OpenAccountUseCase(a, context, Password)
+    get_balance_case = GetBalanceUseCase(a, context)
+    get_accounts_case = GetAccountsUseCase(a, context)
 
-    command_line_interface.main(i, loginCase, transferCase, openCase)
+    logged_cases = LoggedUseCases(
+        transferCase,
+        get_accounts_case,
+        get_balance_case
+    )
+    unlogged_cases = UnloggedUseCases(openCase)
+
+    i = inputfake(["3", "abc123", "joao", "2"])
+
+    command_line_interface.main(i, auth_service, unlogged_cases, logged_cases)
 
     assert i.outputlist[0] == "Account already exists. Try another username."

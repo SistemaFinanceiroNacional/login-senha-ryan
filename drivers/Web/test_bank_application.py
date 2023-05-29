@@ -6,12 +6,13 @@ from fake_config.fakes import (
     fake_connection,
     fake_context,
     fake_identity,
-    contasFake
+    contasFake,
+    fake_authService
 )
 from ApplicationService.unloggedUseCases import UnloggedUseCases
 from ApplicationService.loggedUseCases import LoggedUseCases
 from ApplicationService.TransferFundsUseCase import TransferFundsUseCase
-from ApplicationService.OpenAccountUseCase import OpenAccountUseCase
+from ApplicationService.openAccountUseCase import OpenAccountUseCase
 from ApplicationService.getBalanceUseCase import GetBalanceUseCase
 from ApplicationService.getAccountsUseCase import GetAccountsUseCase
 from Infrastructure.authServiceDB import AuthServiceDB
@@ -31,7 +32,8 @@ def ui_example():
     get_accounts = GetBalanceUseCase(accounts_repo, context)
     get_balance = GetAccountsUseCase(accounts_repo, context)
 
-    auth = AuthServiceDB(context, conn, iden)
+    # auth = AuthServiceDB(context, conn, iden)
+    auth = fake_authService()
     unlogged = UnloggedUseCases(open_use_case)
     logged = LoggedUseCases(transfer_use_case, get_balance, get_accounts)
 

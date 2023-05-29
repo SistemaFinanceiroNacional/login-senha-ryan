@@ -6,7 +6,7 @@ from drivers.Web.HttpRequest.httpRequest import (
     httpRequest,
     makeQueryParameters
 )
-from ApplicationService.OpenAccountUseCase import OpenAccountUseCase
+from ApplicationService.openAccountUseCase import OpenAccountUseCase
 from ApplicationService.unloggedUseCases import UnloggedUseCases
 from ApplicationService.loggedUseCases import LoggedUseCases
 from Infrastructure.authserviceinterface import AuthServiceInterface

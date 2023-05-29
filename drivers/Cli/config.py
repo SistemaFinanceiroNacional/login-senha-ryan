@@ -1,6 +1,6 @@
 from drivers.Cli.command_line_interface import main
 from ApplicationService.TransferFundsUseCase import TransferFundsUseCase
-from ApplicationService.OpenAccountUseCase import OpenAccountUseCase
+from ApplicationService.openAccountUseCase import OpenAccountUseCase
 from ApplicationService.getAccountsUseCase import GetAccountsUseCase
 from ApplicationService.getBalanceUseCase import GetBalanceUseCase
 from ApplicationService.loggedUseCases import LoggedUseCases

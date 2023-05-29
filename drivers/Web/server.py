@@ -15,5 +15,5 @@ def main(app):
         while True:
             clientSocket, addr = serverSocket.accept()
             logger.debug(f"Client-IP {clientSocket.getpeername()}")
-            connection = httpConnection.httpConnection(clientSocket)
+            connection = http_connection.httpConnection(clientSocket)
             threading.Thread(target=connection.process, args=(app,)).run()

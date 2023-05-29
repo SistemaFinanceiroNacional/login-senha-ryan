@@ -1,15 +1,21 @@
+from typing import Iterable
+
 from Domain.account import Account
 from ApplicationService.repositories.identityinterface import identityInterface
 from ApplicationService.repositories.accountsrepositoryinterface import (
     AccountsRepositoryInterface,
     AccountID,
-    Balance
+    Balance, ClientID
 )
 from Domain.transaction import create_transaction
-from ApplicationService.repositories.transactioncontext import transactioncontext
+from ApplicationService.repositories.transactioncontext import(
+    transactioncontext
+)
 from ApplicationService.repositories.connectionInterface import connection_pool
+from Infrastructure.authserviceinterface import AuthServiceInterface
 from inputIO.inputIO import inputIO
 from password import Password as pw
+from maybe import maybe, just, nothing
 
 
 class fake_identity(identityInterface):
@@ -38,7 +44,8 @@ class fake_connection(connection_pool):
 
 
 class fake_cursor:
-    pass
+    def execute(self):
+        pass
 
 
 class fakeContext(transactioncontext):
@@ -72,10 +79,11 @@ class inputfake(inputIO):
 
 class contasFake(AccountsRepositoryInterface):
     def __init__(self, actualAccounts, newAccounts):
-        self.actualAccounts = actualAccounts
+        # self.actualAccounts: set[ClientID, tuple[str, str]] = actualAccounts
+        self.actualAccounts: dict[ClientID, list[Account]] = actualAccounts
         self.newAccounts = newAccounts
 
-    def add_account(self, new_login, new_password: pw):
+    def add_client(self, new_login, new_password: pw):
         if new_login not in self.actualAccounts:
             self.actualAccounts[new_login] = (new_password, 0)
             return True
@@ -98,10 +106,17 @@ class contasFake(AccountsRepositoryInterface):
         pass
 
     def get_balance(self, account_id: AccountID) -> Balance:
-        pass
+        return self.get_by_id(account_id).get_balance()
 
     def get_by_id(self, account_id: AccountID) -> Account:
-        return self.actualAccounts[account_id]
+        for clientID in self.actualAccounts:
+            for acc in self.actualAccounts[clientID]:
+                if acc.get_id() == account_id:
+                    return acc
+
+    def get_by_client_id(self, client_id: ClientID) -> Iterable[AccountID]:
+        accounts_id = [acc.get_id() for acc in self.actualAccounts[client_id]]
+        return accounts_id
 
 def existing_pedros_account():
     t = create_transaction(2, 3, 400)
@@ -136,11 +151,12 @@ class fakeSocket:
         return requiredContent
 
 
-class fake_authService:
-    def __init__(self, context, conn_pool, identifier: identityInterface):
-        self.transactional_context = context
-        self.conn_pool = conn_pool
-        self.identifier = identifier
+class fake_authService(AuthServiceInterface):
+    def __init__(self):
+        self.accounts = {}
 
-    def authenticate(self, username: str, password: str):
-        pass
+    def authenticate(self, username: str, password: str) -> maybe[int]:
+        if username in self.accounts.keys():
+            return just(self.accounts[username][1])
+        else:
+            return nothing()
