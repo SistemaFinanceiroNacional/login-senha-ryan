@@ -23,7 +23,7 @@ class httpConnection:
             logger.info(f"Resource: {request.getResource()};"
                         f" Method: {request.getMethod()}")
             response = handler(request)
-            self.socket.sendall(httpResponse.responseAsBytes(response))
+            self.socket.sendall(http_response.responseAsBytes(response))
             if request.getHeaders().get('Connection', '') == "close":
                 break
 

@@ -1,5 +1,5 @@
 from fake_config.fakes import contasFake, fake_context
-from ApplicationService.OpenAccountUseCase import OpenAccountUseCase
+from ApplicationService.openAccountUseCase import OpenAccountUseCase
 from password import Password
 
 

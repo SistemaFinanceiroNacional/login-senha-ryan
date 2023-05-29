@@ -1,6 +1,6 @@
 from drivers.Web.bank_application import ui
 from drivers.Web.server import main
-from ApplicationService.OpenAccountUseCase import OpenAccountUseCase
+from ApplicationService.openAccountUseCase import OpenAccountUseCase
 from ApplicationService.TransferFundsUseCase import TransferFundsUseCase
 from ApplicationService.unloggedUseCases import UnloggedUseCases
 from ApplicationService.loggedUseCases import LoggedUseCases

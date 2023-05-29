@@ -25,7 +25,7 @@ def test_transfer_correct():
     joao_acc = Account(joaoID, [])
     context = fake_context()
 
-    acc_repository = contasFake({ryanID: ryan_acc, joaoID: joao_acc}, {})
+    acc_repository = contasFake({ryanID: [ryan_acc], joaoID: [joao_acc]}, {})
 
     useCase = TransferFundsUseCase(acc_repository, context)
 
@@ -38,12 +38,12 @@ def test_transfer_correct_ryan_balance():
     joao_acc = Account(joaoID, [])
     context = fake_context()
 
-    acc_repository = contasFake({ryanID: ryan_acc, joaoID: joao_acc}, {})
+    acc_repository = contasFake({ryanID: [ryan_acc], joaoID: [joao_acc]}, {})
 
     useCase = TransferFundsUseCase(acc_repository, context)
     useCase.execute(ryanID, joaoID, 100)
 
-    ryan_balance = acc_repository.actualAccounts[ryanID].get_balance()
+    ryan_balance = acc_repository.get_balance(ryanID)
     assert ryan_balance == 0
 
 
@@ -53,7 +53,7 @@ def test_transfer_zero_amount():
     joao_acc = Account(joaoID, [])
     context = fake_context()
 
-    acc_repository = contasFake({ryanID: ryan_acc, joaoID: joao_acc}, {})
+    acc_repository = contasFake({ryanID: [ryan_acc], joaoID: [joao_acc]}, {})
 
     useCase = TransferFundsUseCase(acc_repository, context)
 
@@ -71,7 +71,7 @@ def test_transfer_negative_amount():
     joao_acc = Account(joaoID, [])
     context = fake_context()
 
-    acc_repository = contasFake({ryanID: ryan_acc, joaoID: joao_acc}, {})
+    acc_repository = contasFake({ryanID: [ryan_acc], joaoID: [joao_acc]}, {})
 
     useCase = TransferFundsUseCase(acc_repository, context)
 
@@ -89,7 +89,7 @@ def test_transfer_not_existing_login_destiny():
     joao_acc = Account(joaoID, [])
     context = fake_context()
 
-    acc_repository = contasFake({ryanID: ryan_acc, joaoID: joao_acc}, {})
+    acc_repository = contasFake({ryanID: [ryan_acc], joaoID: [joao_acc]}, {})
 
     useCase = TransferFundsUseCase(acc_repository, context)
 

@@ -16,7 +16,7 @@ accountID = int
 
 
 def accounts_repl(userIO: inputIO, acc_id: accountID, logged_cases: LoggedUseCases):
-    print("""
+    userIO.print("""
             (1) See your balance
             (2) Transfer money
             (3) Exit account
@@ -45,7 +45,7 @@ def accounts_repl(userIO: inputIO, acc_id: accountID, logged_cases: LoggedUseCas
 
 
 def repl(userIO: inputIO, c_id: int, logged_cases: LoggedUseCases):
-    print("""
+    userIO.print("""
             (1) Select account
             (2) Logout
     """)
@@ -55,10 +55,10 @@ def repl(userIO: inputIO, c_id: int, logged_cases: LoggedUseCases):
             accs = list(logged_cases.get_accounts_use_case.execute(c_id))
             for acc in accs:
                 print(f"Account ID: {acc}")
-            select_acc = int(input("Choose one ID: "))
+            select_acc = int(userIO.input("Choose one ID: "))
             if select_acc in accs:
                 accounts_repl(userIO, select_acc, logged_cases)
-                print("""
+                userIO.print("""
             (1) Select account
             (2) Logout
                     """)
