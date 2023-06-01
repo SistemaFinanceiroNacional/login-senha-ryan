@@ -7,15 +7,17 @@ from fake_config.fakes import (
     fake_context,
     fake_identity,
     contasFake,
+    clientsFake,
     fake_authService
 )
 from ApplicationService.unloggedUseCases import UnloggedUseCases
 from ApplicationService.loggedUseCases import LoggedUseCases
 from ApplicationService.TransferFundsUseCase import TransferFundsUseCase
-from ApplicationService.openAccountUseCase import OpenAccountUseCase
+from ApplicationService.newbankaccountusecase import NewBankAccountUseCase
 from ApplicationService.getBalanceUseCase import GetBalanceUseCase
 from ApplicationService.getAccountsUseCase import GetAccountsUseCase
-from Infrastructure.authServiceDB import AuthServiceDB
+from ApplicationService.registerclientusecase import RegisterClientUseCase
+from ApplicationService.gettransactionsusecase import GetTransactionsUseCase
 from drivers.Web import bank_application
 from password import Password
 
@@ -23,19 +25,26 @@ from password import Password
 @pytest.fixture
 def ui_example():
     accounts_repo = contasFake({}, {})
+    clients_repo = clientsFake({})
     context = fake_context()
     conn = fake_connection()
     iden = fake_identity(1)
 
     transfer_use_case = TransferFundsUseCase(accounts_repo, context)
-    open_use_case = OpenAccountUseCase(accounts_repo, context, Password)
     get_accounts = GetBalanceUseCase(accounts_repo, context)
     get_balance = GetAccountsUseCase(accounts_repo, context)
+    get_transactions = GetTransactionsUseCase(accounts_repo, context)
+    new_bank_use_case = NewBankAccountUseCase(accounts_repo, context)
+    register_use_case = RegisterClientUseCase(clients_repo, context, Password)
 
-    # auth = AuthServiceDB(context, conn, iden)
     auth = fake_authService()
-    unlogged = UnloggedUseCases(open_use_case)
-    logged = LoggedUseCases(transfer_use_case, get_balance, get_accounts)
+    unlogged = UnloggedUseCases(register_use_case)
+    logged = LoggedUseCases(transfer_use_case,
+                            get_balance,
+                            get_accounts,
+                            get_transactions,
+                            new_bank_use_case
+                            )
 
     return bank_application.ui(auth, unlogged, logged)
 
