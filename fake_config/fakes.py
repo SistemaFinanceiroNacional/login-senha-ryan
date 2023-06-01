@@ -12,6 +12,9 @@ from ApplicationService.repositories.transactioncontext import(
     transactioncontext
 )
 from ApplicationService.repositories.connectionInterface import connection_pool
+from ApplicationService.repositories.clientsrepositoryinterface import (
+    ClientsRepositoryInterface
+)
 from Infrastructure.authserviceinterface import AuthServiceInterface
 from inputIO.inputIO import inputIO
 from password import Password as pw
@@ -75,6 +78,17 @@ class inputfake(inputIO):
 
     def print(self, prompt):
         self.outputlist.append(prompt)
+
+
+class clientsFake(ClientsRepositoryInterface):
+    def __init__(self, clients: dict):
+        self.clients = clients
+
+    def add_client(self, login: str, password: pw) -> bool:
+        if login in self.clients:
+            return False
+        self.clients[login] = password
+        return True
 
 
 class contasFake(AccountsRepositoryInterface):

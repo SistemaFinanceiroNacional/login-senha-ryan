@@ -1,6 +1,8 @@
-from ApplicationService.openAccountUseCase import OpenAccountUseCase as oauc
+from ApplicationService.registerclientusecase import (
+    RegisterClientUseCase as rcuc
+)
 
 
 class UnloggedUseCases:
-    def __init__(self, open_use_case: oauc):
-        self.open_use_case = open_use_case
+    def __init__(self, register_client: rcuc):
+        self.register_client = register_client

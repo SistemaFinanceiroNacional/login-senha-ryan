@@ -17,22 +17,25 @@ accountID = int
 
 def accounts_repl(userIO: inputIO, acc_id: accountID, logged_cases: LoggedUseCases):
     userIO.print("""
-            (1) See your balance
+            (1) Balance
             (2) Transfer money
-            (3) Exit account
+            (3) Extract
+            (4) Exit account
         """)
     while True:
         command = userIO.input("->")
+
         if command == "1":
-            balance = logged_cases.get_balance_use_case.execute(acc_id)
+            balance = logged_cases.get_balance.execute(acc_id)
             userIO.print(f"R${balance:.2f}")
+
         elif command == "2":
             destinationAccount = int(userIO.input(
                 "Enter the ID of the destination account: "
             ))
             value = int(userIO.input("How much do you want to transfer? "))
             try:
-                logged_cases.transfer_use_case.execute(acc_id, destinationAccount, value)
+                logged_cases.transfer.execute(acc_id, destinationAccount, value)
                 userIO.print("Successful transaction.")
             except insufficientFundsException:
                 userIO.print("Insufficient funds.")
@@ -40,7 +43,16 @@ def accounts_repl(userIO: inputIO, acc_id: accountID, logged_cases: LoggedUseCas
                 userIO.print(f"{e.value} is a non-positive value to transfer.")
             except AccountDoesNotExistsError:
                 userIO.print("Invalid Account ID.")
+
         elif command == "3":
+            transactions = logged_cases.get_transactions.execute(acc_id)
+            if transactions:
+                for t in transactions:
+                    userIO.print(str(t))
+            else:
+                userIO.print("No transactions to show.")
+
+        elif command == "4":
             break
 
 
@@ -52,7 +64,7 @@ def repl(userIO: inputIO, c_id: int, logged_cases: LoggedUseCases):
     while True:
         command = userIO.input("->")
         if command == "1":
-            accs = list(logged_cases.get_accounts_use_case.execute(c_id))
+            accs = list(logged_cases.get_accounts.execute(c_id))
             for acc in accs:
                 print(f"Account ID: {acc}")
             select_acc = int(userIO.input("Choose one ID: "))
@@ -93,7 +105,7 @@ def main(userIO: inputIO,
             if not username or not password:
                 userIO.print("Login and password should not be empty.")
 
-            created = unlogged_cases.open_use_case.execute(username, password)
+            created = unlogged_cases.register_client.execute(username, password)
             if created:
                 userIO.print("Your account has been successfully created!")
             else:

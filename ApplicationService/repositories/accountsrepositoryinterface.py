@@ -1,5 +1,4 @@
 from typing import Iterable
-from password import Password as pw
 from Domain.account import Account
 
 ClientID = int
@@ -8,11 +7,8 @@ Balance = float
 
 
 class AccountsRepositoryInterface:
-    def add_client(self, login: str, password: pw) -> bool:
+    def add_account(self, client_id: ClientID) -> bool:
         raise NotImplementedError
-
-    # def add_account(self, client_id: ClientID) -> bool:
-    #     raise NotImplementedError
 
     def exists(self, destID: int) -> bool:
         raise NotImplementedError
@@ -24,7 +20,4 @@ class AccountsRepositoryInterface:
         raise NotImplementedError
 
     def get_by_id(self, account_id: AccountID) -> Account:
-        raise NotImplementedError
-
-    def get_balance(self, account_id: AccountID) -> Balance:
         raise NotImplementedError

@@ -2,6 +2,9 @@ from typing import List
 from Domain.transaction import Transaction, create_transaction
 
 
+AccountID = int
+
+
 class Account:
     def __init__(self,
                  account_id: int,
@@ -30,10 +33,10 @@ class Account:
             transaction = create_transaction(self._id, destiny_id, value)
             self._transactions.insert(0, transaction)
 
-    def get_id(self):
+    def get_id(self) -> AccountID:
         return self._id
 
-    def get_transactions(self):
+    def get_transactions(self) -> List[Transaction]:
         return self._transactions
 
 

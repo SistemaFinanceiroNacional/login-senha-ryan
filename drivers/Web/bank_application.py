@@ -1,3 +1,4 @@
+import json
 from drivers.Web.template import render_template
 from drivers.Web.router import router
 from drivers.Web.routes import method_dispatcher, fixed_route
@@ -6,9 +7,9 @@ from drivers.Web.HttpRequest.httpRequest import (
     httpRequest,
     makeQueryParameters
 )
-from ApplicationService.openAccountUseCase import OpenAccountUseCase
 from ApplicationService.unloggedUseCases import UnloggedUseCases
 from ApplicationService.loggedUseCases import LoggedUseCases
+from ApplicationService.registerclientusecase import RegisterClientUseCase
 from Infrastructure.authserviceinterface import AuthServiceInterface
 import logging
 
@@ -54,13 +55,13 @@ class home_handler(method_dispatcher):
         queryParameters = makeQueryParameters(body)
         user_login = queryParameters["login"]
         user_password = queryParameters["password"]
-        possible_account = self.auth_service.authenticate(
+        possible_client_id = self.auth_service.authenticate(
             user_login,
             user_password
         )
-        return possible_account.map(lambda account: httpResponse(  # CLIENT ID RETURNED WHAT TO DO
+        return possible_client_id.map(lambda client_id: httpResponse(
             {
-                "Set-Cookie": f"loggedUsername={account.get_id()}",
+                "Set-Cookie": f"loggedUsername={json.dumps({'client_id': client_id}, separators=(',', ':'))}",
                 "Location": "/"
             },
             "",
@@ -86,12 +87,12 @@ class logged_handler(method_dispatcher):
         return response
 
 
-class open_account_handler(method_dispatcher):
-    def __init__(self, open_use_case: OpenAccountUseCase):
-        self.open_account_use_case = open_use_case
+class register_client_handler(method_dispatcher):
+    def __init__(self, register_client_use_case: RegisterClientUseCase):
+        self.register_use_case = register_client_use_case
 
     def get(self, request: httpRequest) -> httpResponse:
-        html_content = render_template("openAccount.html", {})
+        html_content = render_template("register.html", {})
         response = httpResponse(
             {
                 "Content-type": "text/html"
@@ -106,11 +107,11 @@ class open_account_handler(method_dispatcher):
         queryParameters = makeQueryParameters(body)
         new_username = queryParameters["newUsername"]
         new_password = queryParameters["newPassword"]
-        opened = self.open_account_use_case.execute(new_username, new_password)
+        opened = self.register_use_case.execute(new_username, new_password)
         if opened:
             response = httpResponse({"Location": "/"}, "", 303)
         else:
-            response = httpResponse({"Location": "/openaccount"}, "", 303)
+            response = httpResponse({"Location": "/register"}, "", 303)
         return response
 
 
@@ -129,6 +130,6 @@ class ui:
             fixed_route("/", home_handler(self.auth_service)),
             fixed_route("/logout", logged_handler()),
             fixed_route(
-                "/openaccount",
-                open_account_handler(self.unlogged_cases.open_use_case)
+                "/register",
+                register_client_handler(self.unlogged_cases.register_client)
             ))(request)
