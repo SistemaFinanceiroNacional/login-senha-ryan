@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<section>
+    balance: {{ balance }}
+    <ol>
+        {% for t in transactions %}
+            <li>{{ t }}</li>
+        {% endfor %}
+    </ol>
+</section>
+{% endblock %}

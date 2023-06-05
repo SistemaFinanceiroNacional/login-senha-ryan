@@ -77,6 +77,11 @@
             </div>
             <h1>Você está logado(a)!</h1>
             <h2>Seu usuário é <b>{{ user }}</b></h2>
+            <form action="/selectaccount" method="post">
+                {% for account_id in accounts %}
+                    <button type="submit" name="account_id" value="{{account_id}}">{{ account_id }}</button>
+                {% endfor %}
+            </form>
             <form action="/logout" method="post">
                 <input type="submit" value="Logout"/>
             </form>
