@@ -21,7 +21,6 @@ class TransactionData:
         return f"{self.date} | {self.debit_acc} | {self.credit_acc} | {self.value}"
 
 
-
 class GetTransactionsUseCase:
     def __init__(self, acc_repository: iar, db_context: cntx):
         self._acc_repository = acc_repository

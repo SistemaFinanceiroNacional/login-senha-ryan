@@ -10,6 +10,9 @@ from drivers.Web.HttpRequest.httpRequest import (
 from ApplicationService.unloggedUseCases import UnloggedUseCases
 from ApplicationService.loggedUseCases import LoggedUseCases
 from ApplicationService.registerclientusecase import RegisterClientUseCase
+from ApplicationService.gettransactionsusecase import GetTransactionsUseCase
+from ApplicationService.getAccountsUseCase import GetAccountsUseCase
+from ApplicationService.getBalanceUseCase import GetBalanceUseCase
 from Infrastructure.authserviceinterface import AuthServiceInterface
 import logging
 
@@ -17,22 +20,33 @@ logger = logging.getLogger("drivers.Web.bankApplication")
 
 
 class home_handler(method_dispatcher):
-    def __init__(self, auth_service: AuthServiceInterface):
+    def __init__(self,
+                 auth_service: AuthServiceInterface,
+                 get_accounts: GetAccountsUseCase
+                 ):
         self.auth_service = auth_service
+        self.get_accounts = get_accounts
 
     def get(self, request: httpRequest) -> httpResponse:
         cookie = request.getHeaders().get("Cookie", "")
         if "loggedUsername=" in cookie:
             cookie_start_index = cookie.index("loggedUsername=")
-            username_start_index = cookie_start_index + len("loggedUsername=")
-            username_end_index = cookie[username_start_index:].find(";")
-            if username_end_index == -1:
-                username = cookie[username_start_index:]
+            json_start_index = cookie_start_index + len("loggedUsername=")
+            json_end_index = cookie[json_start_index:].find(";")
+            if json_end_index == -1:
+                json_str = cookie[json_start_index:]
             else:
-                username = cookie[username_start_index:username_end_index + 1]
+                json_str = cookie[json_start_index:json_end_index + 1]
+
+            session_data = json.loads(json_str)
+            client_id = session_data['client_id']
+            accounts = self.get_accounts.execute(client_id)
             html_content = render_template(
                 "loggedPage.html",
-                {"user": username}
+                {
+                    "user": session_data['login'],
+                    "accounts": accounts
+                }
             )
             response = httpResponse(
                 {"Content-Type": "text/html"},
@@ -61,7 +75,7 @@ class home_handler(method_dispatcher):
         )
         return possible_client_id.map(lambda client_id: httpResponse(
             {
-                "Set-Cookie": f"loggedUsername={json.dumps({'client_id': client_id}, separators=(',', ':'))}",
+                "Set-Cookie": f"loggedUsername={json.dumps({'login': user_login, 'client_id': client_id}, separators=(',', ':'))}",
                 "Location": "/"
             },
             "",
@@ -112,6 +126,84 @@ class register_client_handler(method_dispatcher):
             response = httpResponse({"Location": "/"}, "", 303)
         else:
             response = httpResponse({"Location": "/register"}, "", 303)
+
+        return response
+
+
+class account_handler(method_dispatcher):
+    def __init__(self,
+                 get_balance: GetBalanceUseCase,
+                 get_transactions: GetTransactionsUseCase
+                 ):
+        self.get_balance = get_balance
+        self.get_transactions = get_transactions
+
+    def get(self, request: httpRequest) -> httpResponse:
+        cookies = request.getHeaders().get("Cookie", "")
+        if "loggedUsername=" in cookies:
+            cookie_start = cookies.index("loggedUsername=")
+            json_start = cookie_start + len("loggedUsername=")
+            json_end = cookies[json_start:].find(";")
+            if json_end == -1:
+                json_str = cookies[json_start:]
+            else:
+                json_str = cookies[json_start: json_end + 1]
+
+            session_data = json.loads(json_str)
+            account_id = session_data["account_id"]
+            balance = self.get_balance.execute(account_id)
+            transactions = self.get_transactions.execute(account_id)
+            html_content = render_template("account.html", {"balance": balance, "transactions": transactions})
+            response = httpResponse(
+                {"Content-Type": "text/html"},
+                html_content,
+                200
+            )
+        else:
+            expires_date = "Thursday, 1 January 1970 00:00:00 GMT"
+            response = httpResponse(
+                {
+                    "Set-Cookie": f"loggedUsername=; Expires {expires_date}",
+                    "Location": "/"
+                },
+                "",
+                303
+            )
+
+        return response
+
+    def post(self, request: httpRequest) -> httpResponse:
+        body = request.getBody().decode("utf-8")
+        query_parameters = makeQueryParameters(body)
+        account_id = query_parameters["account_id"]
+        cookies = request.getHeaders().get("Cookie", "")
+        if "loggedUsername=" in cookies:
+            cookie_start = cookies.index("loggedUsername=")
+            json_start = cookie_start + len("loggedUsername=")
+            json_end = cookies[json_start:].find(";")
+            if json_end == -1:
+                json_str = cookies[json_start:]
+            else:
+                json_str = cookies[json_start:json_end + 1]
+
+            session_data = json.loads(json_str)
+            session_data["account_id"] = account_id
+
+            response = httpResponse(
+                {
+                    "Set-Cookie": f"loggedUsername={json.dumps(session_data, separators=(',', ':'))};",
+                    "Location": "/selectaccount"
+                }, "", 303)
+        else:
+            expires_date = "Thursday, 1 January 1970 00:00:00 GMT"
+            response = httpResponse(
+                {
+                    "Set-Cookie": f"loggedUsername=; Expires {expires_date}",
+                    "Location": "/"
+                },
+                "",
+                303
+            )
         return response
 
 
@@ -127,9 +219,17 @@ class ui:
 
     def __call__(self, request: httpRequest):
         return router(
-            fixed_route("/", home_handler(self.auth_service)),
+            fixed_route("/", home_handler(self.auth_service, self.logged_cases.get_accounts)),
             fixed_route("/logout", logged_handler()),
             fixed_route(
                 "/register",
                 register_client_handler(self.unlogged_cases.register_client)
-            ))(request)
+            ),
+            fixed_route(
+                "/selectaccount",
+                account_handler(
+                    self.logged_cases.get_balance,
+                    self.logged_cases.get_transactions
+                )
+            )
+        )(request)
