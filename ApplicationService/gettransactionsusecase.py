@@ -6,8 +6,8 @@ from Infrastructure.accountsrepository import (
     AccountsRepositoryInterface as a_repo,
     AccountID
 )
-from ApplicationService.repositories.transactioncontext import (
-    transactioncontext as cntx
+from ApplicationService.repositories.transactioncontextinterface import (
+    TransactionContextInterface as cntx
 )
 
 

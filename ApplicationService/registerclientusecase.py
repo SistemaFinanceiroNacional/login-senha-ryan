@@ -2,8 +2,8 @@ from typing import Callable
 from ApplicationService.repositories.clientsrepositoryinterface import (
     ClientsRepositoryInterface as c_repo
 )
-from ApplicationService.repositories.transactioncontext import (
-    transactioncontext as cntx
+from ApplicationService.repositories.transactioncontextinterface import (
+    TransactionContextInterface as cntx
 )
 from password import Password
 

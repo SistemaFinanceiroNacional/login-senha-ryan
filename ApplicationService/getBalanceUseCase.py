@@ -3,8 +3,8 @@ from ApplicationService.repositories.accountsrepositoryinterface import (
     AccountID,
     Balance
 )
-from ApplicationService.repositories.transactioncontext import (
-    transactioncontext as cntx
+from ApplicationService.repositories.transactioncontextinterface import (
+    TransactionContextInterface as cntx
 )
 
 

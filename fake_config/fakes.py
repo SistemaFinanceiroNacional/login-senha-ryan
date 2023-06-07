@@ -8,8 +8,8 @@ from ApplicationService.repositories.accountsrepositoryinterface import (
     Balance, ClientID
 )
 from Domain.transaction import create_transaction
-from ApplicationService.repositories.transactioncontext import (
-    transactioncontext
+from ApplicationService.repositories.transactioncontextinterface import (
+    TransactionContextInterface
 )
 from ApplicationService.repositories.connectionInterface import connection_pool
 from ApplicationService.repositories.clientsrepositoryinterface import (
@@ -51,7 +51,7 @@ class fake_cursor:
         pass
 
 
-class fakeContext(transactioncontext):
+class fakeContext(TransactionContextInterface):
     def __init__(self):
         self.errors = []
 
@@ -142,7 +142,7 @@ def waiting_pedro_account():
     return contasFake({}, {"pedro": "abc123"})
 
 
-class fake_context(transactioncontext):
+class fake_context(TransactionContextInterface):
     def __init__(self):
         self.errors = []
 

@@ -1,12 +1,12 @@
 from Infrastructure.threadIdentity import identityInterface
 from Infrastructure.connection_pool import connection_pool as cpool
-from ApplicationService.repositories.transactioncontext import (
-    transactioncontext
+from ApplicationService.repositories.transactioncontextinterface import (
+    TransactionContextInterface
 )
 from ApplicationService.contexterrors.businesserror import BusinessError
 
 
-class dbTransactionContext(transactioncontext):
+class dbTransactionContext(TransactionContextInterface):
     def __init__(self, connection_pool: cpool, identifier: identityInterface):
         self.connection_pool = connection_pool
         self.identifier = identifier
