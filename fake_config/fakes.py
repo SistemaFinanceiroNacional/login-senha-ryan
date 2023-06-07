@@ -5,7 +5,7 @@ from ApplicationService.repositories.identityinterface import identityInterface
 from ApplicationService.repositories.accountsrepositoryinterface import (
     AccountsRepositoryInterface,
     AccountID,
-    Balance, ClientID
+    ClientID
 )
 from Domain.transaction import create_transaction
 from ApplicationService.repositories.transactioncontextinterface import (
@@ -118,9 +118,6 @@ class contasFake(AccountsRepositoryInterface):
 
     def update(self, account: Account):
         pass
-
-    def get_balance(self, account_id: AccountID) -> Balance:
-        return self.get_by_id(account_id).get_balance()
 
     def get_by_id(self, account_id: AccountID) -> Account:
         for clientID in self.actualAccounts:
