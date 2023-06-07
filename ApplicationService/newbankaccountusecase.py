@@ -2,8 +2,8 @@ from ApplicationService.repositories.accountsrepositoryinterface import (
     AccountsRepositoryInterface as a_repo,
     ClientID
 )
-from ApplicationService.repositories.transactioncontext import (
-    transactioncontext as cntx
+from ApplicationService.repositories.transactioncontextinterface import (
+    TransactionContextInterface as cntx
 )
 
 

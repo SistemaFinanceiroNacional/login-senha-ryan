@@ -7,8 +7,8 @@ from Infrastructure.authserviceinterface import (
 from ApplicationService.repositories.identityinterface import (
     identityInterface
 )
-from ApplicationService.repositories.transactioncontext import (
-    transactioncontext as cntx
+from ApplicationService.repositories.transactioncontextinterface import (
+    TransactionContextInterface as cntx
 )
 from Infrastructure.connection_pool import (
     connection_pool as c_pool,
