@@ -73,9 +73,14 @@ class home_handler(method_dispatcher):
             user_login,
             user_password
         )
+
+        def user_cookie(client_id):
+            session_data = {'login': user_login, 'client_id': client_id}
+            return json.dumps(session_data, separators=(',', ':'))
+
         return possible_client_id.map(lambda client_id: httpResponse(
             {
-                "Set-Cookie": f"loggedUsername={json.dumps({'login': user_login, 'client_id': client_id}, separators=(',', ':'))}",
+                "Set-Cookie": f"loggedUsername={user_cookie(client_id)}",
                 "Location": "/"
             },
             "",
@@ -153,7 +158,9 @@ class account_handler(method_dispatcher):
             account_id = session_data["account_id"]
             balance = self.get_balance.execute(account_id)
             transactions = self.get_transactions.execute(account_id)
-            html_content = render_template("account.html", {"balance": balance, "transactions": transactions})
+
+            context = {"balance": balance, "transactions": transactions}
+            html_content = render_template("account.html", context)
             response = httpResponse(
                 {"Content-Type": "text/html"},
                 html_content,
@@ -189,9 +196,12 @@ class account_handler(method_dispatcher):
             session_data = json.loads(json_str)
             session_data["account_id"] = account_id
 
+            def user_cookie():
+                return json.dumps(session_data, separators=(',', ':'))
+
             response = httpResponse(
                 {
-                    "Set-Cookie": f"loggedUsername={json.dumps(session_data, separators=(',', ':'))};",
+                    "Set-Cookie": f"loggedUsername={user_cookie()};",
                     "Location": "/selectaccount"
                 }, "", 303)
         else:
@@ -218,8 +228,9 @@ class ui:
         self.logged_cases = logged_cases
 
     def __call__(self, request: httpRequest):
+        get_accounts = self.logged_cases.get_accounts
         return router(
-            fixed_route("/", home_handler(self.auth_service, self.logged_cases.get_accounts)),
+            fixed_route("/", home_handler(self.auth_service, get_accounts)),
             fixed_route("/logout", logged_handler()),
             fixed_route(
                 "/register",

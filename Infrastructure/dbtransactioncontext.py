@@ -1,6 +1,8 @@
 from Infrastructure.threadIdentity import identityInterface
 from Infrastructure.connection_pool import connection_pool as cpool
-from ApplicationService.repositories.transactioncontext import transactioncontext
+from ApplicationService.repositories.transactioncontext import (
+    transactioncontext
+)
 from ApplicationService.contexterrors.businesserror import BusinessError
 
 
