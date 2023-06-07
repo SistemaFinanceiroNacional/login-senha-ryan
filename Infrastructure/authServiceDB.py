@@ -17,7 +17,11 @@ from Infrastructure.connection_pool import (
 
 
 class AuthServiceDB(AuthServiceInterface):
-    def __init__(self, context: cntx, conn_pool: c_pool, identifier: identityInterface):
+    def __init__(self,
+                 context: cntx,
+                 conn_pool: c_pool,
+                 identifier: identityInterface
+                 ):
         self.transactional_context = context
         self.conn_pool = conn_pool
         self.identifier = identifier
@@ -34,7 +38,11 @@ class AuthServiceDB(AuthServiceInterface):
                 return just(client_id[0])
             return nothing()
 
-    def _get_client_id(self, username: str, password: pw, cursor: c) -> int or None:
+    def _get_client_id(self,
+                       username: str,
+                       password: pw,
+                       cursor: c
+                       ) -> int or None:
         columns = "id"
         table = "clients"
         conditions = "login=%s AND password=%s"

@@ -3,9 +3,7 @@ import drivers.Web.HttpRequest.Headers
 import drivers.Web.HttpRequest.Resource
 from drivers.Web.HttpRequest import httpRequest
 from fake_config.fakes import (
-    fake_connection,
     fake_context,
-    fake_identity,
     contasFake,
     clientsFake,
     fake_authService
@@ -27,8 +25,6 @@ def ui_example():
     accounts_repo = contasFake({}, {})
     clients_repo = clientsFake({})
     context = fake_context()
-    conn = fake_connection()
-    iden = fake_identity(1)
 
     transfer_use_case = TransferFundsUseCase(accounts_repo, context)
     get_accounts = GetBalanceUseCase(accounts_repo, context)

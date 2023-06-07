@@ -10,6 +10,7 @@ from ApplicationService.repositories.transactioncontext import (
     transactioncontext as cntx
 )
 
+
 @dataclass
 class TransactionData:
     debit_acc: int
@@ -18,7 +19,11 @@ class TransactionData:
     date: datetime
 
     def __str__(self):
-        return f"{self.date} | {self.debit_acc} | {self.credit_acc} | {self.value}"
+        elemen_1 = self.date
+        elemen_2 = self.debit_acc
+        elemen_3 = self.credit_acc
+        elemen_4 = self.value
+        return f"{elemen_1} | {elemen_2} | {elemen_3} | {elemen_4}"
 
 
 class GetTransactionsUseCase:

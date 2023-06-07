@@ -15,7 +15,39 @@ logger = logging.getLogger("drivers.Cli.command_line_interface")
 accountID = int
 
 
-def accounts_repl(userIO: inputIO, acc_id: accountID, logged_cases: LoggedUseCases):
+def transfer_money(userIO, acc_id, l_cases):
+    destinationAccount = int(userIO.input(
+        "Enter the ID of the destination account: "
+    ))
+    value = int(userIO.input("How much do you want to transfer? "))
+    try:
+        l_cases.transfer.execute(acc_id, destinationAccount, value)
+        userIO.print("Successful transaction.")
+    except insufficientFundsException:
+        userIO.print("Insufficient funds.")
+    except invalidValueToTransfer as e:
+        userIO.print(f"{e.value} is a non-positive value to transfer.")
+    except AccountDoesNotExistsError:
+        userIO.print("Invalid Account ID.")
+
+
+def show_transactions(userIO, acc_id, l_cases):
+    transactions = l_cases.get_transactions.execute(acc_id)
+    if transactions:
+        for t in transactions:
+            userIO.print(str(t))
+    else:
+        userIO.print("No transactions to show.")
+
+
+def accounts_repl(userIO: inputIO, acc_id: accountID, l_cases: LoggedUseCases):
+    balance_case = l_cases.get_balance
+    options = {
+        "1": lambda: userIO.print(f"R${balance_case.execute(acc_id):.2f}"),
+        "2": lambda: transfer_money(userIO, acc_id, l_cases),
+        "3": lambda: show_transactions(userIO, acc_id, l_cases),
+        "4": None
+    }
     userIO.print("""
             (1) Balance
             (2) Transfer money
@@ -24,36 +56,11 @@ def accounts_repl(userIO: inputIO, acc_id: accountID, logged_cases: LoggedUseCas
         """)
     while True:
         command = userIO.input("->")
-
-        if command == "1":
-            balance = logged_cases.get_balance.execute(acc_id)
-            userIO.print(f"R${balance:.2f}")
-
-        elif command == "2":
-            destinationAccount = int(userIO.input(
-                "Enter the ID of the destination account: "
-            ))
-            value = int(userIO.input("How much do you want to transfer? "))
-            try:
-                logged_cases.transfer.execute(acc_id, destinationAccount, value)
-                userIO.print("Successful transaction.")
-            except insufficientFundsException:
-                userIO.print("Insufficient funds.")
-            except invalidValueToTransfer as e:
-                userIO.print(f"{e.value} is a non-positive value to transfer.")
-            except AccountDoesNotExistsError:
-                userIO.print("Invalid Account ID.")
-
-        elif command == "3":
-            transactions = logged_cases.get_transactions.execute(acc_id)
-            if transactions:
-                for t in transactions:
-                    userIO.print(str(t))
-            else:
-                userIO.print("No transactions to show.")
-
-        elif command == "4":
-            break
+        if command in options:
+            action = options[command]
+            if command == "4":
+                break
+            action()
 
 
 def repl(userIO: inputIO, c_id: int, logged_cases: LoggedUseCases):
@@ -76,6 +83,7 @@ def repl(userIO: inputIO, c_id: int, logged_cases: LoggedUseCases):
                     """)
         elif command == "2":
             break
+
 
 def main(userIO: inputIO,
          auth_service: AuthServiceInterface,
@@ -105,7 +113,8 @@ def main(userIO: inputIO,
             if not username or not password:
                 userIO.print("Login and password should not be empty.")
 
-            created = unlogged_cases.register_client.execute(username, password)
+            register_case = unlogged_cases.register_client
+            created = register_case.execute(username, password)
             if created:
                 userIO.print("Your account has been successfully created!")
             else:

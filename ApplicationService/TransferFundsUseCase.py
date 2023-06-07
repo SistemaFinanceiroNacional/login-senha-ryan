@@ -1,4 +1,6 @@
-from ApplicationService.repositories.transactioncontext import transactioncontext
+from ApplicationService.repositories.transactioncontext import (
+    transactioncontext
+)
 from ApplicationService.repositories.accountsrepositoryinterface import (
     AccountsRepositoryInterface as repo,
     AccountID

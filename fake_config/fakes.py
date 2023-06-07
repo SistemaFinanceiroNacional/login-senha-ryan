@@ -8,7 +8,7 @@ from ApplicationService.repositories.accountsrepositoryinterface import (
     Balance, ClientID
 )
 from Domain.transaction import create_transaction
-from ApplicationService.repositories.transactioncontext import(
+from ApplicationService.repositories.transactioncontext import (
     transactioncontext
 )
 from ApplicationService.repositories.connectionInterface import connection_pool
@@ -131,6 +131,7 @@ class contasFake(AccountsRepositoryInterface):
     def get_by_client_id(self, client_id: ClientID) -> Iterable[AccountID]:
         accounts_id = [acc.get_id() for acc in self.actualAccounts[client_id]]
         return accounts_id
+
 
 def existing_pedros_account():
     t = create_transaction(2, 3, 400)

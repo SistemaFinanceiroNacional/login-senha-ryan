@@ -13,7 +13,7 @@ class Account:
         self._id = account_id
         self._transactions = transactions
 
-    def get_balance(self):
+    def get_balance(self) -> float:
         balance = 0
         for t in self._transactions:
             if t.d_acc == self._id:
