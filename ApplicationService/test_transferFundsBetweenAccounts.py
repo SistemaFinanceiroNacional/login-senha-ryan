@@ -98,4 +98,4 @@ def test_transfer_not_existing_login_destiny():
         useCase.execute(ryanID, wrong_id, 50)
         assert False
     except AccountDoesNotExistsError as e:
-        assert e.destinyID == 4
+        assert str(e) == "4 does not exists as a login."
