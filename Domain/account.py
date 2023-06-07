@@ -3,17 +3,18 @@ from Domain.transaction import Transaction, create_transaction
 
 
 AccountID = int
+Amount = float
 
 
 class Account:
     def __init__(self,
-                 account_id: int,
+                 account_id: AccountID,
                  transactions: List[Transaction]
                  ):
         self._id = account_id
         self._transactions = transactions
 
-    def get_balance(self) -> float:
+    def get_balance(self) -> Amount:
         balance = 0
         for t in self._transactions:
             if t.d_acc == self._id:
@@ -22,7 +23,7 @@ class Account:
                 balance += t.value
         return balance
 
-    def transfer(self, destiny_id: int, value: float) -> None:
+    def transfer(self, destiny_id: AccountID, value: Amount) -> None:
         if value <= 0:
             raise invalidValueToTransfer(value)
 
@@ -41,13 +42,13 @@ class Account:
 
 
 class insufficientFundsException(Exception):
-    def __init__(self, balance: float, value: float):
+    def __init__(self, balance: Amount, value: Amount):
         self.balance = balance
         self.value = value
         super().__init__(f"{self.balance} is insufficient to get {self.value}")
 
 
 class invalidValueToTransfer(Exception):
-    def __init__(self, value: float):
+    def __init__(self, value: Amount):
         self.value = value
         super().__init__(f"{self.value} is a non-positive value to transfer.")

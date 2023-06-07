@@ -43,7 +43,7 @@ def test_transfer_correct_ryan_balance():
     useCase = TransferFundsUseCase(acc_repository, context)
     useCase.execute(ryanID, joaoID, 100)
 
-    ryan_balance = acc_repository.get_balance(ryanID)
+    ryan_balance = acc_repository.get_by_id(ryanID).get_balance()
     assert ryan_balance == 0
 
 

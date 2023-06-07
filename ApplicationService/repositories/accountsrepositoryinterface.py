@@ -1,16 +1,17 @@
 from typing import Iterable
-from Domain.account import Account
+from Domain.account import (
+    Account,
+    AccountID,
+)
 
 ClientID = int
-AccountID = int
-Balance = float
 
 
 class AccountsRepositoryInterface:
     def add_account(self, client_id: ClientID) -> bool:
         raise NotImplementedError
 
-    def exists(self, destID: int) -> bool:
+    def exists(self, account_id: AccountID) -> bool:
         raise NotImplementedError
 
     def update(self, account: Account) -> None:

@@ -1,11 +1,11 @@
 from ApplicationService.repositories.accountsrepositoryinterface import (
     AccountsRepositoryInterface as a_repo,
-    AccountID,
-    Balance
+    AccountID
 )
 from ApplicationService.repositories.transactioncontextinterface import (
     TransactionContextInterface as cntx
 )
+from Domain.account import Amount
 
 
 class GetBalanceUseCase:
@@ -13,7 +13,7 @@ class GetBalanceUseCase:
         self._acc_repository = acc_repository
         self._db_context = db_context
 
-    def execute(self, acc_id: AccountID) -> Balance:
+    def execute(self, acc_id: AccountID) -> Amount:
         with self._db_context:
             acc = self._acc_repository.get_by_id(acc_id)
             acc_balance = acc.get_balance()

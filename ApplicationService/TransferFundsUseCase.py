@@ -3,11 +3,12 @@ from ApplicationService.repositories.transactioncontextinterface import (
 )
 from ApplicationService.repositories.accountsrepositoryinterface import (
     AccountsRepositoryInterface as a_repo,
-    AccountID
+    AccountID,
 )
 from ApplicationService.contexterrors.accountdoesnotexistserror import (
     AccountDoesNotExistsError
 )
+from Domain.account import Amount
 
 
 class TransferFundsUseCase:
@@ -21,7 +22,7 @@ class TransferFundsUseCase:
     def execute(self,
                 acc_id: AccountID,
                 dest_id: AccountID,
-                amount: float
+                amount: Amount
                 ) -> bool:
         with self.transactional_context:
             existence = self.acc_repository.exists(dest_id)
