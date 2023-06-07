@@ -18,7 +18,11 @@ class TransferFundsUseCase:
         self.acc_repository = acc_repository
         self.transactional_context = transactional_context
 
-    def execute(self, acc_id: AccountID, dest_id: AccountID, amount: float) -> bool:
+    def execute(self,
+                acc_id: AccountID,
+                dest_id: AccountID,
+                amount: float
+                ) -> bool:
         with self.transactional_context:
             existence = self.acc_repository.exists(dest_id)
             if not existence:
