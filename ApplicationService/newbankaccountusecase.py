@@ -1,5 +1,5 @@
 from ApplicationService.repositories.accountsrepositoryinterface import (
-    AccountsRepositoryInterface as iar,
+    AccountsRepositoryInterface as a_repo,
     ClientID
 )
 from ApplicationService.repositories.transactioncontext import (
@@ -8,7 +8,7 @@ from ApplicationService.repositories.transactioncontext import (
 
 
 class NewBankAccountUseCase:
-    def __init__(self, acc_repository: iar, db_context: cntx):
+    def __init__(self, acc_repository: a_repo, db_context: cntx):
         self._acc_repository = acc_repository
         self._db_context = db_context
 
