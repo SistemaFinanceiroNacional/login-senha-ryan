@@ -1,9 +1,11 @@
 from typing import Iterable
 from Domain.account import (
     Account,
-    AccountID,
 )
-from Domain.CommonTypes.types import ClientID
+from Domain.CommonTypes.types import (
+    ClientID,
+    AccountID
+)
 
 
 class AccountsRepositoryInterface:
