@@ -1,11 +1,11 @@
 from ApplicationService.repositories.accountsrepositoryinterface import (
-    AccountsRepositoryInterface as a_repo,
-    AccountID
+    AccountsRepositoryInterface as a_repo
 )
 from ApplicationService.repositories.transactioncontextinterface import (
     TransactionContextInterface as cntx
 )
 from Domain.account import Amount
+from Domain.CommonTypes.types import AccountID
 
 
 class GetBalanceUseCase:

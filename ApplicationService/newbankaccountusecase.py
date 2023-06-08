@@ -1,10 +1,10 @@
 from ApplicationService.repositories.accountsrepositoryinterface import (
-    AccountsRepositoryInterface as a_repo,
-    ClientID
+    AccountsRepositoryInterface as a_repo
 )
 from ApplicationService.repositories.transactioncontextinterface import (
     TransactionContextInterface as cntx
 )
+from Domain.CommonTypes.types import ClientID
 
 
 class NewBankAccountUseCase:
