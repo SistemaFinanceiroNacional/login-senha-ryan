@@ -1,6 +1,5 @@
 from maybe import maybe
-
-ClientID = int
+from Domain.CommonTypes.types import ClientID
 
 
 class AuthServiceInterface:

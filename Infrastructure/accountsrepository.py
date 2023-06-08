@@ -3,7 +3,7 @@ from Domain.transaction import Transaction, create_transaction_from_raw
 from Infrastructure.connection_pool import (
     connection_pool as cpool,
 )
-from ApplicationService.repositories.identityinterface import (
+from Infrastructure.identityinterface import (
     identityInterface
 )
 from ApplicationService.repositories.accountsrepositoryinterface import (

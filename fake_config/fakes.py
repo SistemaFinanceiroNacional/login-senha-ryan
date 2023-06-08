@@ -1,7 +1,7 @@
 from typing import Iterable
 
 from Domain.account import Account
-from ApplicationService.repositories.identityinterface import identityInterface
+from Infrastructure.identityinterface import identityInterface
 from ApplicationService.repositories.accountsrepositoryinterface import (
     AccountsRepositoryInterface,
     AccountID,
@@ -11,7 +11,7 @@ from Domain.transaction import create_transaction
 from ApplicationService.repositories.transactioncontextinterface import (
     TransactionContextInterface
 )
-from ApplicationService.repositories.connectionInterface import connection_pool
+from Infrastructure.connectionInterface import connection_pool
 from ApplicationService.repositories.clientsrepositoryinterface import (
     ClientsRepositoryInterface
 )
@@ -93,7 +93,6 @@ class clientsFake(ClientsRepositoryInterface):
 
 class contasFake(AccountsRepositoryInterface):
     def __init__(self, actualAccounts, newAccounts):
-        # self.actualAccounts: set[ClientID, tuple[str, str]] = actualAccounts
         self.actualAccounts: dict[ClientID, list[Account]] = actualAccounts
         self.newAccounts = newAccounts
 
@@ -103,15 +102,6 @@ class contasFake(AccountsRepositoryInterface):
             return True
         else:
             return False
-
-    # def update(self, intAccount: Account):
-    #     login = intAccount.get_id()
-    #     balance = intAccount.get_balance()
-    #
-    #     if login in self.actualAccounts:
-    #         account = self.actualAccounts.get(login)
-    #         account._balance = balance
-    #         self.actualAccounts[login] = account
 
     def exists(self, login):
         return login in self.actualAccounts

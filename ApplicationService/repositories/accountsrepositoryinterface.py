@@ -3,8 +3,7 @@ from Domain.account import (
     Account,
     AccountID,
 )
-
-ClientID = int
+from Domain.CommonTypes.types import ClientID
 
 
 class AccountsRepositoryInterface:

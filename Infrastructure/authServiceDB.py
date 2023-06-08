@@ -4,7 +4,7 @@ from Infrastructure.authserviceinterface import (
     AuthServiceInterface,
     ClientID
 )
-from ApplicationService.repositories.identityinterface import (
+from Infrastructure.identityinterface import (
     identityInterface
 )
 from ApplicationService.repositories.transactioncontextinterface import (

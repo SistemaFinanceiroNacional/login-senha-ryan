@@ -2,7 +2,7 @@ from ApplicationService.repositories.clientsrepositoryinterface import (
     ClientsRepositoryInterface,
     pw
 )
-from ApplicationService.repositories.identityinterface import (
+from Infrastructure.identityinterface import (
     identityInterface
 )
 from Infrastructure.connection_pool import (

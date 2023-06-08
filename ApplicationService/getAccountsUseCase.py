@@ -1,12 +1,11 @@
 from typing import Iterable
-
-from Infrastructure.accountsrepository import (
-    AccountsRepositoryInterface as a_repo,
-    ClientID,
-    AccountID,
-)
 from ApplicationService.repositories.transactioncontextinterface import (
     TransactionContextInterface as cntx
+)
+from ApplicationService.repositories.accountsrepositoryinterface import (
+    AccountID,
+    ClientID,
+    AccountsRepositoryInterface as a_repo
 )
 
 
