@@ -1,8 +1,7 @@
 from typing import List
 from Domain.transaction import Transaction, create_transaction
+from Domain.CommonTypes.types import AccountID
 
-
-AccountID = int
 Amount = float
 
 
