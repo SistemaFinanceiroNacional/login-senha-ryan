@@ -42,12 +42,9 @@ class Account:
 
 class insufficientFundsException(Exception):
     def __init__(self, balance: Amount, value: Amount):
-        self.balance = balance
-        self.value = value
-        super().__init__(f"{self.balance} is insufficient to get {self.value}")
+        super().__init__(f"{balance} is insufficient to get {value}")
 
 
 class invalidValueToTransfer(Exception):
     def __init__(self, value: Amount):
-        self.value = value
-        super().__init__(f"{self.value} is a non-positive value to transfer.")
+        super().__init__(f"{value} is a non-positive value to transfer.")
