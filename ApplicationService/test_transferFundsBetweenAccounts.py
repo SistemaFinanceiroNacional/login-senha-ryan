@@ -62,7 +62,7 @@ def test_transfer_zero_amount():
         assert False
 
     except invalidValueToTransfer as e:
-        assert e.value == 0
+        assert str(e) == "0 is a non-positive value to transfer."
 
 
 def test_transfer_negative_amount():
@@ -80,7 +80,7 @@ def test_transfer_negative_amount():
         assert False
 
     except invalidValueToTransfer as e:
-        assert e.value == -50
+        assert str(e) == "-50 is a non-positive value to transfer."
 
 
 def test_transfer_not_existing_login_destiny():
