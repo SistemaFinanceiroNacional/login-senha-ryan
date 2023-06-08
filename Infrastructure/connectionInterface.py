@@ -1,5 +1,5 @@
 from typing import Protocol, Tuple, List
-from ApplicationService.repositories.identityinterface import identityInterface
+from Infrastructure.identityinterface import identityInterface
 
 
 class cursor(Protocol):

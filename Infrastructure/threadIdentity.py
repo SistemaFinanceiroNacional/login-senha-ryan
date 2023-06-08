@@ -1,5 +1,5 @@
 from threading import current_thread
-from ApplicationService.repositories.identityinterface import identityInterface
+from Infrastructure.identityinterface import identityInterface
 
 
 class thread_identity(identityInterface):

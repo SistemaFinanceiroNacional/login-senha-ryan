@@ -2,8 +2,8 @@ from os import getenv
 from psycopg2 import connect
 from threading import Condition
 from typing import Callable
-from ApplicationService.repositories.identityinterface import identityInterface
-from ApplicationService.repositories.connectionInterface import (
+from Infrastructure.identityinterface import identityInterface
+from Infrastructure.connectionInterface import (
     cursor,
     connection,
     connection_pool
