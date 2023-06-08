@@ -9,6 +9,7 @@ from ApplicationService.repositories.accountsrepositoryinterface import (
 from ApplicationService.repositories.transactioncontextinterface import (
     TransactionContextInterface as cntx
 )
+from Domain.transaction import Transaction
 
 
 @dataclass
@@ -18,12 +19,18 @@ class TransactionData:
     value: float
     date: datetime
 
+    def __init__(self, transaction: Transaction):
+        self.debit_acc = transaction.d_acc
+        self.credit_acc = transaction.c_acc
+        self.value = transaction.value
+        self.date = transaction.date
+
     def __str__(self):
-        elemen_1 = self.date
-        elemen_2 = self.debit_acc
-        elemen_3 = self.credit_acc
-        elemen_4 = self.value
-        return f"{elemen_1} | {elemen_2} | {elemen_3} | {elemen_4}"
+        date = self.date
+        debit_acc = self.debit_acc
+        credit_acc = self.credit_acc
+        value = self.value
+        return f"{date} | {debit_acc} | {credit_acc} | {value}"
 
 
 class GetTransactionsUseCase:
@@ -35,16 +42,8 @@ class GetTransactionsUseCase:
         with self._db_context:
             acc = self._acc_repository.get_by_id(acc_id)
             acc_transactions = acc.get_transactions()
-
         acc_transactions_data = []
         for t in acc_transactions:
-            t_debit = t.d_acc
-            t_credit = t.c_acc
-            t_value = t.value
-            t_date = t.date
-
-            t_data = TransactionData(t_debit, t_credit, t_value, t_date)
-
+            t_data = TransactionData(t)
             acc_transactions_data.append(t_data)
-
         return acc_transactions_data
