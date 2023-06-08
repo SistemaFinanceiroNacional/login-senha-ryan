@@ -2,13 +2,13 @@ from ApplicationService.repositories.transactioncontextinterface import (
     TransactionContextInterface as t_cntx
 )
 from ApplicationService.repositories.accountsrepositoryinterface import (
-    AccountsRepositoryInterface as a_repo,
-    AccountID,
+    AccountsRepositoryInterface as a_repo
 )
 from ApplicationService.contexterrors.accountdoesnotexistserror import (
     AccountDoesNotExistsError
 )
 from Domain.account import Amount
+from Domain.CommonTypes.types import AccountID
 
 
 class TransferFundsUseCase:

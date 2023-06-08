@@ -3,9 +3,11 @@ from ApplicationService.repositories.transactioncontextinterface import (
     TransactionContextInterface as cntx
 )
 from ApplicationService.repositories.accountsrepositoryinterface import (
-    AccountID,
-    ClientID,
     AccountsRepositoryInterface as a_repo
+)
+from Domain.CommonTypes.types import (
+    AccountID,
+    ClientID
 )
 
 

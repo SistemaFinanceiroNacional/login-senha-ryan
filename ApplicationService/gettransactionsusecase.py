@@ -3,13 +3,13 @@ from datetime import datetime
 from typing import List
 
 from ApplicationService.repositories.accountsrepositoryinterface import (
-    AccountID,
     AccountsRepositoryInterface as a_repo
 )
 from ApplicationService.repositories.transactioncontextinterface import (
     TransactionContextInterface as cntx
 )
 from Domain.transaction import Transaction
+from Domain.CommonTypes.types import AccountID
 
 
 @dataclass
