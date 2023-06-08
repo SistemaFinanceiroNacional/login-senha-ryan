@@ -2,9 +2,9 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import List
 
-from Infrastructure.accountsrepository import (
-    AccountsRepositoryInterface as a_repo,
-    AccountID
+from ApplicationService.repositories.accountsrepositoryinterface import (
+    AccountID,
+    AccountsRepositoryInterface as a_repo
 )
 from ApplicationService.repositories.transactioncontextinterface import (
     TransactionContextInterface as cntx
