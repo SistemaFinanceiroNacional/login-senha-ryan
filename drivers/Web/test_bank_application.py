@@ -33,7 +33,7 @@ def ui_example():
     new_bank_use_case = NewBankAccountUseCase(accounts_repo, context)
     register_use_case = RegisterClientUseCase(clients_repo, context, Password)
 
-    auth = fake_authService()
+    auth = fake_authService({})
     unlogged = UnloggedUseCases(register_use_case)
     logged = LoggedUseCases(transfer_use_case,
                             get_balance,
