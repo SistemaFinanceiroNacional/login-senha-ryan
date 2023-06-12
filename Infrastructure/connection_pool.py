@@ -2,63 +2,63 @@ from os import getenv
 from psycopg2 import connect
 from threading import Condition
 from typing import Callable
-from Infrastructure.identityinterface import identityInterface
+from Infrastructure.identityinterface import IdentityInterface
 from Infrastructure.connectionInterface import (
-    cursor,
-    connection,
-    connection_pool
+    Cursor,
+    Connection,
+    ConnectionPool
 )
 
 
-class postgresql_connection_pool(connection_pool):
+class PostgresqlConnectionPool(ConnectionPool):
     def __init__(
             self,
-            createConnection: Callable[[], connection] = None,
+            create_connection: Callable[[], Connection] = None,
             max_connections: int = 1,
             condition=None
     ):
-        self.create_connection = createConnection or psycopg2_create_connection
-        self.used_connections: dict[int, tuple[connection, cursor]] = dict()
-        self.max_connections = max_connections
-        self.free_connections: list[tuple[connection, cursor]] = []
+        self.create_conn = create_connection or psycopg2_create_connection
+        self.used_conns: dict[int, tuple[Connection, Cursor]] = dict()
+        self.max_conns = max_connections
+        self.free_conns: list[tuple[Connection, Cursor]] = []
         self.condition = condition() if condition else Condition()
 
-    def get_connection(self, identifier: identityInterface) -> connection:
+    def get_connection(self, identifier: IdentityInterface) -> Connection:
         id_conn = identifier.value()
         with self.condition:
-            if id_conn not in self.used_connections.keys():
+            if id_conn not in self.used_conns.keys():
                 while True:
-                    if self.free_connections:
-                        conn = self.free_connections.pop()
-                        self.used_connections[id_conn] = conn
+                    if self.free_conns:
+                        conn = self.free_conns.pop()
+                        self.used_conns[id_conn] = conn
                         break
 
-                    elif len(self.used_connections) < self.max_connections:
-                        conn = self.create_connection()
-                        self.used_connections[id_conn] = (conn, conn.cursor())
+                    elif len(self.used_conns) < self.max_conns:
+                        conn = self.create_conn()
+                        self.used_conns[id_conn] = (conn, conn.cursor())
                         break
 
                     else:
                         self.condition.wait()
 
-            return self.used_connections[id_conn][0]
+            return self.used_conns[id_conn][0]
 
-    def get_cursor(self, identifier: identityInterface) -> cursor:
+    def get_cursor(self, identifier: IdentityInterface) -> Cursor:
         id_conn = identifier.value()
         with self.condition:
-            if id_conn not in self.used_connections.keys():
-                conn = self.create_connection()
-                self.used_connections[id_conn] = (conn, conn.cursor())
+            if id_conn not in self.used_conns.keys():
+                conn = self.create_conn()
+                self.used_conns[id_conn] = (conn, conn.cursor())
 
-        return self.used_connections[id_conn][1]
+        return self.used_conns[id_conn][1]
 
-    def refund(self, identifier: identityInterface) -> None:
+    def refund(self, identifier: IdentityInterface) -> None:
         with self.condition:
-            if identifier.value() in self.used_connections.keys():
-                conn = self.used_connections.pop(identifier.value())
-                self.free_connections.append(conn)
+            if identifier.value() in self.used_conns.keys():
+                conn = self.used_conns.pop(identifier.value())
+                self.free_conns.append(conn)
                 self.condition.notify_all()
 
 
-def psycopg2_create_connection() -> connection:
+def psycopg2_create_connection() -> Connection:
     return connect(getenv("DB_STRING_CONNECTION"))

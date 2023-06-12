@@ -1,13 +1,13 @@
 from drivers.Web.HttpRequest import IncompleteHttpRequest
 from drivers.Web.HttpRequest.Headers import make_headers
-from drivers.Web.HttpRequest.Resource import makeResource
-from drivers.Web.HttpRequest.FirstLine import getFirstLine
+from drivers.Web.HttpRequest.Resource import make_resource
+from drivers.Web.HttpRequest.FirstLine import get_first_line
 import logging
 
 logger = logging.getLogger("drivers.Web.HttpRequest.httpRequest")
 
 
-class httpRequest:
+class HttpRequest:
     headers: dict[str, str]
 
     def __init__(self, header, body, method, resource, version):
@@ -17,50 +17,50 @@ class httpRequest:
         self.resource = resource
         self.version = version
 
-    def getHeaders(self) -> dict[str, str]:
+    def get_headers(self) -> dict[str, str]:
         return self.headers
 
-    def getBody(self):
+    def get_body(self):
         return self.body
 
-    def getMethod(self):
+    def get_method(self):
         return self.method
 
-    def getResource(self):
+    def get_resource(self):
         return self.resource
 
-    def getVersion(self):
+    def get_version(self):
         return self.version
 
 
-def makeQueryParameters(raw_resource: str) -> dict[str, str]:
+def make_query_parameters(raw_resource: str) -> dict[str, str]:
     logger.debug(f"String: {raw_resource}")
-    keysAndValues = raw_resource.split("&")
-    queryParameters = {}
-    for keyAndValue in keysAndValues:
-        key, value = keyAndValue.split("=")
-        queryParameters[key] = value
+    keys_and_values = raw_resource.split("&")
+    query_parameters = {}
+    for key_and_value in keys_and_values:
+        key, value = key_and_value.split("=")
+        query_parameters[key] = value
 
-    return queryParameters
+    return query_parameters
 
 
-def getNextHttpRequest(socket):
-    method, resource, version = getFirstLine(
+def get_next_http_request(socket):
+    method, resource, version = get_first_line(
         socket,
-        makeResource,
-        makeQueryParameters
+        make_resource,
+        make_query_parameters
     )
     logger.debug(f"Method: {method}; Resource: {resource}; Version: {version}")
     headers = make_headers(socket)
     logger.debug(f"Headers: {headers}")
-    body = getBody(socket, headers)
+    body = get_body(socket, headers)
     logger.debug(f"Body: {body}")
-    request = httpRequest(headers, body, method, resource, version)
+    request = HttpRequest(headers, body, method, resource, version)
 
     return request
 
 
-def getBody(socket, headers):
+def get_body(socket, headers):
     default_length = '0'
     length = int(headers.get('Content-Length', default_length))
     body = socket.recv(length)

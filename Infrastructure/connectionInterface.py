@@ -1,8 +1,8 @@
 from typing import Protocol, Tuple, List
-from Infrastructure.identityinterface import identityInterface
+from Infrastructure.identityinterface import IdentityInterface
 
 
-class cursor(Protocol):
+class Cursor(Protocol):
     def execute(self, *args) -> None:
         raise NotImplementedError
 
@@ -13,8 +13,8 @@ class cursor(Protocol):
         raise NotImplementedError
 
 
-class connection(Protocol):
-    def cursor(self) -> cursor:
+class Connection(Protocol):
+    def cursor(self) -> Cursor:
         raise NotImplementedError
 
     def commit(self) -> None:
@@ -24,12 +24,12 @@ class connection(Protocol):
         raise NotImplementedError
 
 
-class connection_pool:
-    def get_connection(self, identifier: identityInterface) -> connection:
+class ConnectionPool:
+    def get_connection(self, identifier: IdentityInterface) -> Connection:
         raise NotImplementedError()
 
-    def get_cursor(self, identifier: identityInterface) -> cursor:
+    def get_cursor(self, identifier: IdentityInterface) -> Cursor:
         raise NotImplementedError()
 
-    def refund(self, identifier: identityInterface) -> None:
+    def refund(self, identifier: IdentityInterface) -> None:
         raise NotImplementedError()

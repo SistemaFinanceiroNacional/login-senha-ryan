@@ -4,204 +4,203 @@ from drivers.Web.HttpRequest import (
     FirstLine,
     Resource
 )
-from fake_config.fakes import fakeSocket
+from fake_config.fakes import FakeSocket
 import pytest
 import logging
-
 
 logging.basicConfig(level=logging.DEBUG)
 
 
 def qmaker():
-    return httpRequest.makeQueryParameters
+    return httpRequest.make_query_parameters
 
 
 def rmaker():
-    return Resource.makeResource
+    return Resource.make_resource
 
 
 @pytest.mark.http_request
 def test_default_request():
-    noTagsHeader = fakeSocket(b'GET /bank/Main-page HTTP/1.1\r\n\r\n')
-    request = httpRequest.getNextHttpRequest(noTagsHeader)
-    assert len(request.getHeaders()) == 0
+    no_tags_header = FakeSocket(b'GET /bank/Main-page HTTP/1.1\r\n\r\n')
+    request = httpRequest.get_next_http_request(no_tags_header)
+    assert len(request.get_headers()) == 0
 
 
 @pytest.mark.http_request
 def test_host_header():
-    oneTagsHeader = fakeSocket(b'GET /bank/Main-page HTTP/1.1\r\n'
-                               b'Host: www.ryanbanco.com.br\r\n\r\n')
-    request = httpRequest.getNextHttpRequest(oneTagsHeader)
-    assert len(request.getHeaders()) == 1
+    one_tags_header = FakeSocket(b'GET /bank/Main-page HTTP/1.1\r\n'
+                                 b'Host: www.ryanbanco.com.br\r\n\r\n')
+    request = httpRequest.get_next_http_request(one_tags_header)
+    assert len(request.get_headers()) == 1
 
 
 @pytest.mark.http_request
 def test_host_header_value():
-    oneTagsHeader = fakeSocket(b'GET /bank/Main-page HTTP/1.1\r\n'
-                               b'Host: www.ryanbanco.com.br\r\n\r\n')
-    request = httpRequest.getNextHttpRequest(oneTagsHeader)
-    assert request.getHeaders()['Host'] == 'www.ryanbanco.com.br'
+    one_tags_header = FakeSocket(b'GET /bank/Main-page HTTP/1.1\r\n'
+                                 b'Host: www.ryanbanco.com.br\r\n\r\n')
+    request = httpRequest.get_next_http_request(one_tags_header)
+    assert request.get_headers()['Host'] == 'www.ryanbanco.com.br'
 
 
 @pytest.mark.http_request
 def test_2_headers():
-    oneTagsHeader = fakeSocket(b'GET /bank/Main-page HTTP/1.1\r\n'
-                               b'Host: www.ryanbanco.com.br\r\n'
-                               b'User-Agent: Mozilla 5.0\r\n\r\n')
-    request = httpRequest.getNextHttpRequest(oneTagsHeader)
-    assert request.getHeaders()['User-Agent'] == 'Mozilla 5.0'
+    one_tags_header = FakeSocket(b'GET /bank/Main-page HTTP/1.1\r\n'
+                                 b'Host: www.ryanbanco.com.br\r\n'
+                                 b'User-Agent: Mozilla 5.0\r\n\r\n')
+    request = httpRequest.get_next_http_request(one_tags_header)
+    assert request.get_headers()['User-Agent'] == 'Mozilla 5.0'
 
 
 @pytest.mark.http_request
 def test_3_headers():
-    oneTagsHeader = fakeSocket(b'GET /bank/Main-page HTTP/1.1\r\n'
-                               b'Host: www.ryanbanco.com.br\r\n'
-                               b'User-Agent: Mozilla 5.0\r\n'
-                               b'Accept-Language: en-US\r\n\r\n')
-    request = httpRequest.getNextHttpRequest(oneTagsHeader)
-    assert request.getHeaders()['Accept-Language'] == 'en-US'
+    one_tags_header = FakeSocket(b'GET /bank/Main-page HTTP/1.1\r\n'
+                                 b'Host: www.ryanbanco.com.br\r\n'
+                                 b'User-Agent: Mozilla 5.0\r\n'
+                                 b'Accept-Language: en-US\r\n\r\n')
+    request = httpRequest.get_next_http_request(one_tags_header)
+    assert request.get_headers()['Accept-Language'] == 'en-US'
 
 
 @pytest.mark.http_request
-def test_getting_methodGet():
-    socket = fakeSocket(b'GET /bank/Main-page HTTP/1.1\r\n')
+def test_getting_method_get():
+    socket = FakeSocket(b'GET /bank/Main-page HTTP/1.1\r\n')
     q_maker, r_maker = qmaker(), rmaker()
-    method, _, _ = FirstLine.getFirstLine(socket, r_maker, q_maker)
+    method, _, _ = FirstLine.get_first_line(socket, r_maker, q_maker)
     assert method == "GET"
 
 
 @pytest.mark.http_request
-def test_getting_methodPost():
-    socket = fakeSocket(b'POST /bank/Main-page HTTP/1.1\r\n')
+def test_getting_method_post():
+    socket = FakeSocket(b'POST /bank/Main-page HTTP/1.1\r\n')
     q_maker, r_maker = qmaker(), rmaker()
-    method, _, _ = FirstLine.getFirstLine(socket, r_maker, q_maker)
+    method, _, _ = FirstLine.get_first_line(socket, r_maker, q_maker)
     assert method == "POST"
 
 
 @pytest.mark.http_request
-def test_resource_getEndpoint():
-    socket = fakeSocket(b'GET /bank/Main-page HTTP/1.1\r\n')
+def test_resource_get_endpoint():
+    socket = FakeSocket(b'GET /bank/Main-page HTTP/1.1\r\n')
     q_maker, r_maker = qmaker(), rmaker()
-    _, resource, _ = FirstLine.getFirstLine(socket, r_maker, q_maker)
-    assert resource.getEndpoint() == "/bank/Main-page"
+    _, resource, _ = FirstLine.get_first_line(socket, r_maker, q_maker)
+    assert resource.get_endpoint() == "/bank/Main-page"
 
 
 @pytest.mark.http_request
-def test_resource_getQueryParameters():
-    socket = fakeSocket(b'GET /bank/Main-page HTTP/1.1\r\n')
+def test_resource_get_query_parameters():
+    socket = FakeSocket(b'GET /bank/Main-page HTTP/1.1\r\n')
     q_maker, r_maker = qmaker(), rmaker()
-    _, resource, _ = FirstLine.getFirstLine(socket, r_maker, q_maker)
-    assert resource.getQueryParameters() == {}
+    _, resource, _ = FirstLine.get_first_line(socket, r_maker, q_maker)
+    assert resource.get_query_parameters() == {}
 
 
 @pytest.mark.http_request
 def test_getting_version():
-    socket = fakeSocket(b'GET /bank/Main-page HTTP/1.1\r\n')
+    socket = FakeSocket(b'GET /bank/Main-page HTTP/1.1\r\n')
     q_maker, r_maker = qmaker(), rmaker()
-    _, _, version = FirstLine.getFirstLine(socket, r_maker, q_maker)
+    _, _, version = FirstLine.get_first_line(socket, r_maker, q_maker)
     assert version == "1.1"
 
 
 @pytest.mark.http_request
-def test_getBody():
-    oneTagHeader = {'Content-Length': '20'}
-    socket = fakeSocket(b'a' * 20)
-    body = httpRequest.getBody(socket, oneTagHeader)
-    assert body == b'a'*20
+def test_get_body():
+    one_tag_header = {'Content-Length': '20'}
+    socket = FakeSocket(b'a' * 20)
+    body = httpRequest.get_body(socket, one_tag_header)
+    assert body == b'a' * 20
 
 
 @pytest.mark.http_request
-def test_getBody_size_limited():
-    oneTagHeader = {'Content-Length': '20'}
-    socket = fakeSocket(b'a' * 50)
-    body = httpRequest.getBody(socket, oneTagHeader)
-    assert body == b'a'*20
+def test_get_body_size_limited():
+    one_tag_header = {'Content-Length': '20'}
+    socket = FakeSocket(b'a' * 50)
+    body = httpRequest.get_body(socket, one_tag_header)
+    assert body == b'a' * 20
 
 
 @pytest.mark.http_request
-def test_getBody_incomplete_request():
-    oneTagHeader = {'Content-Length': '20'}
-    socket = fakeSocket(b'a' * 15)
+def test_get_body_incomplete_request():
+    one_tag_header = {'Content-Length': '20'}
+    socket = FakeSocket(b'a' * 15)
     with pytest.raises(IncompleteHttpRequest.IncompleteHttpRequest):
-        httpRequest.getBody(socket, oneTagHeader)
+        httpRequest.get_body(socket, one_tag_header)
 
 
 @pytest.mark.http_request
-def test_getBody_limited_to_zero():
-    oneTagHeader = {b'Content-Length': b'0'}
-    socket = fakeSocket(b'a' * 15)
-    body = httpRequest.getBody(socket, oneTagHeader)
+def test_get_body_limited_to_zero():
+    one_tag_header = {b'Content-Length': b'0'}
+    socket = FakeSocket(b'a' * 15)
+    body = httpRequest.get_body(socket, one_tag_header)
     assert body == b''
 
 
 @pytest.mark.http_request
-def test_getBody_noContentLength():
-    oneTagHeader = {}
-    socket = fakeSocket(b'a' * 15)
-    body = httpRequest.getBody(socket, oneTagHeader)
+def test_get_body_no_content_length():
+    one_tag_header = {}
+    socket = FakeSocket(b'a' * 15)
+    body = httpRequest.get_body(socket, one_tag_header)
     assert body == b''
 
 
 @pytest.mark.http_request_getResource
 def test_endpoint():
-    socket = fakeSocket(b'GET /bank/main-page?login=ryanbanco&password=abc123'
+    socket = FakeSocket(b'GET /bank/main-page?login=ryanbanco&password=abc123'
                         b' HTTP/1.1\r\n\r\n')
-    request = httpRequest.getNextHttpRequest(socket)
-    assert request.getResource().getEndpoint() == "/bank/main-page"
+    request = httpRequest.get_next_http_request(socket)
+    assert request.get_resource().get_endpoint() == "/bank/main-page"
 
 
 @pytest.mark.http_request_getResource
-def test_queryParameters():
-    socket = fakeSocket(b'GET /bank/main-page?login=ryanbanco&password=abc123'
+def test_query_parameters():
+    socket = FakeSocket(b'GET /bank/main-page?login=ryanbanco&password=abc123'
                         b' HTTP/1.1\r\n\r\n')
-    request = httpRequest.getNextHttpRequest(socket)
-    queryParameters = request.getResource().getQueryParameters()
-    assert queryParameters == {"login": "ryanbanco", "password": "abc123"}
+    request = httpRequest.get_next_http_request(socket)
+    query_parameters = request.get_resource().get_query_parameters()
+    assert query_parameters == {"login": "ryanbanco", "password": "abc123"}
 
 
 @pytest.mark.http_request_getResource
-def test_NO_queryParameters():
-    socket = fakeSocket(b'GET /bank/main-page? HTTP/1.1\r\n\r\n')
-    request = httpRequest.getNextHttpRequest(socket)
-    assert request.getResource().getQueryParameters() == {}
+def test_no_query_parameters():
+    socket = FakeSocket(b'GET /bank/main-page? HTTP/1.1\r\n\r\n')
+    request = httpRequest.get_next_http_request(socket)
+    assert request.get_resource().get_query_parameters() == {}
 
 
 @pytest.mark.http_request_getResource
-def test_NO_queryParameters_no_interrogation_point():
-    socket = fakeSocket(b'GET /bank/main-page HTTP/1.1\r\n\r\n')
-    request = httpRequest.getNextHttpRequest(socket)
-    assert request.getResource().getQueryParameters() == {}
+def test_no_query_parameters_no_interrogation_point():
+    socket = FakeSocket(b'GET /bank/main-page HTTP/1.1\r\n\r\n')
+    request = httpRequest.get_next_http_request(socket)
+    assert request.get_resource().get_query_parameters() == {}
 
 
 @pytest.mark.http_request_getBody
-def test_getNextHttpRequest_complete():
-    socket = fakeSocket(b'POST / HTTP/1.1\r\n'
+def test_get_next_http_request_complete():
+    socket = FakeSocket(b'POST / HTTP/1.1\r\n'
                         b'Content-Length: 31\r\n'
                         b'\r\nlogin=ryanbanco&password=abc123')
-    request = httpRequest.getNextHttpRequest(socket)
-    assert request.getBody() == b'login=ryanbanco&password=abc123'
+    request = httpRequest.get_next_http_request(socket)
+    assert request.get_body() == b'login=ryanbanco&password=abc123'
 
 
 @pytest.mark.http_request_getMethod
-def test_getNextHttpRequest_complete_2():
-    socket = fakeSocket(b'POST / HTTP/1.1\r\n'
+def test_get_next_http_request_complete_2():
+    socket = FakeSocket(b'POST / HTTP/1.1\r\n'
                         b'Content-Length: 31\r\n'
                         b'\r\nlogin=ryanbanco&password=abc123')
-    request = httpRequest.getNextHttpRequest(socket)
-    assert request.getMethod() == "POST"
+    request = httpRequest.get_next_http_request(socket)
+    assert request.get_method() == "POST"
 
 
 @pytest.mark.http_request_getResource
 def test_verifying_endpoint():
-    socket = fakeSocket(b'POST / HTTP/1.1\r\nContent-Length: 31\r\n'
+    socket = FakeSocket(b'POST / HTTP/1.1\r\nContent-Length: 31\r\n'
                         b'\r\nlogin=ryanbanco&password=abc123')
-    request = httpRequest.getNextHttpRequest(socket)
-    assert request.getResource().getEndpoint() == "/"
+    request = httpRequest.get_next_http_request(socket)
+    assert request.get_resource().get_endpoint() == "/"
 
 
 @pytest.mark.http_request_getResource
-def test_empty_queryParameters():
-    socket = fakeSocket(b'POST / HTTP/1.1\r\nContent-Length: 31\r\n'
+def test_empty_query_parameters():
+    socket = FakeSocket(b'POST / HTTP/1.1\r\nContent-Length: 31\r\n'
                         b'\r\nlogin=ryanbanco&password=abc123')
-    request = httpRequest.getNextHttpRequest(socket)
-    assert request.getResource().getQueryParameters() == {}
+    request = httpRequest.get_next_http_request(socket)
+    assert request.get_resource().get_query_parameters() == {}

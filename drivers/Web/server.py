@@ -7,13 +7,13 @@ logger = logging.getLogger("drivers.Web.server")
 
 
 def main(app):
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as serverSocket:
-        serverSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        serverSocket.bind(("0.0.0.0", 8080))
-        serverSocket.listen()
-        logger.info("serverSocket listened")
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
+        server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        server_socket.bind(("0.0.0.0", 8080))
+        server_socket.listen()
+        logger.info("server_socket listened")
         while True:
-            clientSocket, addr = serverSocket.accept()
-            logger.debug(f"Client-IP {clientSocket.getpeername()}")
-            connection = http_connection.httpConnection(clientSocket)
+            client_socket, addr = server_socket.accept()
+            logger.debug(f"Client-IP {client_socket.getpeername()}")
+            connection = http_connection.HttpConnection(client_socket)
             threading.Thread(target=connection.process, args=(app,)).run()

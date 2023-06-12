@@ -1,6 +1,6 @@
 from typing import Callable
 from drivers.Web.HttpRequest import IncompleteHttpRequest
-from drivers.Web.HttpRequest.Resource import http_resource
+from drivers.Web.HttpRequest.Resource import HttpResource
 import logging
 
 logger = logging.getLogger("drivers.Web.HttpRequest.FirstLine")
@@ -11,7 +11,7 @@ PushlineIncrementer = tuple[bytes, bytes, bytes]
 StateTransition = Callable[[bytes], tuple[State, PushlineIncrementer]]
 StateTransitionTable = dict[State, StateTransition]
 QueryMaker = Callable[[str], dict[str, str]]
-ResourceMaker = Callable[[str, QueryMaker], http_resource]
+ResourceMaker = Callable[[str, QueryMaker], HttpResource]
 
 # States
 METHOD_STATE = 0
@@ -39,13 +39,13 @@ def version_state(b: bytes) -> tuple[State, PushlineIncrementer]:
     return VERSION_STATE, (b'', b'', b)
 
 
-def carriageReturn_state(b: bytes) -> tuple[State, PushlineIncrementer]:
+def carriage_return_state(b: bytes) -> tuple[State, PushlineIncrementer]:
     if b == b'\n':
         return LINE_FINAL_STATE, (b'', b'', b'')
     return CARRIAGE_RETURN_STATE, (b'', b'', b'')
 
 
-def getFirstLine(socket, resource_mkr: ResourceMaker, query_mkr: QueryMaker):
+def get_first_line(socket, resource_mkr: ResourceMaker, query_mkr: QueryMaker):
     method, resource, version = b'', b'', b''
     state = 0
 
@@ -53,27 +53,27 @@ def getFirstLine(socket, resource_mkr: ResourceMaker, query_mkr: QueryMaker):
         METHOD_STATE: method_state,
         RESOURCE_STATE: resource_state,
         VERSION_STATE: version_state,
-        CARRIAGE_RETURN_STATE: carriageReturn_state
+        CARRIAGE_RETURN_STATE: carriage_return_state
     }
 
     while state != LINE_FINAL_STATE:
-        nextByte = socket.recv(1)
+        next_byte = socket.recv(1)
         logger.debug(
-            f"GetFirstLine: state = {state} & actual byte = {nextByte}"
+            f"GetFirstLine: state = {state} & actual byte = {next_byte}"
         )
 
-        if nextByte == b'':
+        if next_byte == b'':
             break
 
-        elif nextByte == b'\r':
+        elif next_byte == b'\r':
             state = CARRIAGE_RETURN_STATE
 
         elif state in transition_states:
-            state, increments = transition_states[state](nextByte)
-            (methodInc, resourceInc, versionInc) = increments
-            method += methodInc
-            resource += resourceInc
-            version += versionInc
+            state, increments = transition_states[state](next_byte)
+            (method_inc, resource_inc, version_inc) = increments
+            method += method_inc
+            resource += resource_inc
+            version += version_inc
 
     if state != LINE_FINAL_STATE:
         raise IncompleteHttpRequest.IncompleteHttpRequest()

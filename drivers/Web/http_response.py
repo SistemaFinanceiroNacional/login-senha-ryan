@@ -1,37 +1,37 @@
-class httpResponse:
+class HttpResponse:
     def __init__(self, headers, body, status):
         self.headers = headers
         self.body = body
         self.status = status
 
-    def getHeaders(self):
+    def get_headers(self):
         return self.headers
 
-    def getBody(self):
+    def get_body(self):
         return self.body
 
-    def getStatus(self):
+    def get_status(self):
         return self.status
 
 
-def responseAsBytes(response):
-    headers = response.getHeaders()
-    body = response.getBody()
+def response_as_bytes(response):
+    headers = response.get_headers()
+    body = response.get_body()
     headers["Content-length"] = len(body)
-    status = response.getStatus()
+    status = response.get_status()
     version = "1.1"
-    mappingStatus = {
+    mapping_status = {
         200: "OK",
         303: "See Other",
         404: "Not Found",
         405: "Method Not Allowed"
     }
-    status_message = mappingStatus.get(status, '')
+    status_message = mapping_status.get(status, '')
     complete_status = f"{status} {status_message}"
-    responseToBytes = f"HTTP/{version} {complete_status}\r\n"
+    response_to_bytes = f"HTTP/{version} {complete_status}\r\n"
     for key in headers:
-        responseToBytes += f"{key}: {headers[key]}\r\n"
+        response_to_bytes += f"{key}: {headers[key]}\r\n"
 
-    responseToBytes += "\r\n"+f"{body}"
+    response_to_bytes += "\r\n"+f"{body}"
 
-    return responseToBytes.encode("utf-8")
+    return response_to_bytes.encode("utf-8")

@@ -7,24 +7,24 @@ from ApplicationService.loggedUseCases import LoggedUseCases
 from ApplicationService.unloggedUseCases import UnloggedUseCases
 from ApplicationService.registerclientusecase import RegisterClientUseCase
 from ApplicationService.gettransactionsusecase import GetTransactionsUseCase
-from Infrastructure.dbtransactioncontext import dbTransactionContext
-from Infrastructure.threadIdentity import thread_identity
+from Infrastructure.dbtransactioncontext import DBTransactionContext
+from Infrastructure.threadIdentity import ThreadIdentity
 from Infrastructure.accountsrepository import AccountsRepository
 from Infrastructure.clientsrepository import ClientsRepository
-from Infrastructure.connection_pool import postgresql_connection_pool
+from Infrastructure.connection_pool import PostgresqlConnectionPool
 from Infrastructure.authServiceDB import AuthServiceDB
-from inputIO.inputIO import inputIO
+from inputIO.inputIO import InputIO
 from password import Password
 
 
-class config:
+class Config:
     def run_ui(self):
-        conn_pool = postgresql_connection_pool()
-        thread_id = thread_identity()
+        conn_pool = PostgresqlConnectionPool()
+        thread_id = ThreadIdentity()
         acc_repo = AccountsRepository(conn_pool, thread_id)
         clients_repo = ClientsRepository(conn_pool, thread_id)
-        context = dbTransactionContext(conn_pool, thread_id)
-        user_io = inputIO()
+        context = DBTransactionContext(conn_pool, thread_id)
+        user_io = InputIO()
 
         transfer_use_case = TransferFundsUseCase(acc_repo, context)
         get_accounts_use_case = GetAccountsUseCase(acc_repo, context)

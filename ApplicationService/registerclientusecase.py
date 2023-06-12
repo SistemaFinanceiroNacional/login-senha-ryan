@@ -1,9 +1,9 @@
 from typing import Callable
 from ApplicationService.repositories.clientsrepositoryinterface import (
-    ClientsRepositoryInterface as c_repo
+    ClientsRepositoryInterface as CRepo
 )
 from ApplicationService.repositories.transactioncontextinterface import (
-    TransactionContextInterface as cntx
+    TransactionContextInterface as Cntx
 )
 from password import Password
 
@@ -13,8 +13,8 @@ PasswordMaker = Callable[[str], Password]
 
 class RegisterClientUseCase:
     def __init__(self,
-                 clients_repository: c_repo,
-                 trans_context: cntx,
+                 clients_repository: CRepo,
+                 trans_context: Cntx,
                  pw_maker: PasswordMaker
                  ):
         self.clients_repository = clients_repository

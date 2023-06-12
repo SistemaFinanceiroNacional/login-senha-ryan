@@ -24,11 +24,11 @@ class Account:
 
     def transfer(self, destiny_id: AccountID, value: Amount) -> None:
         if value <= 0:
-            raise invalidValueToTransfer(value)
+            raise InvalidValueToTransfer(value)
 
         balance = self.get_balance()
         if balance < value:
-            raise insufficientFundsException(balance, value)
+            raise InsufficientFundsException(balance, value)
         else:
             transaction = create_transaction(self._id, destiny_id, value)
             self._transactions.insert(0, transaction)
@@ -40,11 +40,11 @@ class Account:
         return self._transactions
 
 
-class insufficientFundsException(Exception):
+class InsufficientFundsException(Exception):
     def __init__(self, balance: Amount, value: Amount):
         super().__init__(f"{balance} is insufficient to get {value}")
 
 
-class invalidValueToTransfer(Exception):
+class InvalidValueToTransfer(Exception):
     def __init__(self, value: Amount):
         super().__init__(f"{value} is a non-positive value to transfer.")

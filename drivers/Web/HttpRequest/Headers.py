@@ -76,7 +76,7 @@ def maybe_final_state(h_bytes: HeaderBytes) -> HeaderIncrements:
 def make_headers(socket):
     headers = {}
     state = NEW_HEADER_NAME
-    headerName, headerValue = b'', b''
+    h_name, h_value = b'', b''
 
     transition_states: StateHeaderTransitionTable = {
         HEADER_NAME: header_name,
@@ -88,16 +88,16 @@ def make_headers(socket):
     }
 
     while state != FINAL_STATE:
-        nextByte = socket.recv(1)
-        logger.debug(f"GetHeaders: state = {state} & actual byte = {nextByte}")
+        nxt_byte = socket.recv(1)
+        logger.debug(f"GetHeaders: state = {state} & actual byte = {nxt_byte}")
 
-        if nextByte == b'':
+        if nxt_byte == b'':
             break
 
         elif state in transition_states:
-            h_bytes = HeaderBytes(nextByte, headerName, headerValue)
+            h_bytes = HeaderBytes(nxt_byte, h_name, h_value)
             state, new_values = transition_states[state](h_bytes)
-            headerName, headerValue, new_headers = new_values
+            h_name, h_value, new_headers = new_values
             headers = dict(**headers, **new_headers)
     if state != FINAL_STATE:
         raise IncompleteHttpRequest.IncompleteHttpRequest()

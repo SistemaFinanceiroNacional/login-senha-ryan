@@ -1,6 +1,6 @@
 from Domain.account import (
     Account,
-    insufficientFundsException
+    InsufficientFundsException
 )
 from Domain.transaction import create_transaction
 
@@ -20,7 +20,7 @@ def test_transfer_poor_ryan():
     try:
         x.transfer(y, 20)
         assert False
-    except insufficientFundsException:
+    except InsufficientFundsException:
         assert True
 
 

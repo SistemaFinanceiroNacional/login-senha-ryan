@@ -3,10 +3,10 @@ import drivers.Web.HttpRequest.Headers
 import drivers.Web.HttpRequest.Resource
 from drivers.Web.HttpRequest import httpRequest
 from fake_config.fakes import (
-    fake_context,
-    contasFake,
-    clientsFake,
-    fake_authService
+    FakeContext,
+    ContasFake,
+    ClientsFake,
+    FakeAuthService
 )
 from ApplicationService.unloggedUseCases import UnloggedUseCases
 from ApplicationService.loggedUseCases import LoggedUseCases
@@ -22,9 +22,9 @@ from password import Password
 
 @pytest.fixture
 def ui_example():
-    accounts_repo = contasFake({}, {})
-    clients_repo = clientsFake({})
-    context = fake_context()
+    accounts_repo = ContasFake({}, {})
+    clients_repo = ClientsFake({})
+    context = FakeContext()
 
     transfer_use_case = TransferFundsUseCase(accounts_repo, context)
     get_accounts = GetBalanceUseCase(accounts_repo, context)
@@ -33,7 +33,7 @@ def ui_example():
     new_bank_use_case = NewBankAccountUseCase(accounts_repo, context)
     register_use_case = RegisterClientUseCase(clients_repo, context, Password)
 
-    auth = fake_authService({})
+    auth = FakeAuthService({})
     unlogged = UnloggedUseCases(register_use_case)
     logged = LoggedUseCases(transfer_use_case,
                             get_balance,
@@ -42,49 +42,49 @@ def ui_example():
                             new_bank_use_case
                             )
 
-    return bank_application.ui(auth, unlogged, logged)
+    return bank_application.Ui(auth, unlogged, logged)
 
 
-def test_request_using_Users_as_resource_returns_404(ui_example):
+def test_request_using_users_as_resource_returns_404(ui_example):
     header = {}
     body = b''
     method = "GET"
-    resource = drivers.Web.HttpRequest.Resource.http_resource("/users", {})
+    resource = drivers.Web.HttpRequest.Resource.HttpResource("/users", {})
     version = "1.1"
-    request = httpRequest.httpRequest(header, body, method, resource, version)
+    request = httpRequest.HttpRequest(header, body, method, resource, version)
 
-    bankApplicationReturn = ui_example(request)
-    assert bankApplicationReturn.status == 404
+    bank_application_return = ui_example(request)
+    assert bank_application_return.status == 404
 
 
 def test_request_root_status_is_200(ui_example):
     header = {}
     body = ""
     method = "GET"
-    resource = drivers.Web.HttpRequest.Resource.http_resource("/", {})
+    resource = drivers.Web.HttpRequest.Resource.HttpResource("/", {})
     version = "1.1"
-    request = httpRequest.httpRequest(header, body, method, resource, version)
-    bankApplicationReturn = ui_example(request)
-    assert bankApplicationReturn.getStatus() == 200
+    request = httpRequest.HttpRequest(header, body, method, resource, version)
+    bank_application_return = ui_example(request)
+    assert bank_application_return.get_status() == 200
 
 
 def test_request_root_resource_is_html(ui_example):
     header = {}
     body = b''
     method = "GET"
-    resource = drivers.Web.HttpRequest.Resource.http_resource("/", {})
+    resource = drivers.Web.HttpRequest.Resource.HttpResource("/", {})
     version = "1.1"
-    request = httpRequest.httpRequest(header, body, method, resource, version)
-    bankApplicationReturn = ui_example(request)
-    assert bankApplicationReturn.getHeaders()["Content-Type"] == "text/html"
+    request = httpRequest.HttpRequest(header, body, method, resource, version)
+    bank_application_return = ui_example(request)
+    assert bank_application_return.get_headers()["Content-Type"] == "text/html"
 
 
 def test_post_status_303(ui_example):
     header = {}
-    resource = drivers.Web.HttpRequest.Resource.http_resource("/", {})
+    resource = drivers.Web.HttpRequest.Resource.HttpResource("/", {})
     method = "POST"
     body = b"login=ryanbanco&password=abc123"
     version = "1.1"
-    request = httpRequest.httpRequest(header, body, method, resource, version)
-    bankApplicationReturn = ui_example(request)
-    assert bankApplicationReturn.getStatus() == 303
+    request = httpRequest.HttpRequest(header, body, method, resource, version)
+    bank_application_return = ui_example(request)
+    assert bank_application_return.get_status() == 303
