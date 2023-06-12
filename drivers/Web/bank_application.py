@@ -1,11 +1,11 @@
 import json
 from drivers.Web.template import render_template
-from drivers.Web.router import router
-from drivers.Web.routes import method_dispatcher, fixed_route
-from drivers.Web.http_response import httpResponse
+from drivers.Web.router import Router
+from drivers.Web.routes import MethodDispatcher, FixedRoute
+from drivers.Web.http_response import HttpResponse
 from drivers.Web.HttpRequest.httpRequest import (
-    httpRequest,
-    makeQueryParameters
+    HttpRequest,
+    make_query_parameters
 )
 from ApplicationService.unloggedUseCases import UnloggedUseCases
 from ApplicationService.loggedUseCases import LoggedUseCases
@@ -19,7 +19,7 @@ import logging
 logger = logging.getLogger("drivers.Web.bankApplication")
 
 
-class home_handler(method_dispatcher):
+class HomeHandler(MethodDispatcher):
     def __init__(self,
                  auth_service: AuthServiceInterface,
                  get_accounts: GetAccountsUseCase
@@ -27,8 +27,8 @@ class home_handler(method_dispatcher):
         self.auth_service = auth_service
         self.get_accounts = get_accounts
 
-    def get(self, request: httpRequest) -> httpResponse:
-        cookie = request.getHeaders().get("Cookie", "")
+    def get(self, request: HttpRequest) -> HttpResponse:
+        cookie = request.get_headers().get("Cookie", "")
         if "loggedUsername=" in cookie:
             cookie_start_index = cookie.index("loggedUsername=")
             json_start_index = cookie_start_index + len("loggedUsername=")
@@ -48,14 +48,14 @@ class home_handler(method_dispatcher):
                     "accounts": accounts
                 }
             )
-            response = httpResponse(
+            response = HttpResponse(
                 {"Content-Type": "text/html"},
                 html_content,
                 200
             )
         else:
             html_content = render_template("index.html", {})
-            response = httpResponse(
+            response = HttpResponse(
                 {"Content-Type": "text/html"},
                 html_content,
                 200
@@ -63,12 +63,12 @@ class home_handler(method_dispatcher):
 
         return response
 
-    def post(self, request: httpRequest) -> httpResponse:
-        body = request.getBody().decode("utf-8")
+    def post(self, request: HttpRequest) -> HttpResponse:
+        body = request.get_body().decode("utf-8")
         logger.debug(f"Body-Content: {body}")
-        queryParameters = makeQueryParameters(body)
-        user_login = queryParameters["login"]
-        user_password = queryParameters["password"]
+        query_parameters = make_query_parameters(body)
+        user_login = query_parameters["login"]
+        user_password = query_parameters["password"]
         possible_client_id = self.auth_service.authenticate(
             user_login,
             user_password
@@ -78,25 +78,25 @@ class home_handler(method_dispatcher):
             session_data = {'login': user_login, 'client_id': client_id}
             return json.dumps(session_data, separators=(',', ':'))
 
-        return possible_client_id.map(lambda client_id: httpResponse(
+        return possible_client_id.map(lambda client_id: HttpResponse(
             {
                 "Set-Cookie": f"loggedUsername={user_cookie(client_id)}",
                 "Location": "/"
             },
             "",
             303
-        )).orElse(
-            lambda: httpResponse(
+        )).or_else(
+            lambda: HttpResponse(
                 {"Location": "/"},
                 "",
                 303
             ))
 
 
-class logged_handler(method_dispatcher):
-    def post(self, request: httpRequest) -> httpResponse:
+class LoggedHandler(MethodDispatcher):
+    def post(self, request: HttpRequest) -> HttpResponse:
         expires_date = "Thursday, 1 January 1970 00:00:00 GMT"
-        response = httpResponse(
+        response = HttpResponse(
             {
                 "Set-Cookie": f"loggedUsername=; Expires={expires_date}",
                 "Location": "/"
@@ -106,13 +106,13 @@ class logged_handler(method_dispatcher):
         return response
 
 
-class register_client_handler(method_dispatcher):
+class RegisterClientHandler(MethodDispatcher):
     def __init__(self, register_client_use_case: RegisterClientUseCase):
         self.register_use_case = register_client_use_case
 
-    def get(self, request: httpRequest) -> httpResponse:
+    def get(self, request: HttpRequest) -> HttpResponse:
         html_content = render_template("register.html", {})
-        response = httpResponse(
+        response = HttpResponse(
             {
                 "Content-type": "text/html"
             },
@@ -121,21 +121,21 @@ class register_client_handler(method_dispatcher):
         )
         return response
 
-    def post(self, request: httpRequest) -> httpResponse:
-        body = request.getBody().decode("utf-8")
-        queryParameters = makeQueryParameters(body)
-        new_username = queryParameters["newUsername"]
-        new_password = queryParameters["newPassword"]
+    def post(self, request: HttpRequest) -> HttpResponse:
+        body = request.get_body().decode("utf-8")
+        query_parameters = make_query_parameters(body)
+        new_username = query_parameters["newUsername"]
+        new_password = query_parameters["newPassword"]
         opened = self.register_use_case.execute(new_username, new_password)
         if opened:
-            response = httpResponse({"Location": "/"}, "", 303)
+            response = HttpResponse({"Location": "/"}, "", 303)
         else:
-            response = httpResponse({"Location": "/register"}, "", 303)
+            response = HttpResponse({"Location": "/register"}, "", 303)
 
         return response
 
 
-class account_handler(method_dispatcher):
+class AccountHandler(MethodDispatcher):
     def __init__(self,
                  get_balance: GetBalanceUseCase,
                  get_transactions: GetTransactionsUseCase
@@ -143,8 +143,8 @@ class account_handler(method_dispatcher):
         self.get_balance = get_balance
         self.get_transactions = get_transactions
 
-    def get(self, request: httpRequest) -> httpResponse:
-        cookies = request.getHeaders().get("Cookie", "")
+    def get(self, request: HttpRequest) -> HttpResponse:
+        cookies = request.get_headers().get("Cookie", "")
         if "loggedUsername=" in cookies:
             cookie_start = cookies.index("loggedUsername=")
             json_start = cookie_start + len("loggedUsername=")
@@ -161,14 +161,14 @@ class account_handler(method_dispatcher):
 
             context = {"balance": balance, "transactions": transactions}
             html_content = render_template("account.html", context)
-            response = httpResponse(
+            response = HttpResponse(
                 {"Content-Type": "text/html"},
                 html_content,
                 200
             )
         else:
             expires_date = "Thursday, 1 January 1970 00:00:00 GMT"
-            response = httpResponse(
+            response = HttpResponse(
                 {
                     "Set-Cookie": f"loggedUsername=; Expires {expires_date}",
                     "Location": "/"
@@ -179,11 +179,11 @@ class account_handler(method_dispatcher):
 
         return response
 
-    def post(self, request: httpRequest) -> httpResponse:
-        body = request.getBody().decode("utf-8")
-        query_parameters = makeQueryParameters(body)
+    def post(self, request: HttpRequest) -> HttpResponse:
+        body = request.get_body().decode("utf-8")
+        query_parameters = make_query_parameters(body)
         account_id = query_parameters["account_id"]
-        cookies = request.getHeaders().get("Cookie", "")
+        cookies = request.get_headers().get("Cookie", "")
         if "loggedUsername=" in cookies:
             cookie_start = cookies.index("loggedUsername=")
             json_start = cookie_start + len("loggedUsername=")
@@ -199,14 +199,14 @@ class account_handler(method_dispatcher):
             def user_cookie():
                 return json.dumps(session_data, separators=(',', ':'))
 
-            response = httpResponse(
+            response = HttpResponse(
                 {
                     "Set-Cookie": f"loggedUsername={user_cookie()};",
                     "Location": "/selectaccount"
                 }, "", 303)
         else:
             expires_date = "Thursday, 1 January 1970 00:00:00 GMT"
-            response = httpResponse(
+            response = HttpResponse(
                 {
                     "Set-Cookie": f"loggedUsername=; Expires {expires_date}",
                     "Location": "/"
@@ -217,7 +217,7 @@ class account_handler(method_dispatcher):
         return response
 
 
-class ui:
+class Ui:
     def __init__(self,
                  auth_service: AuthServiceInterface,
                  unlogged_cases: UnloggedUseCases,
@@ -227,18 +227,18 @@ class ui:
         self.unlogged_cases = unlogged_cases
         self.logged_cases = logged_cases
 
-    def __call__(self, request: httpRequest):
+    def __call__(self, request: HttpRequest):
         get_accounts = self.logged_cases.get_accounts
-        return router(
-            fixed_route("/", home_handler(self.auth_service, get_accounts)),
-            fixed_route("/logout", logged_handler()),
-            fixed_route(
+        return Router(
+            FixedRoute("/", HomeHandler(self.auth_service, get_accounts)),
+            FixedRoute("/logout", LoggedHandler()),
+            FixedRoute(
                 "/register",
-                register_client_handler(self.unlogged_cases.register_client)
+                RegisterClientHandler(self.unlogged_cases.register_client)
             ),
-            fixed_route(
+            FixedRoute(
                 "/selectaccount",
-                account_handler(
+                AccountHandler(
                     self.logged_cases.get_balance,
                     self.logged_cases.get_transactions
                 )

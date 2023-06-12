@@ -1,10 +1,10 @@
 from typing import Iterable, List
 from Domain.transaction import Transaction, create_transaction_from_raw
 from Infrastructure.connection_pool import (
-    connection_pool as cpool,
+    ConnectionPool as CPool,
 )
 from Infrastructure.identityinterface import (
-    identityInterface
+    IdentityInterface
 )
 from ApplicationService.repositories.accountsrepositoryinterface import (
     AccountsRepositoryInterface,
@@ -17,7 +17,7 @@ Transactions = List[Transaction]
 
 
 class AccountsRepository(AccountsRepositoryInterface):
-    def __init__(self, connection_pool: cpool, identifier: identityInterface):
+    def __init__(self, connection_pool: CPool, identifier: IdentityInterface):
         self.connection_pool = connection_pool
         self.identifier = identifier
 

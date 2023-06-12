@@ -1,27 +1,27 @@
 from ApplicationService.TransferFundsUseCase import (
-    TransferFundsUseCase as tfuc
+    TransferFundsUseCase as TransferCase
 )
 from ApplicationService.getAccountsUseCase import (
-    GetAccountsUseCase as gauc
+    GetAccountsUseCase as GetAccsCase
 )
 from ApplicationService.getBalanceUseCase import (
-    GetBalanceUseCase as gbuc
+    GetBalanceUseCase as BalanceCase
 )
 from ApplicationService.gettransactionsusecase import (
-    GetTransactionsUseCase as gtuc
+    GetTransactionsUseCase as TransactionsCase
 )
 from ApplicationService.newbankaccountusecase import (
-    NewBankAccountUseCase as nbauc
+    NewBankAccountUseCase as NewBankAccCase
 )
 
 
 class LoggedUseCases:
     def __init__(self,
-                 transfer: tfuc,
-                 get_accounts: gauc,
-                 get_balance: gbuc,
-                 get_transactions: gtuc,
-                 new_bank_account: nbauc
+                 transfer: TransferCase,
+                 get_accounts: GetAccsCase,
+                 get_balance: BalanceCase,
+                 get_transactions: TransactionsCase,
+                 new_bank_account: NewBankAccCase
                  ):
         self.transfer = transfer
         self.get_accounts = get_accounts

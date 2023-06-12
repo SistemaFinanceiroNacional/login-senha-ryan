@@ -1,25 +1,25 @@
 from Infrastructure.authServiceDB import AuthServiceDB
 from fake_config.fakes import (
-    fake_context,
-    fake_connection,
-    fake_identity
+    FakeContext,
+    FakeConnection,
+    FakeIdentity
 )
-from maybe import isNothing
+from maybe import is_nothing
 
 
 def test_login_with_no_password():
-    identifier = fake_identity(1)
-    conn = fake_connection()
-    cntx = fake_context()
+    identifier = FakeIdentity(1)
+    conn = FakeConnection()
+    cntx = FakeContext()
     auth = AuthServiceDB(cntx, conn, identifier)
 
-    assert isNothing(auth.authenticate('ryan', ''))
+    assert is_nothing(auth.authenticate('ryan', ''))
 
 
 def test_no_login():
-    identifier = fake_identity(1)
-    conn = fake_connection()
-    cntx = fake_context()
+    identifier = FakeIdentity(1)
+    conn = FakeConnection()
+    cntx = FakeContext()
     auth = AuthServiceDB(cntx, conn, identifier)
 
-    assert isNothing(auth.authenticate('', 'abc123'))
+    assert is_nothing(auth.authenticate('', 'abc123'))

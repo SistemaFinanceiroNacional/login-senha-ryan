@@ -34,10 +34,10 @@ def main():
         print("Two options cannot be used at the same time.")
 
     elif args.cli and not args.web:
-        cli_config.config().run_ui()
+        cli_config.Config().run_ui()
 
     elif not args.cli and args.web:
-        web_config.config().run_ui()
+        web_config.Config().run_ui()
 
     else:
         print("No option has been passed.")
@@ -45,13 +45,13 @@ def main():
 
 def initlog(logs):
     logging.basicConfig(level=logging.DEBUG)
-    allLogs = [
+    all_logs = [
         "drivers.Web.server",
         "drivers.Web.httpRequest",
         "drivers.Web.httpConnection"
     ]
 
-    for log in allLogs:
+    for log in all_logs:
         logger = logging.getLogger(log)
         logger.disabled = True
 

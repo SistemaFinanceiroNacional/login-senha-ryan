@@ -1,6 +1,6 @@
-from password import Password as pw
+from password import Password
 
 
 class ClientsRepositoryInterface:
-    def add_client(self, login: str, password: pw) -> bool:
+    def add_client(self, login: str, password: Password) -> bool:
         raise NotImplementedError

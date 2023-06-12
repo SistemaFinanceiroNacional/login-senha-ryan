@@ -1,8 +1,8 @@
-from maybe import maybe
-from drivers.Web.http_response import httpResponse
-from drivers.Web.HttpRequest.httpRequest import httpRequest
+from maybe import Maybe
+from drivers.Web.http_response import HttpResponse
+from drivers.Web.HttpRequest.httpRequest import HttpRequest
 
 
-class route:
-    def __call__(self, request: httpRequest) -> maybe[httpResponse]:
+class Route:
+    def __call__(self, request: HttpRequest) -> Maybe[HttpResponse]:
         raise NotImplementedError

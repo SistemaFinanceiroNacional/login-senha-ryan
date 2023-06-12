@@ -5,5 +5,5 @@ from ApplicationService.repositories.accountsrepositoryinterface import (
 
 
 class AccountDoesNotExistsError(BusinessError):
-    def __init__(self, destinyID: AccountID):
-        super().__init__(f"Account {destinyID} does not exists.")
+    def __init__(self, destiny_id: AccountID):
+        super().__init__(f"Account {destiny_id} does not exists.")

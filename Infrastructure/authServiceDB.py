@@ -1,47 +1,47 @@
-from password import Password as pw
-from maybe import maybe, just, nothing
+from password import Password as passW
+from maybe import Maybe, Just, Nothing
 from Infrastructure.authserviceinterface import (
     AuthServiceInterface,
     ClientID
 )
 from Infrastructure.identityinterface import (
-    identityInterface
+    IdentityInterface
 )
 from ApplicationService.repositories.transactioncontextinterface import (
-    TransactionContextInterface as cntx
+    TransactionContextInterface as Cntx
 )
 from Infrastructure.connection_pool import (
-    connection_pool as c_pool,
-    cursor as c
+    ConnectionPool as CPool,
+    Cursor
 )
 
 
 class AuthServiceDB(AuthServiceInterface):
     def __init__(self,
-                 context: cntx,
-                 conn_pool: c_pool,
-                 identifier: identityInterface
+                 context: Cntx,
+                 conn_pool: CPool,
+                 identifier: IdentityInterface
                  ):
         self.transactional_context = context
         self.conn_pool = conn_pool
         self.identifier = identifier
 
-    def authenticate(self, username: str, password: str) -> maybe[ClientID]:
+    def authenticate(self, username: str, password: str) -> Maybe[ClientID]:
         if not username or not password:
-            return nothing()
+            return Nothing()
 
-        hash_pw = pw(password)
+        hash_pw = passW(password)
         with self.transactional_context:
             cursor = self.conn_pool.get_cursor(self.identifier)
             client_id = self._get_client_id(username, hash_pw, cursor)
             if client_id is not None:
-                return just(client_id[0])
-            return nothing()
+                return Just(client_id[0])
+            return Nothing()
 
     def _get_client_id(self,
                        username: str,
-                       password: pw,
-                       cursor: c
+                       password: passW,
+                       cursor: Cursor
                        ) -> int or None:
         columns = "id"
         table = "clients"

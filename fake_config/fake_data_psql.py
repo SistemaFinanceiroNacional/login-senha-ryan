@@ -1,7 +1,7 @@
 from faker import Faker
 import random
 import psycopg2
-from password import Password as pw
+from password import Password as passW
 
 fake = Faker()
 
@@ -11,7 +11,7 @@ def generate_clients(num_clients):
     for _ in range(num_clients):
         login = fake.user_name()
         password = 'abc123'
-        clients.append((login, str(pw(password))))
+        clients.append((login, str(passW(password))))
     return clients
 
 
@@ -39,7 +39,7 @@ conn = psycopg2.connect(
     password="abc123"
 )
 
-cursor = conn.cursor()
+cursor = conn.Cursor()
 
 num_clients = 10
 num_transactions = 50

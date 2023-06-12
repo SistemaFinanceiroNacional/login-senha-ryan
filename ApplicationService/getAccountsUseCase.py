@@ -1,9 +1,9 @@
 from typing import Iterable
 from ApplicationService.repositories.transactioncontextinterface import (
-    TransactionContextInterface as cntx
+    TransactionContextInterface as Cntx
 )
 from ApplicationService.repositories.accountsrepositoryinterface import (
-    AccountsRepositoryInterface as a_repo
+    AccountsRepositoryInterface as AccRepo
 )
 from Domain.CommonTypes.types import (
     AccountID,
@@ -12,7 +12,7 @@ from Domain.CommonTypes.types import (
 
 
 class GetAccountsUseCase:
-    def __init__(self, acc_repository: a_repo, db_context: cntx):
+    def __init__(self, acc_repository: AccRepo, db_context: Cntx):
         self._acc_repository = acc_repository
         self._db_context = db_context
 

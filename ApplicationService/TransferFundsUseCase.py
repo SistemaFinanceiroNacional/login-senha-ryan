@@ -1,8 +1,8 @@
 from ApplicationService.repositories.transactioncontextinterface import (
-    TransactionContextInterface as t_cntx
+    TransactionContextInterface as tContext
 )
 from ApplicationService.repositories.accountsrepositoryinterface import (
-    AccountsRepositoryInterface as a_repo
+    AccountsRepositoryInterface as accRepo
 )
 from ApplicationService.contexterrors.accountdoesnotexistserror import (
     AccountDoesNotExistsError
@@ -13,8 +13,8 @@ from Domain.CommonTypes.types import AccountID
 
 class TransferFundsUseCase:
     def __init__(self,
-                 acc_repository: a_repo,
-                 transactional_context: t_cntx
+                 acc_repository: accRepo,
+                 transactional_context: tContext
                  ):
         self.acc_repository = acc_repository
         self.transactional_context = transactional_context

@@ -1,7 +1,7 @@
 from threading import current_thread
-from Infrastructure.identityinterface import identityInterface
+from Infrastructure.identityinterface import IdentityInterface
 
 
-class thread_identity(identityInterface):
+class ThreadIdentity(IdentityInterface):
     def value(self) -> int:
         return current_thread().ident

@@ -9,24 +9,24 @@ from ApplicationService.registerclientusecase import RegisterClientUseCase
 from ApplicationService.gettransactionsusecase import GetTransactionsUseCase
 from Domain.account import Account
 from fake_config.fakes import (
-    inputfake,
-    clientsFake,
-    fake_context,
-    contasFake,
-    fake_authService
+    InputFake,
+    ClientsFake,
+    FakeContext,
+    ContasFake,
+    FakeAuthService
 )
 from password import Password
 
 
 def test_main_login_and_balance():
-    context = fake_context()
+    context = FakeContext()
     joao_login = "joao"
     joao_pw = Password("ab123")
     joao_acc = Account(1, [])
-    a = contasFake({1: [joao_acc]}, {})
-    c = clientsFake({joao_login: joao_pw})
+    a = ContasFake({1: [joao_acc]}, {})
+    c = ClientsFake({joao_login: joao_pw})
 
-    auth_service = fake_authService({joao_login: (joao_pw, 1)})
+    auth_service = FakeAuthService({joao_login: (joao_pw, 1)})
 
     transfer_case = TransferFundsUseCase(a, context)
     get_accounts_case = GetAccountsUseCase(a, context)
@@ -45,7 +45,7 @@ def test_main_login_and_balance():
     register_client_use_case = RegisterClientUseCase(c, context, Password)
     unlogged_cases = UnloggedUseCases(register_client_use_case)
 
-    i = inputfake(["3", "2", "4", "1", "1", "1", "abc123", "joao", "1"])
+    i = InputFake(["3", "2", "4", "1", "1", "1", "abc123", "joao", "1"])
 
     command_line_interface.main(i, auth_service, unlogged_cases, logged_cases)
 
@@ -53,11 +53,11 @@ def test_main_login_and_balance():
 
 
 def test_main_registration():
-    context = fake_context()
-    a = contasFake({}, {})
-    c = clientsFake({})
+    context = FakeContext()
+    a = ContasFake({}, {})
+    c = ClientsFake({})
 
-    auth_service = fake_authService({})
+    auth_service = FakeAuthService({})
 
     transfer_case = TransferFundsUseCase(a, context)
     get_accounts_case = GetAccountsUseCase(a, context)
@@ -76,7 +76,7 @@ def test_main_registration():
     register_client_use_case = RegisterClientUseCase(c, context, Password)
     unlogged_cases = UnloggedUseCases(register_client_use_case)
 
-    i = inputfake(["3", "abc123", "pedro", "2"])
+    i = InputFake(["3", "abc123", "pedro", "2"])
 
     command_line_interface.main(i, auth_service, unlogged_cases, logged_cases)
 
@@ -84,14 +84,14 @@ def test_main_registration():
 
 
 def test_trying_register_an_existed_account():
-    context = fake_context()
+    context = FakeContext()
     joao_login = "joao"
     joao_pw = Password("ab123")
     joao_acc = Account(1, [])
-    a = contasFake({1: [joao_acc]}, {})
-    c = clientsFake({joao_login: joao_pw})
+    a = ContasFake({1: [joao_acc]}, {})
+    c = ClientsFake({joao_login: joao_pw})
 
-    auth_service = fake_authService({joao_login: (joao_pw, 1)})
+    auth_service = FakeAuthService({joao_login: (joao_pw, 1)})
 
     transfer_case = TransferFundsUseCase(a, context)
     get_accounts_case = GetAccountsUseCase(a, context)
@@ -110,7 +110,7 @@ def test_trying_register_an_existed_account():
     register_client_use_case = RegisterClientUseCase(c, context, Password)
     unlogged_cases = UnloggedUseCases(register_client_use_case)
 
-    i = inputfake(["3", "abc123", "joao", "2"])
+    i = InputFake(["3", "abc123", "joao", "2"])
 
     command_line_interface.main(i, auth_service, unlogged_cases, logged_cases)
 

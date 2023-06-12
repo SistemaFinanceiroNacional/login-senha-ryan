@@ -1,4 +1,4 @@
-from drivers.Web.bank_application import ui
+from drivers.Web.bank_application import Ui
 from drivers.Web.server import main
 from ApplicationService.newbankaccountusecase import NewBankAccountUseCase
 from ApplicationService.TransferFundsUseCase import TransferFundsUseCase
@@ -10,20 +10,20 @@ from ApplicationService.registerclientusecase import RegisterClientUseCase
 from ApplicationService.gettransactionsusecase import GetTransactionsUseCase
 from Infrastructure.accountsrepository import AccountsRepository
 from Infrastructure.clientsrepository import ClientsRepository
-from Infrastructure.connection_pool import postgresql_connection_pool
-from Infrastructure.threadIdentity import thread_identity
-from Infrastructure.dbtransactioncontext import dbTransactionContext
+from Infrastructure.connection_pool import PostgresqlConnectionPool
+from Infrastructure.threadIdentity import ThreadIdentity
+from Infrastructure.dbtransactioncontext import DBTransactionContext
 from Infrastructure.authServiceDB import AuthServiceDB
 from password import Password
 
 
-class config:
+class Config:
     def run_ui(self):
-        conn_pool = postgresql_connection_pool(max_connections=5)
-        thread_id = thread_identity()
+        conn_pool = PostgresqlConnectionPool(max_connections=5)
+        thread_id = ThreadIdentity()
         acc_repo = AccountsRepository(conn_pool, thread_id)
         clients_repo = ClientsRepository(conn_pool, thread_id)
-        context = dbTransactionContext(conn_pool, thread_id)
+        context = DBTransactionContext(conn_pool, thread_id)
 
         transfer_use_case = TransferFundsUseCase(acc_repo, context)
         get_accounts_use_case = GetAccountsUseCase(acc_repo, context)
@@ -48,7 +48,7 @@ class config:
         auth_service = AuthServiceDB(context, conn_pool, thread_id)
         unlogged_cases = UnloggedUseCases(register_client_use_case)
 
-        user_interface = ui(
+        user_interface = Ui(
             auth_service,
             unlogged_cases,
             logged_cases

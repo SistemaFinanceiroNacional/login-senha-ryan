@@ -3,26 +3,26 @@ from typing import Callable
 QueryMaker = Callable[[str], dict[str, str]]
 
 
-class http_resource:
-    def __init__(self, endpoint, queryParameters):
+class HttpResource:
+    def __init__(self, endpoint, query_parameters):
         self.endpoint = endpoint
-        self.queryParameters = queryParameters
+        self.queryParameters = query_parameters
 
-    def getEndpoint(self):
+    def get_endpoint(self):
         return self.endpoint
 
-    def getQueryParameters(self):
+    def get_query_parameters(self):
         return self.queryParameters
 
 
-def makeResource(rawResource: str, query_maker: QueryMaker) -> http_resource:
-    splitRawResource = rawResource.split("?")
-    endpoint = splitRawResource[0]
+def make_resource(raw_resource: str, query_maker: QueryMaker) -> HttpResource:
+    split_raw_resource = raw_resource.split("?")
+    endpoint = split_raw_resource[0]
 
-    if len(splitRawResource) > 1 and splitRawResource[1] != "":
-        queryParameters = query_maker(splitRawResource[1])
+    if len(split_raw_resource) > 1 and split_raw_resource[1] != "":
+        query_parameters = query_maker(split_raw_resource[1])
 
     else:
-        queryParameters = {}
+        query_parameters = {}
 
-    return http_resource(endpoint, queryParameters)
+    return HttpResource(endpoint, query_parameters)
