@@ -154,11 +154,11 @@ class fakeSocket:
 
 
 class fake_authService(AuthServiceInterface):
-    def __init__(self):
-        self.accounts = {}
+    def __init__(self, accounts: dict):
+        self.accounts = accounts
 
     def authenticate(self, username: str, password: str) -> maybe[int]:
-        if username in self.accounts.keys():
+        if username in self.accounts:
             return just(self.accounts[username][1])
         else:
             return nothing()

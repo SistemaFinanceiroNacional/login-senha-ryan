@@ -26,8 +26,7 @@ def test_main_login_and_balance():
     a = contasFake({1: [joao_acc]}, {})
     c = clientsFake({joao_login: joao_pw})
 
-    auth_service = fake_authService()
-    auth_service.accounts[joao_login] = (joao_pw, 1)
+    auth_service = fake_authService({joao_login: (joao_pw, 1)})
 
     transfer_case = TransferFundsUseCase(a, context)
     get_accounts_case = GetAccountsUseCase(a, context)
@@ -58,7 +57,7 @@ def test_main_registration():
     a = contasFake({}, {})
     c = clientsFake({})
 
-    auth_service = fake_authService()
+    auth_service = fake_authService({})
 
     transfer_case = TransferFundsUseCase(a, context)
     get_accounts_case = GetAccountsUseCase(a, context)
@@ -92,8 +91,7 @@ def test_trying_register_an_existed_account():
     a = contasFake({1: [joao_acc]}, {})
     c = clientsFake({joao_login: joao_pw})
 
-    auth_service = fake_authService()
-    auth_service.accounts[joao_login] = (joao_pw, 1)
+    auth_service = fake_authService({joao_login: (joao_pw, 1)})
 
     transfer_case = TransferFundsUseCase(a, context)
     get_accounts_case = GetAccountsUseCase(a, context)
