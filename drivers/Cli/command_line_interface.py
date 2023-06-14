@@ -46,7 +46,7 @@ def accounts_repl(io: InputIO, acc_id: AccountID, l_cases: LoggedUseCases):
         "1": lambda: io.print(f"R${balance_case.execute(acc_id):.2f}"),
         "2": lambda: transfer_money(io, acc_id, l_cases),
         "3": lambda: show_transactions(io, acc_id, l_cases),
-        "4": None
+        "4": lambda: None
     }
     io.print("""
             (1) Balance

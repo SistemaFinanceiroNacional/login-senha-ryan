@@ -31,7 +31,7 @@ class MethodDispatcher:
         method = request.get_method().lower()
         attribute = getattr(type(self), method, None)
         class_attribute = getattr(MethodDispatcher, method, None)
-        if attribute != class_attribute:
+        if attribute != class_attribute and attribute is not None:
             return attribute(self, request)
 
         else:

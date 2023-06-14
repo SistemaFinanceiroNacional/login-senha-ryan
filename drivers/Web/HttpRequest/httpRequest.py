@@ -1,14 +1,15 @@
+import logging
+from typing import Dict
 from drivers.Web.HttpRequest import IncompleteHttpRequest
 from drivers.Web.HttpRequest.Headers import make_headers
 from drivers.Web.HttpRequest.Resource import make_resource
 from drivers.Web.HttpRequest.FirstLine import get_first_line
-import logging
 
 logger = logging.getLogger("drivers.Web.HttpRequest.httpRequest")
 
 
 class HttpRequest:
-    headers: dict[str, str]
+    headers: Dict[str, str]
 
     def __init__(self, header, body, method, resource, version):
         self.headers = header
@@ -17,7 +18,7 @@ class HttpRequest:
         self.resource = resource
         self.version = version
 
-    def get_headers(self) -> dict[str, str]:
+    def get_headers(self) -> Dict[str, str]:
         return self.headers
 
     def get_body(self):
@@ -33,7 +34,7 @@ class HttpRequest:
         return self.version
 
 
-def make_query_parameters(raw_resource: str) -> dict[str, str]:
+def make_query_parameters(raw_resource: str) -> Dict[str, str]:
     logger.debug(f"String: {raw_resource}")
     keys_and_values = raw_resource.split("&")
     query_parameters = {}

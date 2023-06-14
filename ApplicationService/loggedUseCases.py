@@ -27,4 +27,4 @@ class LoggedUseCases:
         self.get_accounts = get_accounts
         self.get_balance = get_balance
         self.get_transactions = get_transactions
-        self.new_bank_account: new_bank_account
+        self.new_bank_account = new_bank_account

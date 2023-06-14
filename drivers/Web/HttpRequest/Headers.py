@@ -1,6 +1,6 @@
-from drivers.Web.HttpRequest import IncompleteHttpRequest
-from typing import NamedTuple, Callable
 import logging
+from typing import NamedTuple, Callable, Tuple, Dict
+from drivers.Web.HttpRequest import IncompleteHttpRequest
 
 
 logger = logging.getLogger("drivers.Web.HttpRequest.Headers")
@@ -13,11 +13,11 @@ class HeaderBytes(NamedTuple):
 
 
 State = int
-HeaderIncrementer = tuple[bytes, bytes, dict]
-TransitionReturn = tuple[State, HeaderIncrementer]
+HeaderIncrementer = Tuple[bytes, bytes, Dict[str, str]]
+TransitionReturn = Tuple[State, HeaderIncrementer]
 StateHeaderTransition = Callable[[HeaderBytes], TransitionReturn]
-StateHeaderTransitionTable = dict[State, StateHeaderTransition]
-HeaderIncrements = tuple[State, HeaderIncrementer]
+StateHeaderTransitionTable = Dict[State, StateHeaderTransition]
+HeaderIncrements = Tuple[State, HeaderIncrementer]
 
 
 HEADER_NAME = 2
