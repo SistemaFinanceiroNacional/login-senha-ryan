@@ -1,3 +1,4 @@
+from typing import Tuple
 from password import Password as passW
 from maybe import Maybe, Just, Nothing
 from Infrastructure.authserviceinterface import (
@@ -42,7 +43,7 @@ class AuthServiceDB(AuthServiceInterface):
                        username: str,
                        password: passW,
                        cursor: Cursor
-                       ) -> int or None:
+                       ) -> Tuple | None:
         columns = "id"
         table = "clients"
         conditions = "login=%s AND password=%s"

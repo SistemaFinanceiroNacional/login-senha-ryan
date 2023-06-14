@@ -1,16 +1,16 @@
-from typing import Callable
+import logging
+from typing import Callable, Tuple, Dict
 from drivers.Web.HttpRequest import IncompleteHttpRequest
 from drivers.Web.HttpRequest.Resource import HttpResource
-import logging
 
 logger = logging.getLogger("drivers.Web.HttpRequest.FirstLine")
 
-# Types
+
 State = int
-PushlineIncrementer = tuple[bytes, bytes, bytes]
-StateTransition = Callable[[bytes], tuple[State, PushlineIncrementer]]
-StateTransitionTable = dict[State, StateTransition]
-QueryMaker = Callable[[str], dict[str, str]]
+PushlineIncrementer = Tuple[bytes, bytes, bytes]
+StateTransition = Callable[[bytes], Tuple[State, PushlineIncrementer]]
+StateTransitionTable = Dict[State, StateTransition]
+QueryMaker = Callable[[str], Dict[str, str]]
 ResourceMaker = Callable[[str, QueryMaker], HttpResource]
 
 # States
@@ -21,25 +21,25 @@ CARRIAGE_RETURN_STATE = 3
 LINE_FINAL_STATE = 4
 
 
-def method_state(b: bytes) -> tuple[State, PushlineIncrementer]:
+def method_state(b: bytes) -> Tuple[State, PushlineIncrementer]:
     if b == b' ':
         return RESOURCE_STATE, (b'', b'', b'')
     return METHOD_STATE, (b, b'', b'')
 
 
-def resource_state(b: bytes) -> tuple[State, PushlineIncrementer]:
+def resource_state(b: bytes) -> Tuple[State, PushlineIncrementer]:
     if b == b' ':
         return VERSION_STATE, (b'', b'', b'')
     return RESOURCE_STATE, (b'', b, b'')
 
 
-def version_state(b: bytes) -> tuple[State, PushlineIncrementer]:
+def version_state(b: bytes) -> Tuple[State, PushlineIncrementer]:
     if b == b' ' or b in b'HTTP/':
         return VERSION_STATE, (b'', b'', b'')
     return VERSION_STATE, (b'', b'', b)
 
 
-def carriage_return_state(b: bytes) -> tuple[State, PushlineIncrementer]:
+def carriage_return_state(b: bytes) -> Tuple[State, PushlineIncrementer]:
     if b == b'\n':
         return LINE_FINAL_STATE, (b'', b'', b'')
     return CARRIAGE_RETURN_STATE, (b'', b'', b'')
