@@ -105,8 +105,12 @@ class ContasFake(AccountsRepositoryInterface):
         else:
             return False
 
-    def exists(self, acc_id):
-        return acc_id in self.actualAccounts
+    def exists(self, account_id):
+        for client_id in self.actualAccounts:
+            for acc in self.actualAccounts[client_id]:
+                if acc.get_id() == account_id:
+                    return True
+        return False
 
     def update(self, account: Account):
         pass
