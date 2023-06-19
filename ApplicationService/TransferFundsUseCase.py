@@ -26,9 +26,9 @@ class TransferFundsUseCase:
                 amount: Amount
                 ) -> bool:
         with self.transactional_context:
-            existence = self.acc_repository.exists
-            both_existence = existence(acc_id) and existence(dest_id)
-            if not both_existence:
+            get_existence = self.acc_repository.exists
+            both_exists = get_existence(acc_id) and get_existence(dest_id)
+            if not both_exists:
                 raise AccountDoesNotExistsError(dest_id)
 
             maybe_account = self.acc_repository.get_by_id(acc_id)
