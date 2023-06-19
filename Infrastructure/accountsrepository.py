@@ -1,4 +1,5 @@
 from typing import Iterable, List
+from maybe import Maybe, Just, Nothing
 from Domain.transaction import Transaction, create_transaction_from_raw
 from Infrastructure.connection_pool import (
     ConnectionPool as CPool,
@@ -65,10 +66,12 @@ class AccountsRepository(AccountsRepositoryInterface):
         accounts_ids = map(lambda item: item[0], accounts_ids_tuples)
         return accounts_ids
 
-    def get_by_id(self, account_id: AccountID) -> Account:
+    def get_by_id(self, account_id: AccountID) -> Maybe[Account]:
+        if not self.exists(account_id):
+            return Nothing()
         transactions = self._get_transactions(account_id)
         acc = Account(account_id, transactions)
-        return acc
+        return Just(acc)
 
     def _get_transactions(self, account_id: int) -> Transactions:
         cursor = self.connection_pool.get_cursor(self.identifier)

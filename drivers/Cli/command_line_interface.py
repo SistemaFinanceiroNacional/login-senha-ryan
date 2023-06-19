@@ -1,7 +1,11 @@
 import logging
+from typing import List
+
+from ApplicationService.gettransactionsusecase import TransactionData
 from Domain.account import (
     InsufficientFundsException,
-    InvalidValueToTransfer
+    InvalidValueToTransfer,
+    Amount
 )
 from inputIO.inputIO import InputIO
 from ApplicationService.unloggedUseCases import UnloggedUseCases
@@ -32,18 +36,33 @@ def transfer_money(io: InputIO, acc_id: AccountID, l_cases: LoggedUseCases):
 
 
 def show_transactions(io: InputIO, acc_id: AccountID, l_cases: LoggedUseCases):
-    transactions = l_cases.get_transactions.execute(acc_id)
-    if transactions:
+    maybe_transactions = l_cases.get_transactions.execute(acc_id)
+
+    def transactions_print(transactions: List[TransactionData]) -> str:
+        aux = ""
         for t in transactions:
-            io.print(str(t))
-    else:
-        io.print("No transactions to show.")
+            aux += str(t) + "\n"
+        return aux
+
+    default_message = "No transactions to show."
+    msg = maybe_transactions.map(transactions_print).or_else(default_message)
+    io.print(msg)
 
 
 def accounts_repl(io: InputIO, acc_id: AccountID, l_cases: LoggedUseCases):
     balance_case = l_cases.get_balance
+
+    def balance_print():
+        maybe_balance = balance_case.execute(acc_id)
+        default_message = "Error on trying to show your balance"
+
+        def balance_message(balance: Amount) -> str:
+            return f"R${balance:.2f}"
+
+        io.print(maybe_balance.map(balance_message).or_else(default_message))
+
     options = {
-        "1": lambda: io.print(f"R${balance_case.execute(acc_id):.2f}"),
+        "1": balance_print,
         "2": lambda: transfer_money(io, acc_id, l_cases),
         "3": lambda: show_transactions(io, acc_id, l_cases),
         "4": lambda: None
