@@ -156,8 +156,10 @@ class AccountHandler(MethodDispatcher):
 
             session_data = json.loads(json_str)
             account_id = session_data["account_id"]
-            balance = self.get_balance.execute(account_id)
-            transactions = self.get_transactions.execute(account_id)
+            balance = self.get_balance.execute(account_id).or_else(lambda: 0)
+            transactions_execute = self.get_transactions.execute
+            transactions = transactions_execute(account_id)\
+                .or_else(lambda: [])
 
             context = {"balance": balance, "transactions": transactions}
             html_content = render_template("account.html", context)

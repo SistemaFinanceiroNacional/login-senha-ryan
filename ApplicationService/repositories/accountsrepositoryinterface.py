@@ -6,6 +6,7 @@ from Domain.CommonTypes.types import (
     ClientID,
     AccountID
 )
+from maybe import Maybe
 
 
 class AccountsRepositoryInterface:
@@ -21,5 +22,5 @@ class AccountsRepositoryInterface:
     def get_by_client_id(self, client_id: ClientID) -> Iterable[AccountID]:
         raise NotImplementedError
 
-    def get_by_id(self, account_id: AccountID) -> Account:
+    def get_by_id(self, account_id: AccountID) -> Maybe[Account]:
         raise NotImplementedError

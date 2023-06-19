@@ -8,8 +8,10 @@ from ApplicationService.repositories.accountsrepositoryinterface import (
 from ApplicationService.repositories.transactioncontextinterface import (
     TransactionContextInterface as Cntx
 )
+from Domain.account import Account
 from Domain.transaction import Transaction
 from Domain.CommonTypes.types import AccountID
+from maybe import Maybe
 
 
 @dataclass
@@ -38,12 +40,20 @@ class GetTransactionsUseCase:
         self._acc_repository = acc_repository
         self._db_context = db_context
 
-    def execute(self, acc_id: AccountID) -> List[TransactionData]:
+    def execute(self, acc_id: AccountID) -> Maybe[List[TransactionData]]:
         with self._db_context:
-            acc = self._acc_repository.get_by_id(acc_id)
-            acc_transactions = acc.get_transactions()
-        acc_transactions_data = []
-        for t in acc_transactions:
+            maybe_acc = self._acc_repository.get_by_id(acc_id)
+
+        def transactions_data(acc: Account) -> List[TransactionData]:
+            transactions = acc.get_transactions()
+            return self._get_transactions_data(transactions)
+
+        acc_transactions = maybe_acc.map(transactions_data)
+        return acc_transactions
+
+    def _get_transactions_data(self, transactions) -> List[TransactionData]:
+        transactions_data = []
+        for t in transactions:
             t_data = TransactionData(t)
-            acc_transactions_data.append(t_data)
-        return acc_transactions_data
+            transactions_data.append(t_data)
+        return transactions_data

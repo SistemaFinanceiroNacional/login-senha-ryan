@@ -95,25 +95,28 @@ class ContasFake(AccountsRepositoryInterface):
     def __init__(self, actual_accounts, new_accounts):
         self.actualAccounts: dict[ClientID, list[Account]] = actual_accounts
         self.newAccounts = new_accounts
+        self._accounts = 0
 
-    def add_client(self, new_login, new_password: passW):
-        if new_login not in self.actualAccounts:
-            self.actualAccounts[new_login] = (new_password, 0)
+    def add_account(self, client_id):
+        if client_id in self.actualAccounts:
+            self._accounts += 1
+            self.actualAccounts[client_id].append(Account(self._accounts, []))
             return True
         else:
             return False
 
-    def exists(self, login):
-        return login in self.actualAccounts
+    def exists(self, acc_id):
+        return acc_id in self.actualAccounts
 
     def update(self, account: Account):
         pass
 
-    def get_by_id(self, account_id: AccountID) -> Account:
+    def get_by_id(self, account_id: AccountID) -> Maybe[Account]:
         for client_id in self.actualAccounts:
             for acc in self.actualAccounts[client_id]:
                 if acc.get_id() == account_id:
-                    return acc
+                    return Just(acc)
+        return Nothing()
 
     def get_by_client_id(self, client_id: ClientID) -> Iterable[AccountID]:
         accounts_id = [acc.get_id() for acc in self.actualAccounts[client_id]]

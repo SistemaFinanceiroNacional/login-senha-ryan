@@ -43,7 +43,9 @@ def test_transfer_correct_ryan_balance():
     use_case = TransferFundsUseCase(acc_repository, context)
     use_case.execute(ryan_id, joao_id, 100)
 
-    ryan_balance = acc_repository.get_by_id(ryan_id).get_balance()
+    maybe_acc = acc_repository.get_by_id(ryan_id)
+    ryan_balance = maybe_acc.map(lambda acc: acc.get_balance())\
+        .or_else(lambda: None)
     assert ryan_balance == 0
 
 
