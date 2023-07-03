@@ -1,4 +1,4 @@
-from typing import Iterable
+from typing import Iterable, Tuple, List
 
 from Domain.account import Account
 from Infrastructure.identityinterface import IdentityInterface
@@ -11,7 +11,11 @@ from Domain.transaction import create_transaction
 from ApplicationService.repositories.transactioncontextinterface import (
     TransactionContextInterface
 )
-from Infrastructure.connectionInterface import ConnectionPool
+from Infrastructure.connectionInterface import (
+    ConnectionPool,
+    Connection,
+    Cursor
+)
 from ApplicationService.repositories.clientsrepositoryinterface import (
     ClientsRepositoryInterface
 )
@@ -29,12 +33,20 @@ class FakeIdentity(IdentityInterface):
         return self.iden
 
 
-class FakeConnection(ConnectionPool):
+class FakeConnection(Connection):
+    def cursor(self) -> Cursor:
+        return FakeCursor()
+
+    def commit(self) -> None:
+        pass
+
+    def rollback(self) -> None:
+        pass
+
+
+class FakeConnectionPool(ConnectionPool):
     def __call__(self, *args, **kwargs):
         return self
-
-    def cursor(self):
-        return FakeCursor()
 
     def get_connection(self, identifier):
         pass
@@ -46,9 +58,15 @@ class FakeConnection(ConnectionPool):
         pass
 
 
-class FakeCursor:
+class FakeCursor(Cursor):
     def execute(self):
         pass
+
+    def fetchone(self) -> None | Tuple:
+        return None
+
+    def fetchall(self) -> List:
+        return []
 
 
 class FakeContext(TransactionContextInterface):

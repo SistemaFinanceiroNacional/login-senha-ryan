@@ -73,8 +73,8 @@ def maybe_final_state(h_bytes: HeaderBytes) -> HeaderIncrements:
         return MAYBE_FINAL_STATE, (h_bytes.name, h_bytes.value, {})
 
 
-def make_headers(socket):
-    headers = {}
+def make_headers(socket) -> Dict[str, str]:
+    headers: Dict[str, str] = {}
     state = NEW_HEADER_NAME
     h_name, h_value = b'', b''
 

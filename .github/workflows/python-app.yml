@@ -35,4 +35,4 @@ jobs:
         pytest
     - name: Verify with mypy
       run: |
-        mypy --exclude=venv . || true
+        mypy --exclude=venv .

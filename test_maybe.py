@@ -1,44 +1,46 @@
+from typing import Any
+
 import pytest
-import maybe
+from maybe import Maybe, Just, Nothing, get_first_not_empty
 
 
 @pytest.mark.get_first_not_empty
 def test_nothing():
-    possible = maybe.get_first_not_empty([])
-    assert isinstance(possible, maybe.Nothing)
+    possible: Maybe[Any] = get_first_not_empty([])
+    assert isinstance(possible, Nothing)
 
 
 @pytest.mark.get_first_not_empty
 def test_list_of_nothings():
-    possible = maybe.get_first_not_empty(
+    possible: Maybe[Any] = get_first_not_empty(
         [
-            maybe.Nothing(),
-            maybe.Nothing(),
-            maybe.Nothing()
+            Nothing(),
+            Nothing(),
+            Nothing()
         ]
     )
-    assert isinstance(possible, maybe.Nothing)
+    assert isinstance(possible, Nothing)
 
 
 @pytest.mark.get_first_not_empty
 def test_one_just():
-    possible = maybe.get_first_not_empty(
+    possible: Maybe[Any] = get_first_not_empty(
         [
-            maybe.Nothing(),
-            maybe.Nothing(),
-            maybe.Just(3)
+            Nothing(),
+            Nothing(),
+            Just(3)
         ]
     )
-    assert isinstance(possible, maybe.Just)
+    assert isinstance(possible, Just)
 
 
 @pytest.mark.get_first_not_empty
 def test_two_just():
-    possible = maybe.get_first_not_empty(
+    possible: Maybe[Any] = get_first_not_empty(
         [
-            maybe.Nothing(),
-            maybe.Just(10),
-            maybe.Just(3)
+            Nothing(),
+            Just(10),
+            Just(3)
         ]
     )
-    assert isinstance(possible, maybe.Just) and possible.value == 10
+    assert isinstance(possible, Just) and possible.value == 10

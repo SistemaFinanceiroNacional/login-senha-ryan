@@ -33,7 +33,10 @@ class ClientsRepository(ClientsRepositoryInterface):
             statements = "VALUES (default)"
             query = f"INSERT INTO accounts {statements} {return_t};"
             cursor.execute(query)
-            account_id = cursor.fetchone()[0]
+            fetchone = cursor.fetchone()
+            if fetchone is None:
+                raise Exception("WTF: ID must not be null after an insertion.")
+            account_id = fetchone[0]
 
             columns = "(client_id, account_id)"
             statements = "VALUES (%s,%s)"
