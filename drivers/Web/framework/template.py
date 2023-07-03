@@ -14,6 +14,7 @@ def render_template(template_name, context):
     template = jinja_env.get_template(template_name)
     return template.render(context)
 
+
 def configure_template(module: ModuleType):
     global jinja_env
     abs_path_project = os.path.dirname(inspect.getfile(module))
