@@ -1,9 +1,9 @@
 import logging
 from typing import Dict
-from drivers.Web.HttpRequest import IncompleteHttpRequest
-from drivers.Web.HttpRequest.Headers import make_headers
-from drivers.Web.HttpRequest.Resource import make_resource
-from drivers.Web.HttpRequest.FirstLine import get_first_line
+from drivers.Web.framework.HttpRequest import IncompleteHttpRequest
+from drivers.Web.framework.HttpRequest.Headers import make_headers
+from drivers.Web.framework.HttpRequest.Resource import make_resource
+from drivers.Web.framework.HttpRequest.FirstLine import get_first_line
 
 logger = logging.getLogger("drivers.Web.HttpRequest.httpRequest")
 

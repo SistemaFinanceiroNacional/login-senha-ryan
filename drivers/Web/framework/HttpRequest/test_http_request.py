@@ -1,11 +1,10 @@
 from typing import Dict
 
-from drivers.Web.HttpRequest import (
+from drivers.Web.framework.HttpRequest import (
     httpRequest,
-    IncompleteHttpRequest,
-    FirstLine,
-    Resource
+    FirstLine
 )
+from drivers.Web.framework.HttpRequest import IncompleteHttpRequest, Resource
 from fake_config.fakes import FakeSocket
 import pytest
 import logging

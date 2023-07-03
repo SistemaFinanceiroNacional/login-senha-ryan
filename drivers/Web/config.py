@@ -1,4 +1,4 @@
-from drivers.Web.bank_application import Ui
+from drivers.Web.application.bank_application import Ui
 from drivers.Web.server import main
 from ApplicationService.newbankaccountusecase import NewBankAccountUseCase
 from ApplicationService.TransferFundsUseCase import TransferFundsUseCase

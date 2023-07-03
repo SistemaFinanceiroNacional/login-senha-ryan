@@ -1,9 +1,9 @@
 import json
-from drivers.Web.template import render_template
-from drivers.Web.router import Router
-from drivers.Web.routes import MethodDispatcher, FixedRoute
-from drivers.Web.http_response import HttpResponse
-from drivers.Web.HttpRequest.httpRequest import (
+from drivers.Web.framework.template import render_template
+from drivers.Web.framework.router import Router
+from drivers.Web.framework.routes import MethodDispatcher, FixedRoute
+from drivers.Web.framework.http_response import HttpResponse
+from drivers.Web.framework.HttpRequest.httpRequest import (
     HttpRequest,
     make_query_parameters
 )

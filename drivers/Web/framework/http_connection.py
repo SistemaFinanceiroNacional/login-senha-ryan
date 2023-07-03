@@ -1,8 +1,8 @@
-from drivers.Web import http_response
-from drivers.Web.HttpRequest import (
-    httpRequest,
-    IncompleteHttpRequest
+from drivers.Web.framework import http_response
+from drivers.Web.framework.HttpRequest import (
+    httpRequest
 )
+from drivers.Web.framework.HttpRequest import IncompleteHttpRequest
 
 import logging
 
