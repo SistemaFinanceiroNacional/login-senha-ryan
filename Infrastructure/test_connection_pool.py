@@ -2,7 +2,11 @@ from threading import Thread
 from time import sleep
 import pytest
 from Infrastructure import connection_pool
-from fake_config.fakes import FakeIdentity, FakeConnection, FakeCursor
+from fake_config.fakes import (
+    FakeIdentity,
+    FakeCursor,
+    FakeConnection
+)
 
 
 @pytest.mark.psql_conn_pool

@@ -6,7 +6,7 @@ class Cursor(Protocol):
     def execute(self, *args) -> None:
         raise NotImplementedError
 
-    def fetchone(self) -> None or Tuple:
+    def fetchone(self) -> None | Tuple:
         raise NotImplementedError
 
     def fetchall(self) -> List:

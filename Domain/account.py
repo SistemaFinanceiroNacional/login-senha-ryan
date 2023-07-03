@@ -14,7 +14,7 @@ class Account:
         self._transactions = transactions
 
     def get_balance(self) -> Amount:
-        balance = 0
+        balance = 0.0
         for t in self._transactions:
             if t.d_acc == self._id:
                 balance -= t.value

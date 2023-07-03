@@ -1,4 +1,5 @@
 import pytest
+from typing import Dict
 import drivers.Web.HttpRequest.Headers
 import drivers.Web.HttpRequest.Resource
 from drivers.Web.HttpRequest import httpRequest
@@ -46,7 +47,7 @@ def ui_example():
 
 
 def test_request_using_users_as_resource_returns_404(ui_example):
-    header = {}
+    header: Dict[bytes, bytes] = {}
     body = b''
     method = "GET"
     resource = drivers.Web.HttpRequest.Resource.HttpResource("/users", {})
@@ -58,7 +59,7 @@ def test_request_using_users_as_resource_returns_404(ui_example):
 
 
 def test_request_root_status_is_200(ui_example):
-    header = {}
+    header: Dict[bytes, bytes] = {}
     body = ""
     method = "GET"
     resource = drivers.Web.HttpRequest.Resource.HttpResource("/", {})
@@ -69,7 +70,7 @@ def test_request_root_status_is_200(ui_example):
 
 
 def test_request_root_resource_is_html(ui_example):
-    header = {}
+    header: Dict[bytes, bytes] = {}
     body = b''
     method = "GET"
     resource = drivers.Web.HttpRequest.Resource.HttpResource("/", {})
@@ -80,7 +81,7 @@ def test_request_root_resource_is_html(ui_example):
 
 
 def test_post_status_303(ui_example):
-    header = {}
+    header: Dict[bytes, bytes] = {}
     resource = drivers.Web.HttpRequest.Resource.HttpResource("/", {})
     method = "POST"
     body = b"login=ryanbanco&password=abc123"

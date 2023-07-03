@@ -29,7 +29,7 @@ class Just(Maybe[T]):
     def or_else(self, default: Callable[[], T]) -> T:
         return self.value
 
-    def or_else_throw(self, exc) -> None:
+    def or_else_throw(self, exc) -> T:
         return self.value
 
     def run(self, function: Callable[[T], None]) -> Maybe[T]:
@@ -39,12 +39,12 @@ class Just(Maybe[T]):
 
 class Nothing(Maybe[T]):
     def map(self, function: Callable[[T], U]) -> Maybe[U]:
-        return self
+        return Nothing()
 
     def or_else(self, default: Callable[[], T]) -> T:
         return default()
 
-    def or_else_throw(self, exc) -> None:
+    def or_else_throw(self, exc) -> T:
         raise exc
 
     def run(self, function: Callable[[T], None]) -> Maybe[T]:

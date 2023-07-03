@@ -1,3 +1,5 @@
+from typing import Dict
+
 from drivers.Web.HttpRequest import (
     httpRequest,
     IncompleteHttpRequest,
@@ -135,7 +137,7 @@ def test_get_body_limited_to_zero():
 
 @pytest.mark.http_request
 def test_get_body_no_content_length():
-    one_tag_header = {}
+    one_tag_header: Dict[bytes, bytes] = {}
     socket = FakeSocket(b'a' * 15)
     body = httpRequest.get_body(socket, one_tag_header)
     assert body == b''
