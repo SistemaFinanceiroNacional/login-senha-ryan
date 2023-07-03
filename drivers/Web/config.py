@@ -1,5 +1,7 @@
 from drivers.Web.application.bank_application import Ui
 from drivers.Web.server import main
+from drivers.Web.application import settings
+from drivers.Web.framework.template import configure_template
 from ApplicationService.newbankaccountusecase import NewBankAccountUseCase
 from ApplicationService.TransferFundsUseCase import TransferFundsUseCase
 from ApplicationService.unloggedUseCases import UnloggedUseCases
@@ -54,4 +56,5 @@ class Config:
             logged_cases
         )
 
+        configure_template(settings)
         main(user_interface)
