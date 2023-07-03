@@ -16,7 +16,7 @@ from ApplicationService.getBalanceUseCase import GetBalanceUseCase
 from Infrastructure.authserviceinterface import AuthServiceInterface
 import logging
 
-logger = logging.getLogger("drivers.Web.bankApplication")
+logger = logging.getLogger("drivers.Web.application.bank_application")
 
 
 class HomeHandler(MethodDispatcher):

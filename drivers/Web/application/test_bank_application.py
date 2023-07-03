@@ -1,6 +1,8 @@
 import pytest
 from typing import Dict
 import drivers.Web.framework.HttpRequest.Headers
+from drivers.Web.framework.template import configure_template
+from drivers.Web.application import settings
 from drivers.Web.framework.HttpRequest.Resource import HttpResource
 from drivers.Web.framework.HttpRequest import httpRequest
 from fake_config.fakes import (
@@ -43,6 +45,7 @@ def ui_example():
                             new_bank_use_case
                             )
 
+    configure_template(settings)
     return bank_application.Ui(auth, unlogged, logged)
 
 
