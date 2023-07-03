@@ -1,8 +1,8 @@
 import pytest
 from typing import Dict
-import drivers.Web.HttpRequest.Headers
-import drivers.Web.HttpRequest.Resource
-from drivers.Web.HttpRequest import httpRequest
+import drivers.Web.framework.HttpRequest.Headers
+import drivers.Web.framework.HttpRequest.Resource
+from drivers.Web.framework.HttpRequest import httpRequest
 from fake_config.fakes import (
     FakeContext,
     ContasFake,
@@ -17,7 +17,7 @@ from ApplicationService.getBalanceUseCase import GetBalanceUseCase
 from ApplicationService.getAccountsUseCase import GetAccountsUseCase
 from ApplicationService.registerclientusecase import RegisterClientUseCase
 from ApplicationService.gettransactionsusecase import GetTransactionsUseCase
-from drivers.Web import bank_application
+from drivers.Web.application import bank_application
 from password import Password
 
 
@@ -50,7 +50,7 @@ def test_request_using_users_as_resource_returns_404(ui_example):
     header: Dict[bytes, bytes] = {}
     body = b''
     method = "GET"
-    resource = drivers.Web.HttpRequest.Resource.HttpResource("/users", {})
+    resource = drivers.Web.framework.HttpRequest.Resource.HttpResource("/users", {})
     version = "1.1"
     request = httpRequest.HttpRequest(header, body, method, resource, version)
 
@@ -62,7 +62,7 @@ def test_request_root_status_is_200(ui_example):
     header: Dict[bytes, bytes] = {}
     body = ""
     method = "GET"
-    resource = drivers.Web.HttpRequest.Resource.HttpResource("/", {})
+    resource = drivers.Web.framework.HttpRequest.Resource.HttpResource("/", {})
     version = "1.1"
     request = httpRequest.HttpRequest(header, body, method, resource, version)
     bank_application_return = ui_example(request)
@@ -73,7 +73,7 @@ def test_request_root_resource_is_html(ui_example):
     header: Dict[bytes, bytes] = {}
     body = b''
     method = "GET"
-    resource = drivers.Web.HttpRequest.Resource.HttpResource("/", {})
+    resource = drivers.Web.framework.HttpRequest.Resource.HttpResource("/", {})
     version = "1.1"
     request = httpRequest.HttpRequest(header, body, method, resource, version)
     bank_application_return = ui_example(request)
@@ -82,7 +82,7 @@ def test_request_root_resource_is_html(ui_example):
 
 def test_post_status_303(ui_example):
     header: Dict[bytes, bytes] = {}
-    resource = drivers.Web.HttpRequest.Resource.HttpResource("/", {})
+    resource = drivers.Web.framework.HttpRequest.Resource.HttpResource("/", {})
     method = "POST"
     body = b"login=ryanbanco&password=abc123"
     version = "1.1"

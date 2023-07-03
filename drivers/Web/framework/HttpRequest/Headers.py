@@ -1,7 +1,6 @@
 import logging
 from typing import NamedTuple, Callable, Tuple, Dict
-from drivers.Web.HttpRequest import IncompleteHttpRequest
-
+from drivers.Web.framework.HttpRequest import IncompleteHttpRequest
 
 logger = logging.getLogger("drivers.Web.HttpRequest.Headers")
 

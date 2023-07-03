@@ -1,7 +1,7 @@
 import logging
 from typing import Callable, Tuple, Dict
-from drivers.Web.HttpRequest import IncompleteHttpRequest
-from drivers.Web.HttpRequest.Resource import HttpResource
+from drivers.Web.framework.HttpRequest import IncompleteHttpRequest
+from drivers.Web.framework.HttpRequest.Resource import HttpResource
 
 logger = logging.getLogger("drivers.Web.HttpRequest.FirstLine")
 
