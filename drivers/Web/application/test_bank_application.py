@@ -1,7 +1,7 @@
 import pytest
 from typing import Dict
 import drivers.Web.framework.HttpRequest.Headers
-import drivers.Web.framework.HttpRequest.Resource
+from drivers.Web.framework.HttpRequest.Resource import HttpResource
 from drivers.Web.framework.HttpRequest import httpRequest
 from fake_config.fakes import (
     FakeContext,
@@ -50,7 +50,7 @@ def test_request_using_users_as_resource_returns_404(ui_example):
     header: Dict[bytes, bytes] = {}
     body = b''
     method = "GET"
-    resource = drivers.Web.framework.HttpRequest.Resource.HttpResource("/users", {})
+    resource = HttpResource("/users", {})
     version = "1.1"
     request = httpRequest.HttpRequest(header, body, method, resource, version)
 
