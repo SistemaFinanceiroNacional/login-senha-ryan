@@ -1,5 +1,5 @@
-from drivers.Web import config as web_config
-from drivers.Cli import config as cli_config
+from drivers.web import config as web_config
+from drivers.cli import config as cli_config
 import argparse
 import logging
 

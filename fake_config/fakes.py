@@ -1,26 +1,26 @@
 from typing import Iterable, Tuple, List
 
-from Domain.account import Account
-from Infrastructure.identityinterface import IdentityInterface
-from ApplicationService.repositories.accountsrepositoryinterface import (
+from domain.account import Account
+from infrastructure.identityinterface import IdentityInterface
+from usecases.repositories.accountsrepositoryinterface import (
     AccountsRepositoryInterface,
     AccountID,
     ClientID
 )
-from Domain.transaction import create_transaction
-from ApplicationService.repositories.transactioncontextinterface import (
+from domain.transaction import create_transaction
+from usecases.repositories.transactioncontextinterface import (
     TransactionContextInterface
 )
-from Infrastructure.connectionInterface import (
+from infrastructure.connectionInterface import (
     ConnectionPool,
     Connection,
     Cursor
 )
-from ApplicationService.repositories.clientsrepositoryinterface import (
+from usecases.repositories.clientsrepositoryinterface import (
     ClientsRepositoryInterface
 )
-from Infrastructure.authserviceinterface import AuthServiceInterface
-from inputIO.inputIO import InputIO
+from infrastructure.authserviceinterface import AuthServiceInterface
+from inputio.inputIO import InputIO
 from password import Password as passW
 from maybe import Maybe, Just, Nothing
 
