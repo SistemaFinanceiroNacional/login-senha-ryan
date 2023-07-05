@@ -13,7 +13,7 @@ from infrastructure.accountsrepository import AccountsRepository
 from infrastructure.clientsrepository import ClientsRepository
 from infrastructure.connection_pool import PostgresqlConnectionPool
 from infrastructure.authservicedb import AuthServiceDB
-from inputio.inputIO import InputIO
+from inputio.input_io import InputIO
 from password import Password
 
 

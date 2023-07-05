@@ -20,7 +20,7 @@ from usecases.repositories.clientsrepositoryinterface import (
     ClientsRepositoryInterface
 )
 from infrastructure.authserviceinterface import AuthServiceInterface
-from inputio.inputIO import InputIO
+from inputio.input_io import InputIO
 from password import Password as passW
 from maybe import Maybe, Just, Nothing
 

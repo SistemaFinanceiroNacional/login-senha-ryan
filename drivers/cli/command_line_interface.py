@@ -7,7 +7,7 @@ from domain.account import (
     InvalidValueToTransfer,
     Amount
 )
-from inputio.inputIO import InputIO
+from inputio.input_io import InputIO
 from usecases.unlogged_cases import UnloggedUseCases
 from usecases.logged_cases import LoggedUseCases
 from usecases.contexterrors.accountdoesnotexistserror import (
