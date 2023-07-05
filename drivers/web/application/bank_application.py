@@ -7,6 +7,7 @@ from drivers.web.framework.httprequest.http_request import (
     HttpRequest,
     make_query_parameters
 )
+from drivers.web.framework.httprequest.session import session_maker
 from usecases.unlogged_cases import UnloggedUseCases
 from usecases.logged_cases import LoggedUseCases
 from usecases.register_client import RegisterClientUseCase
@@ -28,39 +29,30 @@ class HomeHandler(MethodDispatcher):
         self.get_accounts = get_accounts
 
     def get(self, request: HttpRequest) -> HttpResponse:
-        cookie = request.get_headers().get("Cookie", "")
-        if "loggedUsername=" in cookie:
-            cookie_start_index = cookie.index("loggedUsername=")
-            json_start_index = cookie_start_index + len("loggedUsername=")
-            json_end_index = cookie[json_start_index:].find(";")
-            if json_end_index == -1:
-                json_str = cookie[json_start_index:]
-            else:
-                json_str = cookie[json_start_index:json_end_index + 1]
-
-            session_data = json.loads(json_str)
-            client_id = session_data['client_id']
-            accounts = self.get_accounts.execute(client_id)
-            html_content = render_template(
-                "loggedPage.html",
-                {
-                    "user": session_data['login'],
-                    "accounts": accounts
-                }
-            )
-            response = HttpResponse(
-                {"Content-Type": "text/html"},
-                html_content,
-                200
-            )
-        else:
+        session = session_maker(request)
+        if "client_id" not in session or "login" not in session:
             html_content = render_template("index.html", {})
             response = HttpResponse(
                 {"Content-Type": "text/html"},
                 html_content,
                 200
             )
+            return response
 
+        client_id = session['client_id']
+        accounts = self.get_accounts.execute(client_id)
+        html_content = render_template(
+            "loggedPage.html",
+            {
+                "user": session['login'],
+                "accounts": accounts
+            }
+        )
+        response = HttpResponse(
+            {"Content-Type": "text/html"},
+            html_content,
+            200
+        )
         return response
 
     def post(self, request: HttpRequest) -> HttpResponse:
@@ -74,31 +66,23 @@ class HomeHandler(MethodDispatcher):
             user_password
         )
 
+        session = session_maker(request)
+        session['login'] = user_login
+
         def user_cookie(client_id):
-            session_data = {'login': user_login, 'client_id': client_id}
-            return json.dumps(session_data, separators=(',', ':'))
+            session['client_id'] = client_id
+            return session.to_headers()
 
-        return possible_client_id.map(lambda client_id: HttpResponse(
-            {
-                "Set-Cookie": f"loggedUsername={user_cookie(client_id)}",
-                "Location": "/"
-            },
-            "",
-            303
-        )).or_else(
-            lambda: HttpResponse(
-                {"Location": "/"},
-                "",
-                303
-            ))
-
+        new_session_data = possible_client_id.map(user_cookie).or_else({})
+        return HttpResponse({"Location": "/", **new_session_data}, "", 303)
 
 class LoggedHandler(MethodDispatcher):
     def post(self, request: HttpRequest) -> HttpResponse:
-        expires_date = "Thursday, 1 January 1970 00:00:00 GMT"
+        session = session_maker(request)
+        session.invalidate()
         response = HttpResponse(
             {
-                "Set-Cookie": f"loggedUsername=; Expires={expires_date}",
+                **session.to_headers(),
                 "Location": "/"
             },
             "",
