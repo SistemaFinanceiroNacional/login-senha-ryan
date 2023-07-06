@@ -21,9 +21,9 @@ class Session:
         self.valid = False
 
     def to_headers(self):
-        expire = "Thursday, 1 January 1970 00:00:00 GMT" if not self.valid else ""
+        expire = " Expires=Thursday, 1 January 1970 00:00:00 GMT" if not self.valid else ""
         user_cookies = json.dumps(self.session_data, separators=(',', ':'))
-        cookies = f"loggedUsername={user_cookies}; Expires={expire}"
+        cookies = f"loggedUsername={user_cookies};{expire}"
         return {"Set-Cookie": cookies}
 
 def session_maker(request: HttpRequest) -> Session:
