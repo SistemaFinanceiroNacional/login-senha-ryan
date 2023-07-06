@@ -1,5 +1,7 @@
 import json
-from typing import Dict
+from typing import Dict, Callable
+
+from drivers.web.framework.http_response import template_http_response
 from drivers.web.framework.httprequest.http_request import HttpRequest
 
 
@@ -42,3 +44,17 @@ def session_maker(request: HttpRequest) -> Session:
         json_str = cookies[json_start_index:json_end_index + 1]
     session_data = json.loads(json_str)
     return Session(session_data)
+
+
+def auth_needed(session_need: str):
+    def decorator(f: Callable):
+        def wrapped(self, request: HttpRequest):
+            session = session_maker(request)
+            if session_need not in session:
+                session.invalidate()
+                return template_http_response("index.html",
+                                              headers=session.to_headers()
+                                              )
+            return f(self, request)
+        return wrapped
+    return decorator

@@ -8,7 +8,7 @@ from drivers.web.framework.httprequest.http_request import (
     HttpRequest,
     make_query_parameters
 )
-from drivers.web.framework.httprequest.session import session_maker
+from drivers.web.framework.httprequest.session import session_maker, auth_needed
 from usecases.unlogged_cases import UnloggedUseCases
 from usecases.logged_cases import LoggedUseCases
 from usecases.register_client import RegisterClientUseCase
@@ -29,12 +29,10 @@ class HomeHandler(MethodDispatcher):
         self.auth_service = auth_service
         self.get_accounts = get_accounts
 
+    @auth_needed("client_id")
+    @auth_needed("login")
     def get(self, request: HttpRequest) -> HttpResponse:
         session = session_maker(request)
-        if "client_id" not in session or "login" not in session:
-            response = template_http_response("index.html")
-            return response
-
         client_id = session['client_id']
         accounts = self.get_accounts.execute(client_id)
         context = {"user": session['login'], "accounts": accounts}
@@ -107,21 +105,9 @@ class AccountHandler(MethodDispatcher):
         self.get_balance = get_balance
         self.get_transactions = get_transactions
 
+    @auth_needed("account_id")
     def get(self, request: HttpRequest) -> HttpResponse:
         session = session_maker(request)
-
-        if "account_id" not in session:
-            session.invalidate()
-            response = HttpResponse(
-                {
-                    **session.to_headers(),
-                    "Location": "/"
-                },
-                "",
-                303
-            )
-            return response
-
         account_id = session["account_id"]
         balance = self.get_balance.execute(account_id).or_else(lambda: 0)
         transactions_execute = self.get_transactions.execute
