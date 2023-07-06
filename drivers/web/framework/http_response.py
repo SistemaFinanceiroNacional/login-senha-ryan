@@ -1,3 +1,6 @@
+from drivers.web.framework.template import render_template
+
+
 class HttpResponse:
     def __init__(self, headers, body, status):
         self.headers = headers
@@ -35,3 +38,17 @@ def response_as_bytes(response):
     response_to_bytes += "\r\n"+f"{body}"
 
     return response_to_bytes.encode("utf-8")
+
+
+def template_http_response(
+        template_name: str,
+        context=None,
+        headers=None,
+        status=200
+) -> HttpResponse:
+    context = context or {}
+    headers = headers or {}
+    html_content = render_template(template_name, context)
+    headers = {"Content-Type": "text/html", **headers}
+    response = HttpResponse(headers, html_content, status)
+    return response
