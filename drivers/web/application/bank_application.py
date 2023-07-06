@@ -72,8 +72,9 @@ class HomeHandler(MethodDispatcher):
             session['client_id'] = client_id
             return session.to_headers()
 
-        new_session_data = possible_client_id.map(user_cookie).or_else(lambda: {})
-        return HttpResponse({"Location": "/", **new_session_data}, "", 303)
+        session_data = possible_client_id.map(user_cookie).or_else(lambda: {})
+        return HttpResponse({"Location": "/", **session_data}, "", 303)
+
 
 class LoggedHandler(MethodDispatcher):
     def post(self, request: HttpRequest) -> HttpResponse:
