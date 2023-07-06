@@ -1,7 +1,9 @@
-from drivers.web.framework.template import render_template
 from drivers.web.framework.router import Router
 from drivers.web.framework.routes import MethodDispatcher, FixedRoute
-from drivers.web.framework.http_response import HttpResponse
+from drivers.web.framework.http_response import (
+    HttpResponse,
+    template_http_response
+)
 from drivers.web.framework.httprequest.http_request import (
     HttpRequest,
     make_query_parameters
@@ -30,28 +32,13 @@ class HomeHandler(MethodDispatcher):
     def get(self, request: HttpRequest) -> HttpResponse:
         session = session_maker(request)
         if "client_id" not in session or "login" not in session:
-            html_content = render_template("index.html", {})
-            response = HttpResponse(
-                {"Content-Type": "text/html"},
-                html_content,
-                200
-            )
+            response = template_http_response("index.html")
             return response
 
         client_id = session['client_id']
         accounts = self.get_accounts.execute(client_id)
-        html_content = render_template(
-            "loggedPage.html",
-            {
-                "user": session['login'],
-                "accounts": accounts
-            }
-        )
-        response = HttpResponse(
-            {"Content-Type": "text/html"},
-            html_content,
-            200
-        )
+        context = {"user": session['login'], "accounts": accounts}
+        response = template_http_response("loggedPage.html", context)
         return response
 
     def post(self, request: HttpRequest) -> HttpResponse:
@@ -95,14 +82,7 @@ class RegisterClientHandler(MethodDispatcher):
         self.register_use_case = register_client_use_case
 
     def get(self, request: HttpRequest) -> HttpResponse:
-        html_content = render_template("register.html", {})
-        response = HttpResponse(
-            {
-                "Content-type": "text/html"
-            },
-            html_content,
-            200
-        )
+        response = template_http_response("register.html")
         return response
 
     def post(self, request: HttpRequest) -> HttpResponse:
@@ -148,13 +128,7 @@ class AccountHandler(MethodDispatcher):
         transactions = transactions_execute(account_id).or_else(lambda: [])
 
         context = {"balance": balance, "transactions": transactions}
-        html_content = render_template("account.html", context)
-        response = HttpResponse(
-            {"Content-Type": "text/html"},
-            html_content,
-            200
-        )
-
+        response = template_http_response("account.html", context)
         return response
 
     def post(self, request: HttpRequest) -> HttpResponse:
