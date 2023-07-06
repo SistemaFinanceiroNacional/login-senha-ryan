@@ -8,7 +8,10 @@ from drivers.web.framework.httprequest.http_request import (
     HttpRequest,
     make_query_parameters
 )
-from drivers.web.framework.httprequest.session import session_maker, auth_needed
+from drivers.web.framework.httprequest.session import (
+    session_maker,
+    auth_needed
+)
 from usecases.unlogged_cases import UnloggedUseCases
 from usecases.logged_cases import LoggedUseCases
 from usecases.register_client import RegisterClientUseCase
