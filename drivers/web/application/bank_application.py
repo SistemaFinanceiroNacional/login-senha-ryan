@@ -1,4 +1,3 @@
-import json
 from drivers.web.framework.template import render_template
 from drivers.web.framework.router import Router
 from drivers.web.framework.routes import MethodDispatcher, FixedRoute
@@ -73,7 +72,7 @@ class HomeHandler(MethodDispatcher):
             session['client_id'] = client_id
             return session.to_headers()
 
-        new_session_data = possible_client_id.map(user_cookie).or_else({})
+        new_session_data = possible_client_id.map(user_cookie).or_else(lambda: {})
         return HttpResponse({"Location": "/", **new_session_data}, "", 303)
 
 class LoggedHandler(MethodDispatcher):
@@ -128,40 +127,32 @@ class AccountHandler(MethodDispatcher):
         self.get_transactions = get_transactions
 
     def get(self, request: HttpRequest) -> HttpResponse:
-        cookies = request.get_headers().get("Cookie", "")
-        if "loggedUsername=" in cookies:
-            cookie_start = cookies.index("loggedUsername=")
-            json_start = cookie_start + len("loggedUsername=")
-            json_end = cookies[json_start:].find(";")
-            if json_end == -1:
-                json_str = cookies[json_start:]
-            else:
-                json_str = cookies[json_start: json_end + 1]
+        session = session_maker(request)
 
-            session_data = json.loads(json_str)
-            account_id = session_data["account_id"]
-            balance = self.get_balance.execute(account_id).or_else(lambda: 0)
-            transactions_execute = self.get_transactions.execute
-            transactions = transactions_execute(account_id)\
-                .or_else(lambda: [])
-
-            context = {"balance": balance, "transactions": transactions}
-            html_content = render_template("account.html", context)
-            response = HttpResponse(
-                {"Content-Type": "text/html"},
-                html_content,
-                200
-            )
-        else:
-            expires_date = "Thursday, 1 January 1970 00:00:00 GMT"
+        if "account_id" not in session:
+            session.invalidate()
             response = HttpResponse(
                 {
-                    "Set-Cookie": f"loggedUsername=; Expires {expires_date}",
+                    **session.to_headers(),
                     "Location": "/"
                 },
                 "",
                 303
             )
+            return response
+
+        account_id = session["account_id"]
+        balance = self.get_balance.execute(account_id).or_else(lambda: 0)
+        transactions_execute = self.get_transactions.execute
+        transactions = transactions_execute(account_id).or_else(lambda: [])
+
+        context = {"balance": balance, "transactions": transactions}
+        html_content = render_template("account.html", context)
+        response = HttpResponse(
+            {"Content-Type": "text/html"},
+            html_content,
+            200
+        )
 
         return response
 
@@ -169,37 +160,15 @@ class AccountHandler(MethodDispatcher):
         body = request.get_body().decode("utf-8")
         query_parameters = make_query_parameters(body)
         account_id = query_parameters["account_id"]
-        cookies = request.get_headers().get("Cookie", "")
-        if "loggedUsername=" in cookies:
-            cookie_start = cookies.index("loggedUsername=")
-            json_start = cookie_start + len("loggedUsername=")
-            json_end = cookies[json_start:].find(";")
-            if json_end == -1:
-                json_str = cookies[json_start:]
-            else:
-                json_str = cookies[json_start:json_end + 1]
 
-            session_data = json.loads(json_str)
-            session_data["account_id"] = account_id
+        session = session_maker(request)
+        session["account_id"] = account_id
 
-            def user_cookie():
-                return json.dumps(session_data, separators=(',', ':'))
-
-            response = HttpResponse(
-                {
-                    "Set-Cookie": f"loggedUsername={user_cookie()};",
-                    "Location": "/selectaccount"
-                }, "", 303)
-        else:
-            expires_date = "Thursday, 1 January 1970 00:00:00 GMT"
-            response = HttpResponse(
-                {
-                    "Set-Cookie": f"loggedUsername=; Expires {expires_date}",
-                    "Location": "/"
-                },
-                "",
-                303
-            )
+        response = HttpResponse(
+            {
+                **session.to_headers(),
+                "Location": "/selectaccount"
+            }, "", 303)
         return response
 
 
