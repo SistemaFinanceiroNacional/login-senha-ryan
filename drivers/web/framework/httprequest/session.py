@@ -3,7 +3,7 @@ from typing import Dict, Callable
 
 from drivers.web.framework.http_response import template_http_response
 from drivers.web.framework.httprequest.http_request import HttpRequest
-
+from drivers.web.application.settings import AUTH_REDIRECT
 
 class Session:
     def __init__(self, session_data: Dict[str, str]):
@@ -52,7 +52,7 @@ def auth_needed(session_need: str):
             session = session_maker(request)
             if session_need not in session:
                 session.invalidate()
-                return template_http_response("index.html",
+                return template_http_response(AUTH_REDIRECT,
                                               headers=session.to_headers()
                                               )
             return f(self, request)
