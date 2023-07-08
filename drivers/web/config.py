@@ -2,6 +2,7 @@ from drivers.web.application.bank_application import Ui
 from drivers.web.server import main
 from drivers.web.application import settings
 from drivers.web.framework.template import configure_template
+from drivers.web.framework.httprequest.session import configure_auth_redirect
 from usecases.new_bank_account import NewBankAccountUseCase
 from usecases.transfer import TransferFundsUseCase
 from usecases.unlogged_cases import UnloggedUseCases
@@ -57,4 +58,5 @@ class Config:
         )
 
         configure_template(settings)
+        configure_auth_redirect(settings.AUTH_REDIRECT)
         main(user_interface)

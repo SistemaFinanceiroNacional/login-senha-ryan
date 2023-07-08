@@ -5,8 +5,7 @@ from jinja2 import FileSystemLoader, Environment
 import logging
 
 
-logger = logging.getLogger("drivers.Web.framework.template")
-
+logger = logging.getLogger("drivers.web.framework.template")
 jinja_env = Environment(loader=FileSystemLoader(""))
 
 

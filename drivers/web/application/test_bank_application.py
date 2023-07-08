@@ -3,6 +3,7 @@ from typing import Dict
 from drivers.web.framework.template import configure_template
 from drivers.web.application import settings
 from drivers.web.framework.httprequest.resource import HttpResource
+from drivers.web.framework.httprequest.session import configure_auth_redirect
 from drivers.web.framework.httprequest import http_request
 from fake_config.fakes import (
     FakeContext,
@@ -45,6 +46,7 @@ def ui_example():
                             )
 
     configure_template(settings)
+    configure_auth_redirect(settings.AUTH_REDIRECT)
     return bank_application.Ui(auth, unlogged, logged)
 
 
