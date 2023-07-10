@@ -51,7 +51,7 @@ def ui_example():
 
 
 def test_request_using_users_as_resource_returns_404(ui_example):
-    header: Dict[bytes, bytes] = {}
+    header: Dict[str, str] = {}
     body = b''
     method = "GET"
     resource = HttpResource("/users", {})
@@ -63,7 +63,7 @@ def test_request_using_users_as_resource_returns_404(ui_example):
 
 
 def test_request_root_status_is_200(ui_example):
-    header: Dict[bytes, bytes] = {}
+    header: Dict[str, str] = {}
     body = ""
     method = "GET"
     resource = HttpResource("/", {})
@@ -74,7 +74,7 @@ def test_request_root_status_is_200(ui_example):
 
 
 def test_request_root_resource_is_html(ui_example):
-    header: Dict[bytes, bytes] = {}
+    header: Dict[str, str] = {}
     body = b''
     method = "GET"
     resource = HttpResource("/", {})
@@ -85,7 +85,9 @@ def test_request_root_resource_is_html(ui_example):
 
 
 def test_post_status_303(ui_example):
-    header: Dict[bytes, bytes] = {}
+    header: Dict[str, str] = {
+        'Content-Type': 'application/x-www-form-urlencoded'
+    }
     resource = HttpResource("/", {})
     method = "POST"
     body = b"login=ryanbanco&password=abc123"

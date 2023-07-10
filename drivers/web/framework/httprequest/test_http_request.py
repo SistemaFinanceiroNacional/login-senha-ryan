@@ -4,6 +4,7 @@ from drivers.web.framework.httprequest import (
     http_request,
     first_line
 )
+from drivers.web.framework.encodings import url_encoded
 from drivers.web.framework.httprequest import (
     incomplete_http_request_error as ihre,
     resource
@@ -16,7 +17,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 def qmaker():
-    return http_request.make_query_parameters
+    return url_encoded
 
 
 def rmaker():
@@ -180,9 +181,10 @@ def test_no_query_parameters_no_interrogation_point():
 def test_get_next_http_request_complete():
     socket = FakeSocket(b'POST / HTTP/1.1\r\n'
                         b'Content-Length: 31\r\n'
+                        b'Content-Type: application/x-www-form-urlencoded\r\n'
                         b'\r\nlogin=ryanbanco&password=abc123')
     request = http_request.get_next_http_request(socket)
-    assert request.get_body() == b'login=ryanbanco&password=abc123'
+    assert request.get_body().raw() == b'login=ryanbanco&password=abc123'
 
 
 @pytest.mark.http_request_getMethod
