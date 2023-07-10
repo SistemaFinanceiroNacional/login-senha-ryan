@@ -1,13 +1,12 @@
+from typing import Dict
+
 from drivers.web.framework.router import Router
 from drivers.web.framework.routes import MethodDispatcher, FixedRoute
 from drivers.web.framework.http_response import (
     HttpResponse,
     template_http_response
 )
-from drivers.web.framework.httprequest.http_request import (
-    HttpRequest,
-    make_query_parameters
-)
+from drivers.web.framework.httprequest.http_request import HttpRequest
 from drivers.web.framework.httprequest.session import (
     session_maker,
     auth_needed
@@ -43,11 +42,9 @@ class HomeHandler(MethodDispatcher):
         return response
 
     def post(self, request: HttpRequest) -> HttpResponse:
-        body = request.get_body().decode("utf-8")
-        logger.debug(f"Body-Content: {body}")
-        query_parameters = make_query_parameters(body)
-        user_login = query_parameters["login"]
-        user_password = query_parameters["password"]
+        body: Dict[str, str] = request.get_body().refine()
+        user_login = body["login"]
+        user_password = body["password"]
         possible_client_id = self.auth_service.authenticate(
             user_login,
             user_password
@@ -87,10 +84,9 @@ class RegisterClientHandler(MethodDispatcher):
         return response
 
     def post(self, request: HttpRequest) -> HttpResponse:
-        body = request.get_body().decode("utf-8")
-        query_parameters = make_query_parameters(body)
-        new_username = query_parameters["newUsername"]
-        new_password = query_parameters["newPassword"]
+        body = request.get_body().refine()
+        new_username = body["newUsername"]
+        new_password = body["newPassword"]
         opened = self.register_use_case.execute(new_username, new_password)
         if opened:
             response = HttpResponse({"Location": "/"}, "", 303)
@@ -121,9 +117,8 @@ class AccountHandler(MethodDispatcher):
         return response
 
     def post(self, request: HttpRequest) -> HttpResponse:
-        body = request.get_body().decode("utf-8")
-        query_parameters = make_query_parameters(body)
-        account_id = query_parameters["account_id"]
+        body = request.get_body().refine()
+        account_id = body["account_id"]
 
         session = session_maker(request)
         session["account_id"] = account_id
