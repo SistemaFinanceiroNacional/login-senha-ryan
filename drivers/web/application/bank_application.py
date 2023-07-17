@@ -4,7 +4,8 @@ from drivers.web.framework.router import Router
 from drivers.web.framework.routes import MethodDispatcher, FixedRoute
 from drivers.web.framework.http_response import (
     HttpResponse,
-    template_http_response
+    template_response,
+    redirect_response
 )
 from drivers.web.framework.httprequest.http_request import HttpRequest
 from drivers.web.framework.httprequest.session import (
@@ -38,7 +39,7 @@ class HomeHandler(MethodDispatcher):
         client_id = session['client_id']
         accounts = self.get_accounts.execute(client_id)
         context = {"user": session['login'], "accounts": accounts}
-        response = template_http_response("loggedPage.html", context)
+        response = template_response("loggedPage.html", context)
         return response
 
     def post(self, request: HttpRequest) -> HttpResponse:
@@ -51,16 +52,14 @@ class HomeHandler(MethodDispatcher):
         ).run(
             lambda client_id: session.__setitem__('client_id', client_id)
         )
-
-        return HttpResponse({"Location": "/"}, "", 303)
+        return redirect_response("/")
 
 
 class LoggedHandler(MethodDispatcher):
     def post(self, request: HttpRequest) -> HttpResponse:
         session = session_maker(request)
         session.invalidate()
-        response = HttpResponse({"Location": "/"}, "", 303)
-        return response
+        return redirect_response("/")
 
 
 class RegisterClientHandler(MethodDispatcher):
@@ -68,7 +67,7 @@ class RegisterClientHandler(MethodDispatcher):
         self.register_use_case = register_client_use_case
 
     def get(self, request: HttpRequest) -> HttpResponse:
-        response = template_http_response("register.html")
+        response = template_response("register.html")
         return response
 
     def post(self, request: HttpRequest) -> HttpResponse:
@@ -76,12 +75,10 @@ class RegisterClientHandler(MethodDispatcher):
         new_username = body["newUsername"]
         new_password = body["newPassword"]
         opened = self.register_use_case.execute(new_username, new_password)
-        if opened:
-            response = HttpResponse({"Location": "/"}, "", 303)
-        else:
-            response = HttpResponse({"Location": "/register"}, "", 303)
-
-        return response
+        destiny = "/"
+        if not opened:
+            destiny = "/register"
+        return redirect_response(destiny)
 
 
 class AccountHandler(MethodDispatcher):
@@ -101,7 +98,7 @@ class AccountHandler(MethodDispatcher):
         transactions = transactions_execute(account_id).or_else(lambda: [])
 
         context = {"balance": balance, "transactions": transactions}
-        response = template_http_response("account.html", context)
+        response = template_response("account.html", context)
         return response
 
     def post(self, request: HttpRequest) -> HttpResponse:
@@ -110,9 +107,7 @@ class AccountHandler(MethodDispatcher):
 
         session = session_maker(request)
         session["account_id"] = account_id
-
-        response = HttpResponse({"Location": "/selectaccount"}, "", 303)
-        return response
+        return redirect_response("/selectaccount")
 
 
 class Ui:
