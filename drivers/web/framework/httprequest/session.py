@@ -1,16 +1,17 @@
 import json
+from threading import get_ident
 from typing import Dict, Callable
 import logging
-from drivers.web.framework.http_response import template_http_response
+from drivers.web.framework.http_response import template_http_response, HttpResponse
 from drivers.web.framework.httprequest.http_request import HttpRequest
-
+from drivers.web.framework.types import Handler, ThreadId, SessionData
 
 logger = logging.getLogger("drivers.web.framework.httprequest.session")
 auth_redirect_template = ""
 
 
 class Session:
-    def __init__(self, session_data: Dict[str, str]):
+    def __init__(self, session_data: SessionData):
         self.session_data = session_data
         self.valid = True
 
@@ -34,10 +35,13 @@ class Session:
         return {"Set-Cookie": cookies}
 
 
-def session_maker(request: HttpRequest) -> Session:
+sessions: Dict[ThreadId, Session] = {}
+
+
+def _create_new_session_data(request: HttpRequest) -> SessionData:
     cookies = request.get_headers().get("Cookie", "")
     if "loggedUsername=" not in cookies:
-        return Session({})
+        return {}
 
     cookie_start_index = cookies.index("loggedUsername=")
     json_start_index = cookie_start_index + len("loggedUsername=")
@@ -46,8 +50,42 @@ def session_maker(request: HttpRequest) -> Session:
         json_str = cookies[json_start_index:]
     else:
         json_str = cookies[json_start_index:json_end_index + 1]
+
     session_data = json.loads(json_str)
-    return Session(session_data)
+    return session_data
+
+
+def session_maker(request: HttpRequest) -> Session:
+    global sessions
+    if (thread_id := get_ident()) not in sessions:
+        logger.debug("Session_maker: Existing Session...")
+        logger.debug(f"Session_maker: thread_id = {thread_id}")
+        session_data = _create_new_session_data(request)
+        sessions[thread_id] = Session(session_data)
+    return sessions[thread_id]
+
+
+def session_middleware(app: Handler) -> Handler:
+    global sessions
+
+    def wrapper(request: HttpRequest) -> HttpResponse:
+        global sessions
+        app_response = app(request)
+        if (thread_id := get_ident()) in sessions:
+            logger.debug("Middleware: Existing Session...")
+            logger.debug(f"Middleware: thread_id 1 = {thread_id}")
+            body = app_response.get_body()
+            headers = app_response.get_headers()
+            status = app_response.get_status()
+            session = sessions[thread_id]
+            response = HttpResponse({**headers, **session.to_headers()}, body, status)
+            del sessions[thread_id]
+            return response
+        logger.debug(f"Middleware: thread_id 2 = {thread_id}")
+        logger.debug("Middleware: There is no existing Session.")
+        return app_response
+
+    return wrapper
 
 
 def configure_auth_redirect(template_name):
@@ -66,5 +104,7 @@ def auth_needed(session_need: str):
                                               headers=session.to_headers()
                                               )
             return f(self, request)
+
         return wrapped
+
     return decorator
