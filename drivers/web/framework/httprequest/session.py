@@ -3,7 +3,7 @@ from threading import get_ident
 from typing import Dict, Callable
 import logging
 from drivers.web.framework.http_response import (
-    template_http_response,
+    template_response,
     HttpResponse
 )
 from drivers.web.framework.httprequest.http_request import HttpRequest
@@ -107,9 +107,9 @@ def auth_needed(session_need: str):
             session = session_maker(request)
             if session_need not in session:
                 session.invalidate()
-                return template_http_response(auth_redirect_template,
-                                              headers=session.to_headers()
-                                              )
+                return template_response(auth_redirect_template,
+                                         headers=session.to_headers()
+                                         )
             return f(self, request)
 
         return wrapped

@@ -40,7 +40,7 @@ def response_as_bytes(response):
     return response_to_bytes.encode("utf-8")
 
 
-def template_http_response(
+def template_response(
         template_name: str,
         context=None,
         headers=None,
@@ -52,3 +52,7 @@ def template_http_response(
     headers = {"Content-Type": "text/html", **headers}
     response = HttpResponse(headers, html_content, status)
     return response
+
+
+def redirect_response(to: str) -> HttpResponse:
+    return HttpResponse({"Location": to}, "", 303)
