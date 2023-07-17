@@ -2,7 +2,7 @@ from drivers.web.application.bank_application import Ui
 from drivers.web.server import main
 from drivers.web.application import settings
 from drivers.web.framework.template import configure_template
-from drivers.web.framework.httprequest.session import configure_auth_redirect
+from drivers.web.framework.httprequest.session import configure_auth_redirect, session_middleware
 from usecases.new_bank_account import NewBankAccountUseCase
 from usecases.transfer import TransferFundsUseCase
 from usecases.unlogged_cases import UnloggedUseCases
@@ -51,11 +51,11 @@ class Config:
         auth_service = AuthServiceDB(context, conn_pool, thread_id)
         unlogged_cases = UnloggedUseCases(register_client_use_case)
 
-        user_interface = Ui(
+        user_interface = session_middleware(Ui(
             auth_service,
             unlogged_cases,
             logged_cases
-        )
+        ))
 
         configure_template(settings)
         configure_auth_redirect(settings.AUTH_REDIRECT)
