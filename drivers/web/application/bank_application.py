@@ -42,36 +42,24 @@ class HomeHandler(MethodDispatcher):
         return response
 
     def post(self, request: HttpRequest) -> HttpResponse:
+        session = session_maker(request)
         body: Dict[str, str] = request.get_body().refine()
-        user_login = body["login"]
-        user_password = body["password"]
-        possible_client_id = self.auth_service.authenticate(
-            user_login,
-            user_password
+        login = body["login"]
+        password = body["password"]
+        self.auth_service.authenticate(login, password).run(
+            lambda _: session.__setitem__('login', login)
+        ).run(
+            lambda client_id: session.__setitem__('client_id', client_id)
         )
 
-        session = session_maker(request)
-        session['login'] = user_login
-
-        def user_cookie(client_id):
-            session['client_id'] = client_id
-            return session.to_headers()
-
-        session_data = possible_client_id.map(user_cookie).or_else(lambda: {})
-        return HttpResponse({"Location": "/", **session_data}, "", 303)
+        return HttpResponse({"Location": "/"}, "", 303)
 
 
 class LoggedHandler(MethodDispatcher):
     def post(self, request: HttpRequest) -> HttpResponse:
         session = session_maker(request)
         session.invalidate()
-        response = HttpResponse(
-            {
-                **session.to_headers(),
-                "Location": "/"
-            },
-            "",
-            303)
+        response = HttpResponse({"Location": "/"}, "", 303)
         return response
 
 
@@ -123,11 +111,7 @@ class AccountHandler(MethodDispatcher):
         session = session_maker(request)
         session["account_id"] = account_id
 
-        response = HttpResponse(
-            {
-                **session.to_headers(),
-                "Location": "/selectaccount"
-            }, "", 303)
+        response = HttpResponse({"Location": "/selectaccount"}, "", 303)
         return response
 
 
