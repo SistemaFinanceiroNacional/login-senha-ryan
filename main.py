@@ -48,7 +48,9 @@ def initlog(logs):
     all_logs = [
         "drivers.Web.server",
         "drivers.Web.httpRequest",
-        "drivers.Web.httpConnection"
+        "drivers.Web.httpConnection",
+        "drivers.Web.HttpRequest.Headers",
+        "drivers.Web.HttpRequest.FirstLine"
     ]
 
     for log in all_logs:
