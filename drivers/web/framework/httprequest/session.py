@@ -2,7 +2,10 @@ import json
 from threading import get_ident
 from typing import Dict, Callable
 import logging
-from drivers.web.framework.http_response import template_http_response, HttpResponse
+from drivers.web.framework.http_response import (
+    template_http_response,
+    HttpResponse
+)
 from drivers.web.framework.httprequest.http_request import HttpRequest
 from drivers.web.framework.types import Handler, ThreadId, SessionData
 
@@ -74,13 +77,17 @@ def session_middleware(app: Handler) -> Handler:
         if (thread_id := get_ident()) in sessions:
             logger.debug("Middleware: Existing Session...")
             logger.debug(f"Middleware: thread_id 1 = {thread_id}")
+
             body = app_response.get_body()
             headers = app_response.get_headers()
             status = app_response.get_status()
             session = sessions[thread_id]
-            response = HttpResponse({**headers, **session.to_headers()}, body, status)
+            response_headers = {**headers, **session.to_headers()}
+
+            response = HttpResponse(response_headers, body, status)
             del sessions[thread_id]
             return response
+
         logger.debug(f"Middleware: thread_id 2 = {thread_id}")
         logger.debug("Middleware: There is no existing Session.")
         return app_response
