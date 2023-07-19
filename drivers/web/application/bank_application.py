@@ -1,113 +1,18 @@
-from typing import Dict
-
+from drivers.web.application.controllers.home import HomeHandler
+from drivers.web.application.controllers.logged import LoggedHandler
+from drivers.web.application.controllers.logout import LogoutHandler
+from drivers.web.application.controllers.register_client import (
+    RegisterClientHandler
+)
 from drivers.web.framework.router import Router
-from drivers.web.framework.routes import MethodDispatcher, FixedRoute
-from drivers.web.framework.http_response import (
-    HttpResponse,
-    template_response,
-    redirect_response
-)
+from drivers.web.framework.routes import FixedRoute
 from drivers.web.framework.httprequest.http_request import HttpRequest
-from drivers.web.framework.httprequest.session import (
-    session_maker,
-    auth_needed
-)
 from usecases.unlogged_cases import UnloggedUseCases
 from usecases.logged_cases import LoggedUseCases
-from usecases.register_client import RegisterClientUseCase
-from usecases.get_transactions import GetTransactionsUseCase
-from usecases.get_accounts import GetAccountsUseCase
-from usecases.get_balance import GetBalanceUseCase
 from infrastructure.authserviceinterface import AuthServiceInterface
 import logging
 
 logger = logging.getLogger("drivers.Web.application.bank_application")
-
-
-class HomeHandler(MethodDispatcher):
-    def __init__(self,
-                 auth_service: AuthServiceInterface,
-                 get_accounts: GetAccountsUseCase
-                 ):
-        self.auth_service = auth_service
-        self.get_accounts = get_accounts
-
-    @auth_needed("client_id")
-    @auth_needed("login")
-    def get(self, request: HttpRequest) -> HttpResponse:
-        session = session_maker(request)
-        client_id = session['client_id']
-        accounts = self.get_accounts.execute(client_id)
-        context = {"user": session['login'], "accounts": accounts}
-        response = template_response("loggedPage.html", context)
-        return response
-
-    def post(self, request: HttpRequest) -> HttpResponse:
-        session = session_maker(request)
-        body: Dict[str, str] = request.get_body().refine()
-        login = body["login"]
-        password = body["password"]
-        self.auth_service.authenticate(login, password).run(
-            lambda _: session.__setitem__('login', login)
-        ).run(
-            lambda client_id: session.__setitem__('client_id', client_id)
-        )
-        return redirect_response("/")
-
-
-class LoggedHandler(MethodDispatcher):
-    def post(self, request: HttpRequest) -> HttpResponse:
-        session = session_maker(request)
-        session.invalidate()
-        return redirect_response("/")
-
-
-class RegisterClientHandler(MethodDispatcher):
-    def __init__(self, register_client_use_case: RegisterClientUseCase):
-        self.register_use_case = register_client_use_case
-
-    def get(self, request: HttpRequest) -> HttpResponse:
-        response = template_response("register.html")
-        return response
-
-    def post(self, request: HttpRequest) -> HttpResponse:
-        body = request.get_body().refine()
-        new_username = body["newUsername"]
-        new_password = body["newPassword"]
-        opened = self.register_use_case.execute(new_username, new_password)
-        destiny = "/"
-        if not opened:
-            destiny = "/register"
-        return redirect_response(destiny)
-
-
-class AccountHandler(MethodDispatcher):
-    def __init__(self,
-                 get_balance: GetBalanceUseCase,
-                 get_transactions: GetTransactionsUseCase
-                 ):
-        self.get_balance = get_balance
-        self.get_transactions = get_transactions
-
-    @auth_needed("account_id")
-    def get(self, request: HttpRequest) -> HttpResponse:
-        session = session_maker(request)
-        account_id = session["account_id"]
-        balance = self.get_balance.execute(account_id).or_else(lambda: 0)
-        transactions_execute = self.get_transactions.execute
-        transactions = transactions_execute(account_id).or_else(lambda: [])
-
-        context = {"balance": balance, "transactions": transactions}
-        response = template_response("account.html", context)
-        return response
-
-    def post(self, request: HttpRequest) -> HttpResponse:
-        body = request.get_body().refine()
-        account_id = body["account_id"]
-
-        session = session_maker(request)
-        session["account_id"] = account_id
-        return redirect_response("/selectaccount")
 
 
 class Ui:
@@ -124,14 +29,14 @@ class Ui:
         get_accounts = self.logged_cases.get_accounts
         return Router(
             FixedRoute("/", HomeHandler(self.auth_service, get_accounts)),
-            FixedRoute("/logout", LoggedHandler()),
+            FixedRoute("/logout", LogoutHandler()),
             FixedRoute(
                 "/register",
                 RegisterClientHandler(self.unlogged_cases.register_client)
             ),
             FixedRoute(
                 "/selectaccount",
-                AccountHandler(
+                LoggedHandler(
                     self.logged_cases.get_balance,
                     self.logged_cases.get_transactions
                 )
