@@ -1,5 +1,12 @@
 import pytest
 from typing import Dict
+
+from drivers.web.application.controllers.home import HomeHandler
+from drivers.web.application.controllers.logged import LoggedHandler
+from drivers.web.application.controllers.logout import LogoutHandler
+from drivers.web.application.controllers.register_client import (
+    RegisterClientHandler
+)
 from drivers.web.framework.template import configure_template
 from drivers.web.application import settings
 from drivers.web.framework.httprequest.resource import HttpResource
@@ -11,10 +18,6 @@ from fake_config.fakes import (
     ClientsFake,
     FakeAuthService
 )
-from usecases.unlogged_cases import UnloggedUseCases
-from usecases.logged_cases import LoggedUseCases
-from usecases.transfer import TransferFundsUseCase
-from usecases.new_bank_account import NewBankAccountUseCase
 from usecases.get_balance import GetBalanceUseCase
 from usecases.get_accounts import GetAccountsUseCase
 from usecases.register_client import RegisterClientUseCase
@@ -29,25 +32,25 @@ def ui_example():
     clients_repo = ClientsFake({})
     context = FakeContext()
 
-    transfer_use_case = TransferFundsUseCase(accounts_repo, context)
-    get_accounts = GetBalanceUseCase(accounts_repo, context)
-    get_balance = GetAccountsUseCase(accounts_repo, context)
+    get_balance = GetBalanceUseCase(accounts_repo, context)
+    get_accounts = GetAccountsUseCase(accounts_repo, context)
     get_transactions = GetTransactionsUseCase(accounts_repo, context)
-    new_bank_use_case = NewBankAccountUseCase(accounts_repo, context)
     register_use_case = RegisterClientUseCase(clients_repo, context, Password)
 
     auth = FakeAuthService({})
-    unlogged = UnloggedUseCases(register_use_case)
-    logged = LoggedUseCases(transfer_use_case,
-                            get_balance,
-                            get_accounts,
-                            get_transactions,
-                            new_bank_use_case
-                            )
+
+    home_handler = HomeHandler(auth, get_accounts)
+    logout_handler = LogoutHandler()
+    register_handler = RegisterClientHandler(register_use_case)
+    logged_handler = LoggedHandler(get_balance, get_transactions)
 
     configure_template(settings)
     configure_auth_redirect(settings.AUTH_REDIRECT)
-    return bank_application.Ui(auth, unlogged, logged)
+    return bank_application.Ui(home_handler,
+                               logout_handler,
+                               register_handler,
+                               logged_handler
+                               )
 
 
 def test_request_using_users_as_resource_returns_404(ui_example):
