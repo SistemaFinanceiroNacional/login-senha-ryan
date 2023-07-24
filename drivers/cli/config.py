@@ -11,7 +11,10 @@ from infrastructure.dbtransactioncontext import DBTransactionContext
 from infrastructure.threadIdentity import ThreadIdentity
 from infrastructure.accountsrepository import AccountsRepository
 from infrastructure.clientsrepository import ClientsRepository
-from infrastructure.connection_pool import PostgresqlConnectionPool
+from infrastructure.connection_pool import (
+    PostgresqlConnectionPool,
+    psycopg2_create_connection
+)
 from infrastructure.authservicedb import AuthServiceDB
 from inputio.input_io import InputIO
 from password import Password
@@ -19,7 +22,7 @@ from password import Password
 
 class Config:
     def run_ui(self):
-        conn_pool = PostgresqlConnectionPool()
+        conn_pool = PostgresqlConnectionPool(psycopg2_create_connection, 1)
         thread_id = ThreadIdentity()
         acc_repo = AccountsRepository(conn_pool, thread_id)
         clients_repo = ClientsRepository(conn_pool, thread_id)
