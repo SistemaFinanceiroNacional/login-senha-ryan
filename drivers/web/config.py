@@ -15,13 +15,13 @@ from drivers.web.framework.httprequest.session import (
 from infrastructure.dicontainer import DiContainer
 from usecases.get_accounts import GetAccountsUseCase
 from usecases.get_balance import GetBalanceUseCase
-from usecases.register_client import RegisterClientUseCase
+from usecases.register_client import RegisterClientUseCase, PasswordMaker
 from usecases.get_transactions import GetTransactionsUseCase
 from infrastructure.accountsrepository import AccountsRepository
 from infrastructure.clientsrepository import ClientsRepository
 from infrastructure.connection_pool import (
     PostgresqlConnectionPool,
-    psycopg2_create_connection
+    psycopg2_create_connection, ConnMaker
 )
 from infrastructure.threadIdentity import ThreadIdentity
 from infrastructure.dbtransactioncontext import DBTransactionContext
@@ -32,8 +32,8 @@ from password import Password
 class Config:
     def run_ui(self):
         di_container = DiContainer()
-
-        conn_pool = PostgresqlConnectionPool(psycopg2_create_connection, 1)
+        di_container[ConnMaker] = psycopg2_create_connection
+        conn_pool = PostgresqlConnectionPool(di_container[ConnMaker], 1)
         thread_id = di_container[ThreadIdentity]
         acc_repo = AccountsRepository(conn_pool, thread_id)
         clients_repo = ClientsRepository(conn_pool, thread_id)
@@ -43,10 +43,11 @@ class Config:
         get_balance = GetBalanceUseCase(acc_repo, context)
         get_transactions = GetTransactionsUseCase(acc_repo, context)
 
+        di_container[PasswordMaker] = Password
         register_client_use_case = RegisterClientUseCase(
             clients_repo,
             context,
-            Password
+            di_container[PasswordMaker]
         )
 
         auth_service = AuthServiceDB(context, conn_pool, thread_id)

@@ -10,6 +10,9 @@ class DiContainer:
             self.objects[item] = self.construct_obj(item)
         return self.objects[item]
 
+    def __setitem__(self, key, value):
+        self.objects[key] = value
+
     def construct_obj(self, item):
         sign = inspect.signature(item)
         params = sign.parameters
