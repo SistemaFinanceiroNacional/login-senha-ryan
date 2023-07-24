@@ -38,3 +38,18 @@ def test_multiple_dependencies_class():
     di = DiContainer()
     c = di[C]
     assert c.a == c.b.a
+
+
+def test_set_item_1():
+    di = DiContainer()
+    a = A()
+    di[A] = a
+    assert di[A] == a
+
+
+def test_construct_and_set():
+    di = DiContainer()
+    c = di[C]
+    b = c.b
+    di[B] = b
+    assert c.b == di[B]
