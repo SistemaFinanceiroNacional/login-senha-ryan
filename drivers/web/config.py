@@ -12,6 +12,7 @@ from drivers.web.framework.httprequest.session import (
     configure_auth_redirect,
     session_middleware
 )
+from infrastructure.dicontainer import DiContainer
 from usecases.get_accounts import GetAccountsUseCase
 from usecases.get_balance import GetBalanceUseCase
 from usecases.register_client import RegisterClientUseCase
@@ -27,8 +28,10 @@ from password import Password
 
 class Config:
     def run_ui(self):
+        di_container = DiContainer()
+
         conn_pool = PostgresqlConnectionPool(max_connections=5)
-        thread_id = ThreadIdentity()
+        thread_id = di_container[ThreadIdentity]
         acc_repo = AccountsRepository(conn_pool, thread_id)
         clients_repo = ClientsRepository(conn_pool, thread_id)
         context = DBTransactionContext(conn_pool, thread_id)
@@ -46,7 +49,7 @@ class Config:
         auth_service = AuthServiceDB(context, conn_pool, thread_id)
 
         home_handler = HomeHandler(auth_service, get_accounts)
-        logout_handler = LogoutHandler()
+        logout_handler = di_container[LogoutHandler]
         register_handler = RegisterClientHandler(register_client_use_case)
         logged_handler = LoggedHandler(get_balance, get_transactions)
 
