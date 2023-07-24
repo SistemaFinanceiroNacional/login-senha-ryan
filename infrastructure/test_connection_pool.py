@@ -23,7 +23,7 @@ def test_two_different_identities_returning_two_different_connections():
 
 @pytest.mark.psql_conn_pool
 def test_one_id_returning_the_same_connection_obj():
-    psql_conn = connection_pool.PostgresqlConnectionPool(FakeConnection)
+    psql_conn = connection_pool.PostgresqlConnectionPool(FakeConnection, 2)
     id1 = FakeIdentity(141)
 
     connection_id1 = psql_conn.get_connection(id1)
@@ -34,7 +34,7 @@ def test_one_id_returning_the_same_connection_obj():
 
 @pytest.mark.psql_conn_pool
 def test_verifying_cursor_class():
-    psql_conn = connection_pool.PostgresqlConnectionPool(FakeConnection)
+    psql_conn = connection_pool.PostgresqlConnectionPool(FakeConnection, 1)
 
     id1 = FakeIdentity(141)
 
@@ -45,7 +45,7 @@ def test_verifying_cursor_class():
 
 @pytest.mark.psql_conn_pool
 def test_obtaining_the_cursor():
-    psql_conn = connection_pool.PostgresqlConnectionPool(FakeConnection)
+    psql_conn = connection_pool.PostgresqlConnectionPool(FakeConnection, 1)
 
     id1 = FakeIdentity(141)
 
@@ -57,7 +57,7 @@ def test_obtaining_the_cursor():
 
 @pytest.mark.psql_conn_pool
 def test_accessing_connections_tuple():
-    psql_conn = connection_pool.PostgresqlConnectionPool(FakeConnection)
+    psql_conn = connection_pool.PostgresqlConnectionPool(FakeConnection, 1)
 
     id1 = FakeIdentity(141)
 
@@ -68,7 +68,7 @@ def test_accessing_connections_tuple():
 
 @pytest.mark.psql_conn_pool
 def test_verifying_if_the_second_tuple_item_is_not_none():
-    psql_conn = connection_pool.PostgresqlConnectionPool(FakeConnection)
+    psql_conn = connection_pool.PostgresqlConnectionPool(FakeConnection, 1)
 
     id1 = FakeIdentity(141)
 
@@ -79,7 +79,7 @@ def test_verifying_if_the_second_tuple_item_is_not_none():
 
 @pytest.mark.psql_conn_pool
 def test_refund_same_connection():
-    psql_pool = connection_pool.PostgresqlConnectionPool(FakeConnection)
+    psql_pool = connection_pool.PostgresqlConnectionPool(FakeConnection, 1)
     id1 = FakeIdentity(141)
     conn1 = psql_pool.get_connection(id1)
 
@@ -92,7 +92,7 @@ def test_refund_same_connection():
 
 @pytest.mark.psql_conn_pool
 def test_trying_to_create_conn_but_max_has_reached():
-    psql_conn = connection_pool.PostgresqlConnectionPool(FakeConnection)
+    psql_conn = connection_pool.PostgresqlConnectionPool(FakeConnection, 1)
     id1 = FakeIdentity(141)
     id2 = FakeIdentity(555)
 

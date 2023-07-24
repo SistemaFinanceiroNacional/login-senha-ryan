@@ -33,8 +33,8 @@ def psycopg2_create_connection() -> Connection:
 class PostgresqlConnectionPool(ConnectionPool):
     def __init__(
             self,
-            create_connection: ConnMaker = psycopg2_create_connection,
-            max_connections: int = 1
+            create_connection: ConnMaker,
+            max_connections: int
     ):
         self.create_conn = create_connection
         self.used_conns: dict[int, tuple[Connection, Cursor]] = dict()
