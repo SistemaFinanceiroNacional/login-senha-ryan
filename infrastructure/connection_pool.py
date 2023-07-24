@@ -34,14 +34,13 @@ class PostgresqlConnectionPool(ConnectionPool):
     def __init__(
             self,
             create_connection: ConnMaker = psycopg2_create_connection,
-            max_connections: int = 1,
-            condition=None
+            max_connections: int = 1
     ):
         self.create_conn = create_connection
         self.used_conns: dict[int, tuple[Connection, Cursor]] = dict()
         self.max_conns = max_connections
         self.free_conns: list[tuple[Connection, Cursor]] = []
-        self.condition = condition() if condition else Condition()
+        self.condition = Condition()
 
     def get_connection(self, identifier: IdentityInterface) -> Connection:
         id_conn = identifier.value()
