@@ -21,10 +21,10 @@ class DiContainer:
         sign = inspect.signature(item)
         params = sign.parameters
         dict_params = {}
-        for param_name, param_annotation in params.items():
+        for param_name, param in params.items():
             if param_name in self.parameters:
                 dict_params[param_name] = self.parameters[param_name]
             else:
-                dict_params[param_name] = self[param_annotation]
+                dict_params[param_name] = self[param.annotation]
 
         return item(**dict_params)

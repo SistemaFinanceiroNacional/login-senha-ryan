@@ -15,6 +15,7 @@ class C:
         self.a = a
         self.b = b
 
+
 class D:
     def __init__(self, num: int, a: A):
         self.a = a
