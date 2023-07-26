@@ -15,6 +15,11 @@ class C:
         self.a = a
         self.b = b
 
+class D:
+    def __init__(self, num: int, a: A):
+        self.a = a
+        self.num = num
+
 
 def test_no_dependency_class():
     di = DiContainer()
@@ -40,16 +45,23 @@ def test_multiple_dependencies_class():
     assert c.a == c.b.a
 
 
-def test_set_item_1():
+def test_set_an_item():
     di = DiContainer()
     a = A()
     di[A] = a
     assert di[A] == a
 
 
-def test_construct_and_set():
+def test_construct_and_set_an_item():
     di = DiContainer()
     c = di[C]
     b = c.b
     di[B] = b
     assert c.b == di[B]
+
+
+def test_set_parameters_and_construct():
+    di = DiContainer()
+    di.set_parameter('num', 2)
+    d = di[D]
+    assert d.num == 2
