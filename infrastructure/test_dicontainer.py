@@ -16,7 +16,11 @@ class C:
         self.b = b
 
 
-class D:
+class DInterface:
+    pass
+
+
+class D(DInterface):
     def __init__(self, num: int, a: A):
         self.a = a
         self.num = num
@@ -66,3 +70,20 @@ def test_set_parameters_and_construct():
     di.set_parameter('num', 2)
     d = di[D]
     assert d.num == 2
+
+
+def test_provide_d_interface():
+    di = DiContainer()
+    di.provide(DInterface, D)
+    di.set_parameter('num', 2)
+    obj = di[DInterface]
+    assert isinstance(obj, D)
+
+
+def test_provide_d_interface_equals_di_object():
+    di = DiContainer()
+    di.provide(DInterface, D)
+    di.set_parameter('num', 2)
+    obj1 = di[D]
+    obj2 = di[DInterface]
+    assert obj1 == obj2
