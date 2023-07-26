@@ -33,7 +33,9 @@ class Config:
     def run_ui(self):
         di_container = DiContainer()
         di_container[ConnMaker] = psycopg2_create_connection
-        conn_pool = PostgresqlConnectionPool(di_container[ConnMaker], 1)
+        di_container.set_parameter('max_connections', 1)
+
+        conn_pool = di_container[PostgresqlConnectionPool]
         thread_id = di_container[ThreadIdentity]
         acc_repo = AccountsRepository(conn_pool, thread_id)
         clients_repo = ClientsRepository(conn_pool, thread_id)
