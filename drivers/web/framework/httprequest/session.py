@@ -6,11 +6,12 @@ from drivers.web.framework.http_response import (
     template_response,
     HttpResponse
 )
+from drivers.web.framework.http_response_interface import HttpResponseInterface
 from drivers.web.framework.httprequest.http_request import HttpRequest
 from drivers.web.framework.types import Handler, ThreadId, SessionData
+from drivers.web.framework import settings
 
 logger = logging.getLogger("drivers.web.framework.httprequest.session")
-auth_redirect_template = ""
 
 
 class Session:
@@ -71,7 +72,7 @@ def session_maker(request: HttpRequest) -> Session:
 def session_middleware(app: Handler) -> Handler:
     global sessions
 
-    def wrapper(request: HttpRequest) -> HttpResponse:
+    def wrapper(request: HttpRequest) -> HttpResponseInterface:
         global sessions
         app_response = app(request)
         if (thread_id := get_ident()) in sessions:
@@ -95,19 +96,13 @@ def session_middleware(app: Handler) -> Handler:
     return wrapper
 
 
-def configure_auth_redirect(template_name):
-    global auth_redirect_template
-    auth_redirect_template = template_name
-    logger.debug(f"Auth_redirect_template value: {auth_redirect_template}")
-
-
 def auth_needed(session_need: str):
     def decorator(f: Callable):
         def wrapped(self, request: HttpRequest):
             session = session_maker(request)
             if session_need not in session:
                 session.invalidate()
-                return template_response(auth_redirect_template,
+                return template_response(settings.app_settings.AUTH_REDIRECT,
                                          headers=session.to_headers()
                                          )
             return f(self, request)

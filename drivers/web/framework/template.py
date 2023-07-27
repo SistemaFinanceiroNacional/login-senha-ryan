@@ -7,6 +7,7 @@ from drivers.web.framework import settings
 
 logger = logging.getLogger("drivers.web.framework.template")
 
+
 @cache
 def get_jinja_env():
     abs_path_project = settings.app_settings.BASE_DIR
