@@ -1,7 +1,8 @@
+from drivers.web.framework.http_response_interface import HttpResponseInterface
 from drivers.web.framework.template import render_template
 
 
-class HttpResponse:
+class HttpResponse(HttpResponseInterface):
     def __init__(self, headers, body, status):
         self.headers = headers
         self.body = body

@@ -1,11 +1,5 @@
-from drivers.web.application.bank_application import Ui
-from drivers.web.application import settings
+from drivers.web.application.entrypoint import get_application
 from drivers.web.server import main
-from drivers.web.framework.template import configure_template
-from drivers.web.framework.httprequest.session import (
-    configure_auth_redirect,
-    session_middleware
-)
 from infrastructure.authserviceinterface import AuthServiceInterface
 from infrastructure.connectionInterface import ConnectionPool
 from infrastructure.dicontainer import DiContainer
@@ -48,8 +42,5 @@ class Config:
         di_container.provide(ClientsRepositoryInterface, ClientsRepository)
         di_container.provide(AuthServiceInterface, AuthServiceDB)
 
-        user_interface = session_middleware(di_container[Ui])
-
-        configure_template(settings)
-        configure_auth_redirect(settings.AUTH_REDIRECT)
+        user_interface = get_application(di_container)
         main(user_interface)
