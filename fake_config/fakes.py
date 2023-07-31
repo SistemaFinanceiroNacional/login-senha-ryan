@@ -1,6 +1,6 @@
 from typing import Iterable, Tuple, List
 
-from domain.account import Account
+from domain.bankaccount import BankAccount
 from infrastructure.identityinterface import IdentityInterface
 from usecases.repositories.accountsrepositoryinterface import (
     AccountsRepositoryInterface,
@@ -111,14 +111,14 @@ class ClientsFake(ClientsRepositoryInterface):
 
 class ContasFake(AccountsRepositoryInterface):
     def __init__(self, actual_accounts, new_accounts):
-        self.actualAccounts: dict[ClientID, list[Account]] = actual_accounts
+        self.actualAccounts: dict[ClientID, list[BankAccount]] = actual_accounts
         self.newAccounts = new_accounts
         self._accounts = 0
 
     def add_account(self, client_id):
         if client_id in self.actualAccounts:
             self._accounts += 1
-            self.actualAccounts[client_id].append(Account(self._accounts, []))
+            self.actualAccounts[client_id].append(BankAccount(self._accounts, []))
             return True
         else:
             return False
@@ -130,10 +130,10 @@ class ContasFake(AccountsRepositoryInterface):
                     return True
         return False
 
-    def update(self, account: Account):
+    def update(self, account: BankAccount):
         pass
 
-    def get_by_id(self, account_id: AccountID) -> Maybe[Account]:
+    def get_by_id(self, account_id: AccountID) -> Maybe[BankAccount]:
         for client_id in self.actualAccounts:
             for acc in self.actualAccounts[client_id]:
                 if acc.get_id() == account_id:

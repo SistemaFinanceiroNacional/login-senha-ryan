@@ -2,7 +2,7 @@ import logging
 from typing import List
 
 from usecases.get_transactions import TransactionData
-from domain.account import (
+from domain.bankaccount import (
     InsufficientFundsException,
     InvalidValueToTransfer,
     Amount
