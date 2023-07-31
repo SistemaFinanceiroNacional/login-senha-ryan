@@ -25,7 +25,7 @@ from password import Password as passW
 from maybe import Maybe, Just, Nothing
 
 
-Accounts = dict[ClientID, list[BankAccount]]
+AccountsByClient = dict[ClientID, list[BankAccount]]
 
 
 class FakeIdentity(IdentityInterface):
@@ -114,7 +114,7 @@ class ClientsFake(ClientsRepositoryInterface):
 
 class ContasFake(AccountsRepositoryInterface):
     def __init__(self, actual_accounts, new_accounts):
-        self.actual_accounts: Accounts = actual_accounts
+        self.actual_accounts: AccountsByClient = actual_accounts
         self.new_accounts = new_accounts
         self._accounts = 0
 
