@@ -3,12 +3,12 @@ from usecases.repositories.transactioncontextinterface import (
 )
 from usecases.repositories.accountsrepositoryinterface import (
     AccountsRepositoryInterface as accRepo,
-    Account
+    BankAccount
 )
 from usecases.contexterrors.accountdoesnotexistserror import (
     AccountDoesNotExistsError
 )
-from domain.account import Amount
+from domain.bankaccount import Amount
 from domain.commontypes.types import AccountID
 
 
@@ -33,7 +33,7 @@ class TransferFundsUseCase:
 
             maybe_account = self.acc_repository.get_by_id(acc_id)
 
-            def transfer_to(account: Account):
+            def transfer_to(account: BankAccount):
                 account.transfer(dest_id, amount)
                 self.acc_repository.update(account)
 

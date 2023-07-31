@@ -9,7 +9,7 @@ from infrastructure.identityinterface import (
 )
 from usecases.repositories.accountsrepositoryinterface import (
     AccountsRepositoryInterface,
-    Account,
+    BankAccount,
     AccountID,
     ClientID
 )
@@ -46,7 +46,7 @@ class AccountsRepository(AccountsRepositoryInterface):
         cursor.execute(query, (destiny_id,))
         return cursor.fetchone() is not None
 
-    def update(self, acc: Account):
+    def update(self, acc: BankAccount):
         cursor = self.connection_pool.get_cursor(self.identifier)
         transactions = acc.get_transactions()
 
@@ -69,11 +69,11 @@ class AccountsRepository(AccountsRepositoryInterface):
         accounts_ids = map(lambda item: item[0], accounts_ids_tuples)
         return accounts_ids
 
-    def get_by_id(self, account_id: AccountID) -> Maybe[Account]:
+    def get_by_id(self, account_id: AccountID) -> Maybe[BankAccount]:
         if not self.exists(account_id):
             return Nothing()
         transactions = self._get_transactions(account_id)
-        acc = Account(account_id, transactions)
+        acc = BankAccount(account_id, transactions)
         return Just(acc)
 
     def _get_transactions(self, account_id: int) -> Transactions:

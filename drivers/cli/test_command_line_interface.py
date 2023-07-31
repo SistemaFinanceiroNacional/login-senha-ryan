@@ -7,7 +7,7 @@ from usecases.get_balance import GetBalanceUseCase
 from usecases.get_accounts import GetAccountsUseCase
 from usecases.register_client import RegisterClientUseCase
 from usecases.get_transactions import GetTransactionsUseCase
-from domain.account import Account
+from domain.bankaccount import BankAccount
 from fake_config.fakes import (
     InputFake,
     ClientsFake,
@@ -22,7 +22,7 @@ def test_main_login_and_balance():
     context = FakeContext()
     joao_login = "joao"
     joao_pw = Password("ab123")
-    joao_acc = Account(1, [])
+    joao_acc = BankAccount(1, [])
     a = ContasFake({1: [joao_acc]}, {})
     c = ClientsFake({joao_login: joao_pw})
 
@@ -87,7 +87,7 @@ def test_trying_register_an_existed_account():
     context = FakeContext()
     joao_login = "joao"
     joao_pw = Password("ab123")
-    joao_acc = Account(1, [])
+    joao_acc = BankAccount(1, [])
     a = ContasFake({1: [joao_acc]}, {})
     c = ClientsFake({joao_login: joao_pw})
 

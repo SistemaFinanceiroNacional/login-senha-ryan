@@ -5,8 +5,8 @@ from usecases.transfer import (
     TransferFundsUseCase
 )
 from domain.transaction import create_transaction
-from domain.account import (
-    Account,
+from domain.bankaccount import (
+    BankAccount,
     InvalidValueToTransfer
 )
 from fake_config.fakes import (
@@ -21,8 +21,8 @@ joao_id = 3
 
 def test_transfer_correct():
     t = create_transaction(default_id, ryan_id, 300)
-    ryan_acc = Account(ryan_id, [t])
-    joao_acc = Account(joao_id, [])
+    ryan_acc = BankAccount(ryan_id, [t])
+    joao_acc = BankAccount(joao_id, [])
     context = FakeContext()
 
     acc_repository = ContasFake({ryan_id: [ryan_acc], joao_id: [joao_acc]}, {})
@@ -34,8 +34,8 @@ def test_transfer_correct():
 
 def test_transfer_correct_ryan_balance():
     t = create_transaction(default_id, ryan_id, 100)
-    ryan_acc = Account(ryan_id, [t])
-    joao_acc = Account(joao_id, [])
+    ryan_acc = BankAccount(ryan_id, [t])
+    joao_acc = BankAccount(joao_id, [])
     context = FakeContext()
 
     acc_repository = ContasFake({ryan_id: [ryan_acc], joao_id: [joao_acc]}, {})
@@ -51,8 +51,8 @@ def test_transfer_correct_ryan_balance():
 
 def test_transfer_zero_amount():
     t = create_transaction(default_id, ryan_id, 100)
-    ryan_acc = Account(ryan_id, [t])
-    joao_acc = Account(joao_id, [])
+    ryan_acc = BankAccount(ryan_id, [t])
+    joao_acc = BankAccount(joao_id, [])
     context = FakeContext()
 
     acc_repository = ContasFake({ryan_id: [ryan_acc], joao_id: [joao_acc]}, {})
@@ -69,8 +69,8 @@ def test_transfer_zero_amount():
 
 def test_transfer_negative_amount():
     t = create_transaction(default_id, ryan_id, 100)
-    ryan_acc = Account(ryan_id, [t])
-    joao_acc = Account(joao_id, [])
+    ryan_acc = BankAccount(ryan_id, [t])
+    joao_acc = BankAccount(joao_id, [])
     context = FakeContext()
 
     acc_repository = ContasFake({ryan_id: [ryan_acc], joao_id: [joao_acc]}, {})
@@ -87,8 +87,8 @@ def test_transfer_negative_amount():
 
 def test_transfer_not_existing_login_destiny():
     t = create_transaction(default_id, ryan_id, 100)
-    ryan_acc = Account(ryan_id, [t])
-    joao_acc = Account(joao_id, [])
+    ryan_acc = BankAccount(ryan_id, [t])
+    joao_acc = BankAccount(joao_id, [])
     context = FakeContext()
 
     acc_repository = ContasFake({ryan_id: [ryan_acc], joao_id: [joao_acc]}, {})

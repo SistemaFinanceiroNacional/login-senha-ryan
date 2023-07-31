@@ -5,7 +5,7 @@ from domain.commontypes.types import AccountID
 Amount = float
 
 
-class Account:
+class BankAccount:
     def __init__(self,
                  account_id: AccountID,
                  transactions: List[Transaction]

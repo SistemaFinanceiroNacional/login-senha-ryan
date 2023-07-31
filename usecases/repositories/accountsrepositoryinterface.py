@@ -1,6 +1,6 @@
 from typing import Iterable
-from domain.account import (
-    Account,
+from domain.bankaccount import (
+    BankAccount,
 )
 from domain.commontypes.types import (
     ClientID,
@@ -16,11 +16,11 @@ class AccountsRepositoryInterface:
     def exists(self, account_id: AccountID) -> bool:
         raise NotImplementedError
 
-    def update(self, account: Account) -> None:
+    def update(self, account: BankAccount) -> None:
         raise NotImplementedError
 
     def get_by_client_id(self, client_id: ClientID) -> Iterable[AccountID]:
         raise NotImplementedError
 
-    def get_by_id(self, account_id: AccountID) -> Maybe[Account]:
+    def get_by_id(self, account_id: AccountID) -> Maybe[BankAccount]:
         raise NotImplementedError
