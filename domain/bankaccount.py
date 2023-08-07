@@ -10,11 +10,13 @@ class BankAccount:
                  account_id: AccountID,
                  main_account: LedgerAccount,
                  draft_account: LedgerAccount,
+                 stage_account: LedgerAccount,
                  overdraft_limit: Amount
                  ):
         self._id = account_id
         self._main_account = main_account
         self._draft_account = draft_account
+        self._stage_account = stage_account
         self._overdraft_limit = overdraft_limit
 
     def get_balance(self) -> Amount:
@@ -38,9 +40,9 @@ class BankAccount:
                 draft_transaction = create_transaction(draft_id, main_id, remaining)
                 main_transaction = create_transaction(main_id, destiny_id, value)
 
-                self._draft_account.transactions.insert(0, draft_transaction)
-                self._main_account.transactions.insert(0, draft_transaction)
-                self._main_account.transactions.insert(0, main_transaction)
+                self._draft_account.add_transaction(draft_transaction)
+                self._main_account.add_transaction(draft_transaction)
+                self._main_account.add_transaction(main_transaction)
 
             else:
                 raise InsufficientFundsException(self.get_balance(), value)
@@ -53,7 +55,14 @@ class BankAccount:
         return self._id
 
     def get_transactions(self) -> List[Transaction]:
-        return self._transactions
+        main_transactions = self._main_account.get_transactions()
+        stage_transactions = self._stage_account.get_transactions()
+        draft_transactions = self._draft_account.get_transactions()
+        all_transactions = []
+        all_transactions.extend(main_transactions)
+        all_transactions.extend(draft_transactions)
+        all_transactions.extend(stage_transactions)
+        return all_transactions
 
 
 class InsufficientFundsException(Exception):

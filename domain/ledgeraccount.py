@@ -32,3 +32,9 @@ class LedgerAccount:
                 else:
                     balance += t.value
         return balance
+
+    def get_transactions(self) -> List[Transaction]:
+        return self.transactions
+
+    def add_transaction(self, transaction: Transaction):
+        self.transactions.insert(0, transaction)
