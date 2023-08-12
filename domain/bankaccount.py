@@ -30,26 +30,25 @@ class BankAccount:
 
         main_balance = self._main_account.get_balance()
         main_id = self._main_account.account_id
-        if main_balance < value:
-            remaining = value - main_balance
-            draft_account_balance = self._draft_account.get_balance()
-            overdraft = self._overdraft_limit - draft_account_balance
 
-            if overdraft >= remaining:
-                draft_id = self._draft_account.account_id
-                draft_transaction = create_transaction(draft_id, main_id, remaining)
-                main_transaction = create_transaction(main_id, destiny_id, value)
+        main_transaction = create_transaction(main_id, destiny_id, value)
+        if main_balance >= value:
+            self._main_account.add_transaction(main_transaction)
+            return
 
-                self._draft_account.add_transaction(draft_transaction)
-                self._main_account.add_transaction(draft_transaction)
-                self._main_account.add_transaction(main_transaction)
+        remaining = value - main_balance
+        draft_account_balance = self._draft_account.get_balance()
+        overdraft = self._overdraft_limit - draft_account_balance
 
-            else:
-                raise InsufficientFundsException(self.get_balance(), value)
-        else:
+        if overdraft < remaining:
+            raise InsufficientFundsException(self.get_balance(), value)
 
-            transaction = create_transaction(main_id, destiny_id, value)
-            self._main_account.transactions.insert(0, transaction)
+        draft_id = self._draft_account.account_id
+        draft_transaction = create_transaction(draft_id, main_id, remaining)
+
+        self._draft_account.add_transaction(draft_transaction)
+        self._main_account.add_transaction(draft_transaction)
+        self._main_account.add_transaction(main_transaction)
 
     def get_id(self) -> AccountID:
         return self._id

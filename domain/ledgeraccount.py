@@ -19,18 +19,11 @@ class LedgerAccount:
 
     def get_balance(self) -> Amount:
         balance = 0.0
-        if self._account_nature == AccountNature.CREDIT_ACCOUNT:
-            for t in self.transactions:
-                if t.d_acc == self.account_id:
-                    balance -= t.value
-                else:
-                    balance += t.value
-        else:
-            for t in self.transactions:
-                if t.c_acc == self.account_id:
-                    balance -= t.value
-                else:
-                    balance += t.value
+        for t in self.transactions:
+            if self._account_nature == AccountNature.CREDIT_ACCOUNT and t.d_acc == self.account_id:
+                balance -= t.value
+            else:
+                balance += t.value
         return balance
 
     def get_transactions(self) -> List[Transaction]:
