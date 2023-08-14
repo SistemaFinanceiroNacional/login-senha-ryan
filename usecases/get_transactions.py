@@ -9,7 +9,7 @@ from usecases.repositories.transactioncontextinterface import (
     TransactionContextInterface as Cntx
 )
 from domain.bankaccount import BankAccount
-from domain.transaction import Transaction
+from domain.transaction import BankAccountTransaction
 from domain.commontypes.types import AccountID
 from maybe import Maybe
 
@@ -21,7 +21,7 @@ class TransactionData:
     value: float
     date: datetime
 
-    def __init__(self, transaction: Transaction):
+    def __init__(self, transaction: BankAccountTransaction):
         self.debit_acc = transaction.d_acc
         self.credit_acc = transaction.c_acc
         self.value = transaction.value
