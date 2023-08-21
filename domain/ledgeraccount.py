@@ -1,8 +1,8 @@
 from enum import Enum
 from typing import List
 
-from domain.commontypes.types import AccountId, Amount
-from domain.bankaccounttransaction import BankAccountTransaction
+from domain.commontypes.types import Amount, LedgerId
+from domain.ledgertransaction import LedgerTransaction
 
 
 class AccountNature(Enum):
@@ -13,13 +13,11 @@ class AccountNature(Enum):
 class LedgerAccount:
     def __init__(
             self,
-            account_id: AccountId,
-            name: str,
+            ledger_id: LedgerId,
             account_nature: AccountNature,
-            transactions: List[BankAccountTransaction]
+            transactions: List[LedgerTransaction]
     ):
-        self.account_id = account_id
-        self._name = name
+        self.account_id = ledger_id
         self._account_nature = account_nature
         self.transactions = transactions
 
@@ -28,14 +26,14 @@ class LedgerAccount:
         for t in self.transactions:
             def is_credit(acc_nature: AccountNature) -> bool:
                 return acc_nature == AccountNature.CREDIT_ACCOUNT
-            if is_credit(self._account_nature) and t.d_acc == self.account_id:
+            if is_credit(self._account_nature) and t.from_acc == self.account_id:
                 balance -= t.value
             else:
                 balance += t.value
         return balance
 
-    def get_transactions(self) -> List[BankAccountTransaction]:
+    def get_transactions(self) -> List[LedgerTransaction]:
         return self.transactions
 
-    def add_transaction(self, transaction: BankAccountTransaction):
+    def add_transaction(self, transaction: LedgerTransaction):
         self.transactions.insert(0, transaction)

@@ -3,7 +3,7 @@ from password import Password as passW
 from maybe import Maybe, Just, Nothing
 from infrastructure.authserviceinterface import (
     AuthServiceInterface,
-    ClientID
+    ClientId
 )
 from infrastructure.identityinterface import (
     IdentityInterface
@@ -27,7 +27,7 @@ class AuthServiceDB(AuthServiceInterface):
         self.conn_pool = conn_pool
         self.identifier = identifier
 
-    def authenticate(self, username: str, password: str) -> Maybe[ClientID]:
+    def authenticate(self, username: str, password: str) -> Maybe[ClientId]:
         if not username or not password:
             return Nothing()
 

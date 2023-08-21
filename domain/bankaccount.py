@@ -1,11 +1,13 @@
 from typing import List
 
+from domain.accounts_conversor import get_stage_id
 from domain.ledgeraccount import LedgerAccount
 from domain.bankaccounttransaction import (
     BankAccountTransaction,
     create_transaction
 )
-from domain.commontypes.types import AccountId, Amount
+from domain.commontypes.types import AccountId, Amount, LedgerId
+from domain.ledgertransaction import create_ledger_transaction
 
 
 class BankAccount:
@@ -37,14 +39,15 @@ class BankAccount:
         if main_balance < value:
             self.use_overdraft(value, main_balance, main_id)
 
-        main_transaction = create_transaction(main_id, destiny_id, value)
+        destiny_stage_id = get_stage_id(destiny_id)
+        main_transaction = create_ledger_transaction(main_id, destiny_stage_id, value)
         self._main_account.add_transaction(main_transaction)
 
     def use_overdraft(
             self,
             value: Amount,
             main_balance: Amount,
-            main_id: AccountId
+            main_id: LedgerId
     ):
         remaining = value - main_balance
         draft_account_balance = self._draft_account.get_balance()
@@ -54,7 +57,7 @@ class BankAccount:
             raise InsufficientFundsException(self.get_balance(), value)
 
         draft_id = self._draft_account.account_id
-        draft_transaction = create_transaction(draft_id, main_id, remaining)
+        draft_transaction = create_ledger_transaction(draft_id, main_id, remaining)
 
         self._draft_account.add_transaction(draft_transaction)
         self._main_account.add_transaction(draft_transaction)

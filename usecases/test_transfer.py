@@ -4,7 +4,7 @@ from usecases.contexterrors.accountdoesnotexistserror import (
 from usecases.transfer import (
     TransferFundsUseCase
 )
-from domain.transaction import create_transaction
+from domain.bankaccounttransaction import create_transaction
 from domain.bankaccount import (
     BankAccount,
     InvalidValueToTransfer

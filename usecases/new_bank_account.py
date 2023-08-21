@@ -4,7 +4,7 @@ from usecases.repositories.accountsrepositoryinterface import (
 from usecases.repositories.transactioncontextinterface import (
     TransactionContextInterface as Cntx
 )
-from domain.commontypes.types import ClientID
+from domain.commontypes.types import ClientId
 
 
 class NewBankAccountUseCase:
@@ -12,7 +12,7 @@ class NewBankAccountUseCase:
         self._acc_repository = acc_repository
         self._db_context = db_context
 
-    def execute(self, client_id: ClientID) -> bool:
+    def execute(self, client_id: ClientId) -> bool:
         with self._db_context:
             self._acc_repository.add_account(client_id)
 

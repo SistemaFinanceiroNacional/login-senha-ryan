@@ -9,8 +9,8 @@ from usecases.repositories.transactioncontextinterface import (
     TransactionContextInterface as Cntx
 )
 from domain.bankaccount import BankAccount
-from domain.transaction import BankAccountTransaction
-from domain.commontypes.types import AccountID
+from domain.bankaccounttransaction import BankAccountTransaction
+from domain.commontypes.types import AccountId
 from maybe import Maybe
 
 
@@ -40,7 +40,7 @@ class GetTransactionsUseCase:
         self._acc_repository = acc_repository
         self._db_context = db_context
 
-    def execute(self, acc_id: AccountID) -> Maybe[List[TransactionData]]:
+    def execute(self, acc_id: AccountId) -> Maybe[List[TransactionData]]:
         with self._db_context:
             maybe_acc = self._acc_repository.get_by_id(acc_id)
 

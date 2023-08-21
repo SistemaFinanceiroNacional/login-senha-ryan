@@ -4,10 +4,10 @@ from domain.bankaccount import BankAccount
 from infrastructure.identityinterface import IdentityInterface
 from usecases.repositories.accountsrepositoryinterface import (
     AccountsRepositoryInterface,
-    AccountID,
-    ClientID
+    AccountId,
+    ClientId
 )
-from domain.transaction import create_transaction
+from domain.bankaccounttransaction import create_transaction
 from usecases.repositories.transactioncontextinterface import (
     TransactionContextInterface
 )
@@ -25,7 +25,7 @@ from password import Password as passW
 from maybe import Maybe, Just, Nothing
 
 
-AccountsByClient = dict[ClientID, list[BankAccount]]
+AccountsByClient = dict[ClientId, list[BankAccount]]
 
 
 class FakeIdentity(IdentityInterface):
@@ -137,14 +137,14 @@ class ContasFake(AccountsRepositoryInterface):
     def update(self, account: BankAccount):
         pass
 
-    def get_by_id(self, account_id: AccountID) -> Maybe[BankAccount]:
+    def get_by_id(self, account_id: AccountId) -> Maybe[BankAccount]:
         for client_id in self.actual_accounts:
             for acc in self.actual_accounts[client_id]:
                 if acc.get_id() == account_id:
                     return Just(acc)
         return Nothing()
 
-    def get_by_client_id(self, client_id: ClientID) -> Iterable[AccountID]:
+    def get_by_client_id(self, client_id: ClientId) -> Iterable[AccountId]:
         accounts_id = [acc.get_id() for acc in self.actual_accounts[client_id]]
         return accounts_id
 

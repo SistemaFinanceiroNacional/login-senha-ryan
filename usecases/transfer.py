@@ -9,7 +9,7 @@ from usecases.contexterrors.accountdoesnotexistserror import (
     AccountDoesNotExistsError
 )
 from domain.bankaccount import Amount
-from domain.commontypes.types import AccountID
+from domain.commontypes.types import AccountId
 
 
 class TransferFundsUseCase:
@@ -21,8 +21,8 @@ class TransferFundsUseCase:
         self.transactional_context = transactional_context
 
     def execute(self,
-                acc_id: AccountID,
-                dest_id: AccountID,
+                acc_id: AccountId,
+                dest_id: AccountId,
                 amount: Amount
                 ) -> bool:
         with self.transactional_context:

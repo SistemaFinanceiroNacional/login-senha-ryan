@@ -6,8 +6,8 @@ from usecases.repositories.accountsrepositoryinterface import (
     AccountsRepositoryInterface as AccRepo
 )
 from domain.commontypes.types import (
-    AccountID,
-    ClientID
+    AccountId,
+    ClientId
 )
 
 
@@ -16,7 +16,7 @@ class GetAccountsUseCase:
         self._acc_repository = acc_repository
         self._db_context = db_context
 
-    def execute(self, client_id: ClientID) -> Iterable[AccountID]:
+    def execute(self, client_id: ClientId) -> Iterable[AccountId]:
         with self._db_context:
             acc_iter = self._acc_repository.get_by_client_id(client_id)
 
