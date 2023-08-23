@@ -1,3 +1,6 @@
+import uuid
+
+from domain.commontypes.types import LedgerType
 from drivers.cli import command_line_interface
 from usecases.transfer import TransferFundsUseCase
 from usecases.new_bank_account import NewBankAccountUseCase
@@ -13,7 +16,7 @@ from fake_config.fakes import (
     ClientsFake,
     FakeContext,
     ContasFake,
-    FakeAuthService
+    FakeAuthService, ledger_cred_maker, ledger_debt_maker
 )
 from password import Password
 
@@ -22,7 +25,14 @@ def test_main_login_and_balance():
     context = FakeContext()
     joao_login = "joao"
     joao_pw = Password("ab123")
-    joao_acc = BankAccount(1, [])
+    joao_acc_id = uuid.uuid4()
+    joao_acc = BankAccount(
+                joao_acc_id,
+                ledger_cred_maker(joao_acc_id, LedgerType.MAIN),
+                ledger_debt_maker(joao_acc_id, LedgerType.MAIN),
+                ledger_cred_maker(joao_acc_id, LedgerType.MAIN),
+                0
+            )
     a = ContasFake({1: [joao_acc]}, {})
     c = ClientsFake({joao_login: joao_pw})
 

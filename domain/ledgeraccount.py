@@ -19,21 +19,27 @@ class LedgerAccount:
     ):
         self.account_id = ledger_id
         self._account_nature = account_nature
-        self.transactions = transactions
+        self._transactions = transactions
 
     def get_balance(self) -> Amount:
         balance = 0.0
-        for t in self.transactions:
+        for t in self._transactions:
             def is_credit(acc_nature: AccountNature) -> bool:
                 return acc_nature == AccountNature.CREDIT_ACCOUNT
-            if is_credit(self._account_nature) and t.from_acc == self.account_id:
-                balance -= t.value
+            if is_credit(self._account_nature):
+                if t.from_acc == self.account_id:
+                    balance -= t.value
+                else:
+                    balance += t.value
             else:
-                balance += t.value
+                if t.from_acc == self.account_id:
+                    balance += t.value
+                else:
+                    balance -= t.value
         return balance
 
     def get_transactions(self) -> List[LedgerTransaction]:
-        return self.transactions
+        return self._transactions
 
     def add_transaction(self, transaction: LedgerTransaction):
-        self.transactions.insert(0, transaction)
+        self._transactions.insert(0, transaction)
