@@ -8,8 +8,10 @@ DRAFT_DIGIT = LedgerType.DRAFT
 def get_stage_id(bank_acc_id: AccountId) -> LedgerId:
     return LedgerId(bank_acc_id, STAGE_DIGIT)
 
+
 def get_main_id(bank_acc_id: AccountId) -> LedgerId:
     return LedgerId(bank_acc_id, MAIN_DIGIT)
+
 
 def get_draft_id(bank_acc_id: AccountId) -> LedgerId:
     return LedgerId(bank_acc_id, DRAFT_DIGIT)
