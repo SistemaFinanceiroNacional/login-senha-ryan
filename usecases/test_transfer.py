@@ -1,3 +1,5 @@
+import uuid
+
 from usecases.contexterrors.accountdoesnotexistserror import (
     AccountDoesNotExistsError
 )
@@ -14,9 +16,9 @@ from fake_config.fakes import (
     FakeContext
 )
 
-default_id = 1
-ryan_id = 2
-joao_id = 3
+default_id = uuid.uuid4()
+ryan_id = uuid.uuid4()
+joao_id = uuid.uuid4()
 
 
 def test_transfer_correct():

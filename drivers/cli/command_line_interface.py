@@ -92,7 +92,7 @@ def repl(io: InputIO, c_id: ClientId, logged_cases: LoggedUseCases):
         if command == "1":
             accs = list(logged_cases.get_accounts.execute(c_id))
             for acc in accs:
-                print(f"Account ID: {acc}")
+                io.print(f"Account ID: {acc}")
             select_acc = int(io.input("Choose one ID: "))
             if select_acc in accs:
                 accounts_repl(io, select_acc, logged_cases)
