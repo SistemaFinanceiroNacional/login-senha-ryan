@@ -1,13 +1,16 @@
+import uuid
 from typing import Iterable, Tuple, List
 
 from domain.bankaccount import BankAccount
+from domain.commontypes.types import LedgerType, LedgerId
+from domain.ledgeraccount import AccountNature, LedgerAccount
 from infrastructure.identityinterface import IdentityInterface
 from usecases.repositories.accountsrepositoryinterface import (
     AccountsRepositoryInterface,
-    AccountID,
-    ClientID
+    AccountId,
+    ClientId
 )
-from domain.transaction import create_transaction
+from domain.bankaccounttransaction import create_transaction
 from usecases.repositories.transactioncontextinterface import (
     TransactionContextInterface
 )
@@ -24,8 +27,7 @@ from inputio.input_io import InputIO
 from password import Password as passW
 from maybe import Maybe, Just, Nothing
 
-
-AccountsByClient = dict[ClientID, list[BankAccount]]
+AccountsByClient = dict[ClientId, list[BankAccount]]
 
 
 class FakeIdentity(IdentityInterface):
@@ -112,6 +114,16 @@ class ClientsFake(ClientsRepositoryInterface):
         return True
 
 
+def ledger_debt_maker(bank_id: AccountId, ledger_type: LedgerType):
+    ledger_id = LedgerId(bank_id, ledger_type)
+    return LedgerAccount(ledger_id, AccountNature.DEBIT_ACCOUNT, [])
+
+
+def ledger_cred_maker(bank_id: AccountId, ledger_type: LedgerType):
+    ledger_id = LedgerId(bank_id, ledger_type)
+    return LedgerAccount(ledger_id, AccountNature.CREDIT_ACCOUNT, [])
+
+
 class ContasFake(AccountsRepositoryInterface):
     def __init__(self, actual_accounts, new_accounts):
         self.actual_accounts: AccountsByClient = actual_accounts
@@ -121,7 +133,14 @@ class ContasFake(AccountsRepositoryInterface):
     def add_account(self, client_id):
         if client_id in self.actual_accounts:
             self._accounts += 1
-            new_account = BankAccount(self._accounts, [])
+            new_account_id = uuid.uuid4()
+            new_account = BankAccount(
+                new_account_id,
+                ledger_cred_maker(new_account_id, LedgerType.MAIN),
+                ledger_debt_maker(new_account_id, LedgerType.MAIN),
+                ledger_cred_maker(new_account_id, LedgerType.MAIN),
+                0
+            )
             self.actual_accounts[client_id].append(new_account)
             return True
         else:
@@ -137,14 +156,14 @@ class ContasFake(AccountsRepositoryInterface):
     def update(self, account: BankAccount):
         pass
 
-    def get_by_id(self, account_id: AccountID) -> Maybe[BankAccount]:
+    def get_by_id(self, account_id: AccountId) -> Maybe[BankAccount]:
         for client_id in self.actual_accounts:
             for acc in self.actual_accounts[client_id]:
                 if acc.get_id() == account_id:
                     return Just(acc)
         return Nothing()
 
-    def get_by_client_id(self, client_id: ClientID) -> Iterable[AccountID]:
+    def get_by_client_id(self, client_id: ClientId) -> Iterable[AccountId]:
         accounts_id = [acc.get_id() for acc in self.actual_accounts[client_id]]
         return accounts_id
 

@@ -1,6 +1,9 @@
 from typing import Iterable, List
 from maybe import Maybe, Just, Nothing
-from domain.transaction import Transaction, create_transaction_from_raw
+from domain.bankaccounttransaction import (
+    BankAccountTransaction,
+    create_transaction_from_raw
+)
 from infrastructure.connection_pool import (
     ConnectionPool as CPool,
 )
@@ -10,11 +13,11 @@ from infrastructure.identityinterface import (
 from usecases.repositories.accountsrepositoryinterface import (
     AccountsRepositoryInterface,
     BankAccount,
-    AccountID,
-    ClientID
+    AccountId,
+    ClientId
 )
 
-Transactions = List[Transaction]
+Transactions = List[BankAccountTransaction]
 
 
 class AccountsRepository(AccountsRepositoryInterface):
@@ -22,7 +25,7 @@ class AccountsRepository(AccountsRepositoryInterface):
         self.connection_pool = connection_pool
         self.identifier = identifier
 
-    def add_account(self, client_id: ClientID):
+    def add_account(self, client_id: ClientId):
         cursor = self.connection_pool.get_cursor(self.identifier)
 
         return_t = "RETURNING id"
@@ -40,7 +43,7 @@ class AccountsRepository(AccountsRepositoryInterface):
         query = f"INSERT INTO {table} {columns} {statements};"
         cursor.execute(query, (client_id, account_id))
 
-    def exists(self, destiny_id: int) -> bool:
+    def exists(self, destiny_id: AccountId) -> bool:
         cursor = self.connection_pool.get_cursor(self.identifier)
         query = "SELECT * FROM accounts WHERE id=%s;"
         cursor.execute(query, (destiny_id,))
@@ -60,7 +63,7 @@ class AccountsRepository(AccountsRepositoryInterface):
             data = t.get_transaction_data()
             cursor.execute(query, data)
 
-    def get_by_client_id(self, client_id: ClientID) -> Iterable[AccountID]:
+    def get_by_client_id(self, client_id: ClientId) -> Iterable[AccountId]:
         cursor = self.connection_pool.get_cursor(self.identifier)
 
         query = "SELECT account_id FROM clients_accounts WHERE client_id=%s;"
@@ -69,7 +72,7 @@ class AccountsRepository(AccountsRepositoryInterface):
         accounts_ids = map(lambda item: item[0], accounts_ids_tuples)
         return accounts_ids
 
-    def get_by_id(self, account_id: AccountID) -> Maybe[BankAccount]:
+    def get_by_id(self, account_id: AccountId) -> Maybe[BankAccount]:
         if not self.exists(account_id):
             return Nothing()
         transactions = self._get_transactions(account_id)

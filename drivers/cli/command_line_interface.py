@@ -13,13 +13,13 @@ from usecases.logged_cases import LoggedUseCases
 from usecases.contexterrors.accountdoesnotexistserror import (
     AccountDoesNotExistsError
 )
-from domain.commontypes.types import AccountID, ClientID
+from domain.commontypes.types import AccountId, ClientId
 from infrastructure.authserviceinterface import AuthServiceInterface
 
 logger = logging.getLogger("drivers.Cli.command_line_interface")
 
 
-def transfer_money(io: InputIO, acc_id: AccountID, l_cases: LoggedUseCases):
+def transfer_money(io: InputIO, acc_id: AccountId, l_cases: LoggedUseCases):
     destination_account = int(io.input(
         "Enter the ID of the destination account: "
     ))
@@ -35,7 +35,7 @@ def transfer_money(io: InputIO, acc_id: AccountID, l_cases: LoggedUseCases):
         io.print("Invalid Account ID.")
 
 
-def show_transactions(io: InputIO, acc_id: AccountID, l_cases: LoggedUseCases):
+def show_transactions(io: InputIO, acc_id: AccountId, l_cases: LoggedUseCases):
     maybe_transactions = l_cases.get_transactions.execute(acc_id)
 
     def transactions_print(transactions: List[TransactionData]) -> str:
@@ -49,7 +49,7 @@ def show_transactions(io: InputIO, acc_id: AccountID, l_cases: LoggedUseCases):
     io.print(msg)
 
 
-def accounts_repl(io: InputIO, acc_id: AccountID, l_cases: LoggedUseCases):
+def accounts_repl(io: InputIO, acc_id: AccountId, l_cases: LoggedUseCases):
     balance_case = l_cases.get_balance
 
     def balance_print():
@@ -82,7 +82,7 @@ def accounts_repl(io: InputIO, acc_id: AccountID, l_cases: LoggedUseCases):
             action()
 
 
-def repl(io: InputIO, c_id: ClientID, logged_cases: LoggedUseCases):
+def repl(io: InputIO, c_id: ClientId, logged_cases: LoggedUseCases):
     io.print("""
             (1) Select account
             (2) Logout
@@ -92,7 +92,7 @@ def repl(io: InputIO, c_id: ClientID, logged_cases: LoggedUseCases):
         if command == "1":
             accs = list(logged_cases.get_accounts.execute(c_id))
             for acc in accs:
-                print(f"Account ID: {acc}")
+                io.print(f"Account ID: {acc}")
             select_acc = int(io.input("Choose one ID: "))
             if select_acc in accs:
                 accounts_repl(io, select_acc, logged_cases)
