@@ -3,12 +3,16 @@ import pytest
 
 from domain.amount import Amount
 from domain.money import Money
+from maybe import is_nothing
+from testsupport.authenticator import SoftwareAuthenticator
+from testsupport.bank import ORIGIN
 
 APPLICATION_TABLES = {
     "clients", "accounts", "clients_accounts", "transactions"
 }
 BANK_DEPOSITS_ACCOUNT = 1
 EXACT_AMOUNTS = "20260928_01_exact_transaction_amounts"
+PASSKEYS = "20260928_02_passkeys"
 
 
 @pytest.mark.integration
@@ -84,3 +88,17 @@ def test_rolling_back_refuses_to_lose_cents(database, bank):
         database.rollback_down_to(EXACT_AMOUNTS)
 
     assert balance(bank, alice) == large
+
+
+@pytest.mark.integration
+@pytest.mark.xfail(strict=True, raises=NotImplementedError,
+                   reason="passkeys not implemented yet (issue #119)")
+def test_rolling_back_passkeys_refuses_to_delete_them(database, bank):
+    key = SoftwareAuthenticator(ORIGIN)
+    bank.register_with_passkey("alice", key)\
+        .or_else_throw(AssertionError("could not register"))
+
+    with pytest.raises(psycopg2.Error, match="would delete passkeys"):
+        database.rollback_down_to(PASSKEYS)
+
+    assert not is_nothing(bank.sign_in_with_passkey("alice", key))

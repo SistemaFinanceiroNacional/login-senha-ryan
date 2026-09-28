@@ -10,6 +10,7 @@ from playwright.sync_api import Browser, Page
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.image import DockerImage
 
+from e2e.authenticators import PLATFORM
 from e2e.bank_site import BankSite
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -89,21 +90,23 @@ def page(page: Page) -> Page:
 
 
 @pytest.fixture
-def new_site(browser: Browser, web_app) -> Iterator[Callable[[], BankSite]]:
+def new_site(browser: Browser,
+             web_app
+             ) -> Iterator[Callable[..., BankSite]]:
     """Opens the bank site in a new, independent browser session (its own
-    cookies), so a test can play several people.
+    cookies and authenticator), so a test can play several people.
 
     The server handles one connection at a time (#96): an idle keep-alive
     connection from one browser blocks every other one. Until that is
     fixed, a person must leave() before the next one acts."""
     contexts = []
 
-    def open_site() -> BankSite:
+    def open_site(authenticator: str = PLATFORM) -> BankSite:
         context = browser.new_context()
         contexts.append(context)
         page = context.new_page()
         page.set_default_timeout(BROWSER_TIMEOUT_MILLISECONDS)
-        return BankSite(page, web_app)
+        return BankSite(page, web_app, authenticator)
 
     yield open_site
     for context in contexts:
