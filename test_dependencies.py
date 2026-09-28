@@ -8,8 +8,6 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 pytestmark = pytest.mark.integration
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason="dependencies with known vulnerabilities (#106)")
 @pytest.mark.parametrize("requirements", ["requirements.txt",
                                           "requirements-dev.txt"])
 def test_dependencies_have_no_known_vulnerabilities(requirements):

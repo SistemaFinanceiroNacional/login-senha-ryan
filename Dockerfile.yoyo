@@ -1,9 +1,10 @@
-FROM python:3.10
+FROM python:3.10-slim
 
-RUN pip install yoyo-migrations
+RUN pip install --no-cache-dir yoyo-migrations==9.0.0 psycopg2-binary==2.9.13
 
-RUN pip install psycopg2
+RUN useradd --system --no-create-home yoyo
+USER yoyo
 
 WORKDIR /yoyo/migrations
 
-ENTRYPOINT ["/usr/local/bin/yoyo"]
+ENTRYPOINT ["yoyo"]
