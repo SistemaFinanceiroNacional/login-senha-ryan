@@ -68,6 +68,8 @@ class BankSite:
                 }""",
                 [action, fields]
             )
+        # The form submission is a navigation: let it finish.
+        self.page.wait_for_load_state()
         return answer.value.status
 
     def message(self):

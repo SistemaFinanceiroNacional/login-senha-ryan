@@ -46,7 +46,6 @@ def test_another_site_cannot_log_the_client_out(new_site):
     status = alice.submit_hand_made_form(
         bank + "/logout", {}, with_csrf_token=False
     )
-    alice.page.wait_for_load_state()
 
     assert status == 403
     alice.page.goto(alice.web_app.url("/"))
