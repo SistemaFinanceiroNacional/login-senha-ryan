@@ -94,11 +94,8 @@ def new_site(browser: Browser,
              web_app
              ) -> Iterator[Callable[..., BankSite]]:
     """Opens the bank site in a new, independent browser session (its own
-    cookies and authenticator), so a test can play several people.
-
-    The server handles one connection at a time (#96): an idle keep-alive
-    connection from one browser blocks every other one. Until that is
-    fixed, a person must leave() before the next one acts."""
+    cookies and authenticator), so a test can play several people at
+    once."""
     contexts = []
 
     def open_site(authenticator: str = PLATFORM) -> BankSite:

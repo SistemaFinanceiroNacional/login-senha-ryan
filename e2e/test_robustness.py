@@ -53,8 +53,6 @@ def test_a_malformed_body_is_refused(web_app, request_bytes):
     assert_answered_and_alive(web_app.base_url, request_bytes)
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason="one connection is served at a time (issue #96)")
 def test_a_kept_alive_connection_does_not_block_the_others(web_app):
     address = urlparse(web_app.base_url)
     browser = socket.create_connection((address.hostname, address.port or 80))

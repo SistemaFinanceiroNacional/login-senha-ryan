@@ -14,6 +14,10 @@ class HttpConnection:
         self.socket = socket
 
     def process(self, handler):
+        with self.socket:
+            self._serve(handler)
+
+    def _serve(self, handler):
         while True:
             try:
                 request = http_request.get_next_http_request(self.socket)

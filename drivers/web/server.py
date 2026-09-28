@@ -16,4 +16,9 @@ def main(app):
             client_socket, addr = server_socket.accept()
             logger.debug(f"Client-IP {client_socket.getpeername()}")
             connection = http_connection.HttpConnection(client_socket)
-            threading.Thread(target=connection.process, args=(app,)).run()
+            # Each connection in its own thread: a slow or idle client
+            # (e.g. a browser keeping its connection alive) must not keep
+            # everybody else waiting.
+            threading.Thread(
+                target=connection.process, args=(app,), daemon=True
+            ).start()
