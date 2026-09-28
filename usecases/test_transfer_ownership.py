@@ -7,11 +7,7 @@ from usecases.contexterrors.accountdoesnotexistserror import (
     AccountDoesNotExistsError
 )
 
-pytestmark = [
-    pytest.mark.integration,
-    pytest.mark.xfail(strict=True, raises=TypeError,
-                      reason="transfers do not know who asks (issue #107)"),
-]
+pytestmark = pytest.mark.integration
 
 
 @pytest.fixture

@@ -9,7 +9,10 @@ from usecases.contexterrors.accountdoesnotexistserror import (
     AccountDoesNotExistsError
 )
 from domain.amount import Amount
-from domain.commontypes.types import AccountID
+from domain.commontypes.types import AccountID, ClientID
+from usecases.contexterrors.sameaccounttransfererror import (
+    SameAccountTransferError
+)
 
 
 class TransferFundsUseCase:
@@ -21,11 +24,20 @@ class TransferFundsUseCase:
         self.transactional_context = transactional_context
 
     def execute(self,
+                client_id: ClientID,
                 acc_id: AccountID,
                 dest_id: AccountID,
                 amount: Amount
                 ) -> bool:
+        """Moves money from one of the client's accounts to another
+        account. An account the client does not own is, to them, an
+        account that does not exist."""
+        if acc_id == dest_id:
+            raise SameAccountTransferError(acc_id)
         with self.transactional_context:
+            client_accounts = self.acc_repository.get_by_client_id(client_id)
+            if acc_id not in client_accounts:
+                raise AccountDoesNotExistsError(acc_id)
             get_existence = self.acc_repository.exists
             both_exists = get_existence(acc_id) and get_existence(dest_id)
             if not both_exists:
