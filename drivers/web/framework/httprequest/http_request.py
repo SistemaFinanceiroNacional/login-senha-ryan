@@ -1,5 +1,5 @@
 import logging
-from typing import Dict
+from typing import Any, Dict
 
 from drivers.web.framework.body import BodyInterface, Body, EmptyBody
 from drivers.web.framework.encodings import url_encoded
@@ -20,6 +20,8 @@ class HttpRequest:
         self.method = method
         self.resource = resource
         self.version = version
+        # Set by the session middleware for the duration of the request.
+        self.session: Any = None
 
     def _construct_body(self, body, headers) -> BodyInterface:
         if 'Content-Type' in headers:

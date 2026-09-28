@@ -1,4 +1,4 @@
-from typing import Callable, Dict, Protocol, List
+from typing import Any, Callable, Dict, Protocol, List
 from types import ModuleType
 
 from drivers.web.framework.http_response_interface import HttpResponseInterface
@@ -14,5 +14,5 @@ class SettingsModule(Protocol):
     BASE_DIR: str
     TEMPLATES: str
     AUTH_REDIRECT: str
-    MIDDLEWARES: List[Middleware]
+    MIDDLEWARES: List[Any]
     ROOT_URLCONF: ModuleType

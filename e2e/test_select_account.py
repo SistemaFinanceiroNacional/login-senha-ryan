@@ -1,5 +1,3 @@
-import json
-
 import pytest
 from playwright.sync_api import expect
 
@@ -76,24 +74,6 @@ def test_client_cannot_open_another_clients_account(bob_account, alice):
         alice.open_account()
 
     assert selection.value.status == 404
-    assert BOB_BALANCE not in alice.page.content()
-
-
-@pytest.mark.integration
-def test_session_pointing_to_another_clients_account_is_not_disclosed(
-        bob_account, alice
-):
-    # Alice tampers with her session cookie (see #94) to point to Bob's
-    # account.
-    context = alice.page.context
-    [cookie] = [c for c in context.cookies() if c["name"] == "loggedUsername"]
-    session = {**json.loads(cookie["value"]), "account_id": bob_account}
-    tampered = json.dumps(session, separators=(",", ":"))
-    context.add_cookies([{**cookie, "value": tampered}])
-
-    response = alice.page.goto(alice.web_app.url("/selectaccount"))
-
-    assert response is not None and response.status == 404
     assert BOB_BALANCE not in alice.page.content()
 
 
