@@ -11,19 +11,26 @@ from usecases.logged_cases import LoggedUseCases
 from usecases.contexterrors.accountdoesnotexistserror import (
     AccountDoesNotExistsError
 )
+from usecases.contexterrors.sameaccounttransfererror import (
+    SameAccountTransferError
+)
 from domain.commontypes.types import AccountID, ClientID
 from infrastructure.authserviceinterface import AuthServiceInterface
 
 logger = logging.getLogger("drivers.Cli.command_line_interface")
 
 
-def transfer_money(io: InputIO, acc_id: AccountID, l_cases: LoggedUseCases):
+def transfer_money(io: InputIO,
+                   c_id: ClientID,
+                   acc_id: AccountID,
+                   l_cases: LoggedUseCases
+                   ):
     destination_account = int(io.input(
         "Enter the ID of the destination account: "
     ))
     try:
         amount = Amount(io.input("How much do you want to transfer? "))
-        l_cases.transfer.execute(acc_id, destination_account, amount)
+        l_cases.transfer.execute(c_id, acc_id, destination_account, amount)
         io.print("Successful transaction.")
     except InsufficientFundsException:
         io.print("Insufficient funds.")
@@ -31,6 +38,8 @@ def transfer_money(io: InputIO, acc_id: AccountID, l_cases: LoggedUseCases):
         io.print(str(e))
     except AccountDoesNotExistsError:
         io.print("Invalid Account ID.")
+    except SameAccountTransferError:
+        io.print("Choose another account to transfer to.")
 
 
 def show_transactions(io: InputIO,
@@ -69,7 +78,7 @@ def accounts_repl(io: InputIO,
 
     options = {
         "1": balance_print,
-        "2": lambda: transfer_money(io, acc_id, l_cases),
+        "2": lambda: transfer_money(io, c_id, acc_id, l_cases),
         "3": lambda: show_transactions(io, c_id, acc_id, l_cases),
         "4": lambda: None
     }

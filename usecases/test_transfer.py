@@ -28,7 +28,7 @@ def test_transfer_correct():
 
     use_case = TransferFundsUseCase(acc_repository, context)
 
-    assert use_case.execute(ryan_id, joao_id, Amount(150))
+    assert use_case.execute(ryan_id, ryan_id, joao_id, Amount(150))
 
 
 def test_transfer_correct_ryan_balance():
@@ -40,7 +40,7 @@ def test_transfer_correct_ryan_balance():
     acc_repository = ContasFake({ryan_id: [ryan_acc], joao_id: [joao_acc]}, {})
 
     use_case = TransferFundsUseCase(acc_repository, context)
-    use_case.execute(ryan_id, joao_id, Amount(100))
+    use_case.execute(ryan_id, ryan_id, joao_id, Amount(100))
 
     maybe_acc = acc_repository.get_by_id(ryan_id)
     ryan_balance = maybe_acc.map(lambda acc: acc.get_balance())\
@@ -60,7 +60,7 @@ def test_transfer_not_existing_login_destiny():
 
     wrong_id = 4
     try:
-        use_case.execute(ryan_id, wrong_id, Amount(50))
+        use_case.execute(ryan_id, ryan_id, wrong_id, Amount(50))
         assert False
     except AccountDoesNotExistsError as e:
         assert str(e) == "Account 4 does not exists."
