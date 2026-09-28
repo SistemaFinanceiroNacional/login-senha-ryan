@@ -70,8 +70,11 @@ def test_a_failing_handler_answers_500_and_the_server_survives(new_site):
 
     # A deposit without any body makes the handler fail.
     status = alice.page.evaluate(
-        """() => fetch("/deposit", {method: "POST"})
-            .then(response => response.status)"""
+        """() => fetch("/deposit", {
+            method: "POST",
+            headers: {"X-CSRF-Token": document.querySelector(
+                'meta[name="csrf-token"]').content},
+        }).then(response => response.status)"""
     )
 
     assert status == 500
