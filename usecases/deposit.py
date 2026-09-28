@@ -1,4 +1,4 @@
-from domain.bankaccount import Amount
+from domain.bankaccount import Amount, BankAccount, is_valid_deposit
 from domain.commontypes.types import AccountID, ClientID
 from usecases.repositories.accountsrepositoryinterface import (
     AccountsRepositoryInterface as AccRepo
@@ -21,4 +21,23 @@ class DepositUseCase:
                 account_id: AccountID,
                 amount: Amount
                 ) -> bool:
-        raise NotImplementedError
+        # Validated before opening the transaction: an exception inside
+        # the transactional context is recorded in its error list, which
+        # is shared by every use case.
+        if not is_valid_deposit(amount):
+            return False
+
+        with self._db_context:
+            client_accounts = self._acc_repository.get_by_client_id(client_id)
+            if account_id not in client_accounts:
+                return False
+            maybe_account = self._acc_repository.get_by_id(account_id)
+            deposited = maybe_account.map(
+                lambda account: self._deposit(account, amount)
+            )
+            return deposited.or_else(lambda: False)
+
+    def _deposit(self, account: BankAccount, amount: Amount) -> bool:
+        account.deposit(amount)
+        self._acc_repository.update(account)
+        return True

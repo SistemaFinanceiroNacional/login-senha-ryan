@@ -2,16 +2,12 @@ import math
 
 import pytest
 
-NOT_IMPLEMENTED = "deposit not implemented yet (issue #110)"
-
 
 def balance_of(bank, account) -> float:
     return bank.get_balance.execute(account).or_else(lambda: math.nan)
 
 
 @pytest.mark.integration
-@pytest.mark.xfail(strict=True, reason=NOT_IMPLEMENTED,
-                   raises=NotImplementedError)
 def test_client_deposits_into_own_account(bank):
     alice = bank.open_client("alice")
 
@@ -25,8 +21,6 @@ def test_client_deposits_into_own_account(bank):
 
 
 @pytest.mark.integration
-@pytest.mark.xfail(strict=True, reason=NOT_IMPLEMENTED,
-                   raises=NotImplementedError)
 def test_client_cannot_deposit_into_another_clients_account(bank):
     alice = bank.open_client("alice")
     bob = bank.open_client("bob")
@@ -37,8 +31,6 @@ def test_client_cannot_deposit_into_another_clients_account(bank):
 
 
 @pytest.mark.integration
-@pytest.mark.xfail(strict=True, reason=NOT_IMPLEMENTED,
-                   raises=NotImplementedError)
 @pytest.mark.parametrize("amount", [0, -10, math.nan, math.inf])
 def test_invalid_amounts_are_not_deposited(bank, amount):
     alice = bank.open_client("alice")
@@ -49,8 +41,6 @@ def test_invalid_amounts_are_not_deposited(bank, amount):
 
 
 @pytest.mark.integration
-@pytest.mark.xfail(strict=True, reason=NOT_IMPLEMENTED,
-                   raises=NotImplementedError)
 def test_rejected_deposit_does_not_break_later_operations(bank):
     alice = bank.open_client("alice")
 
