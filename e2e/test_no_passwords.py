@@ -1,10 +1,6 @@
 import pytest
 
-pytestmark = [
-    pytest.mark.integration,
-    pytest.mark.xfail(strict=True, raises=AssertionError,
-                      reason="the web still accepts passwords (issue #119)"),
-]
+pytestmark = pytest.mark.integration
 
 
 def submit_form(site, action: str, fields: dict) -> int:
