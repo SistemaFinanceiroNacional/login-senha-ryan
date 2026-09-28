@@ -21,6 +21,9 @@ class Maybe(Generic[T]):
     def flat_map(self, function: Callable[[T], Maybe[U]]) -> Maybe[U]:
         raise NotImplementedError
 
+    def filter(self, predicate: Callable[[T], bool]) -> Maybe[T]:
+        raise NotImplementedError
+
 
 class Just(Maybe[T]):
     def __init__(self, value: T):
@@ -42,6 +45,11 @@ class Just(Maybe[T]):
     def flat_map(self, function: Callable[[T], Maybe[U]]) -> Maybe[U]:
         return function(self.value)
 
+    def filter(self, predicate: Callable[[T], bool]) -> Maybe[T]:
+        if predicate(self.value):
+            return self
+        return Nothing()
+
 
 class Nothing(Maybe[T]):
     def map(self, function: Callable[[T], U]) -> Maybe[U]:
@@ -58,6 +66,9 @@ class Nothing(Maybe[T]):
 
     def flat_map(self, function: Callable[[T], Maybe[U]]) -> Maybe[U]:
         return cast(Maybe[U], self)
+
+    def filter(self, predicate: Callable[[T], bool]) -> Maybe[T]:
+        return self
 
 
 def get_first_not_empty(possible_not_empties: Iterable[Maybe[T]]) -> Maybe[T]:
