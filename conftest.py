@@ -37,18 +37,36 @@ class Database:
             backend.apply_migrations(backend.to_apply(migrations))
 
     def rollback_all_migrations(self) -> None:
+        self._rollback(lambda applied: applied)
+
+    def rollback_last_migration(self) -> None:
+        self._rollback(lambda applied: applied[:1])
+
+    def _rollback(self, choose) -> None:
         backend = get_backend(self._url)
         migrations = read_migrations(MIGRATIONS_PATH)
         with backend.lock():
-            backend.rollback_migrations(backend.to_rollback(migrations))
+            applied = backend.to_rollback(migrations)
+            backend.rollback_migrations(choose(applied))
 
-    def table_names(self) -> set[str]:
-        query = "SELECT table_name FROM information_schema.tables " \
-                "WHERE table_schema = 'public';"
+    def reset(self) -> None:
+        """Drops everything, migrations bookkeeping included."""
+        self.execute("DROP SCHEMA public CASCADE; CREATE SCHEMA public;")
+
+    def execute(self, query: str, params: tuple = ()) -> list[tuple]:
         with psycopg2.connect(self.dsn) as conn:
             with conn.cursor() as cursor:
-                cursor.execute(query)
-                return {name for (name,) in cursor.fetchall()}
+                cursor.execute(query, params)
+                if cursor.description is None:
+                    return []
+                return cursor.fetchall()
+
+    def table_names(self) -> set[str]:
+        rows = self.execute(
+            "SELECT table_name FROM information_schema.tables "
+            "WHERE table_schema = 'public';"
+        )
+        return {name for (name,) in rows}
 
 
 @pytest.fixture(scope="session")
@@ -71,7 +89,7 @@ def database(postgres_container, monkeypatch) -> Iterator[Database]:
     """A freshly migrated database, exposed to the application through
     DB_STRING_CONNECTION exactly as in production."""
     db = Database(postgres_container)
-    db.rollback_all_migrations()
+    db.reset()
     db.apply_all_migrations()
     monkeypatch.setenv("DB_STRING_CONNECTION", db.dsn)
     yield db
