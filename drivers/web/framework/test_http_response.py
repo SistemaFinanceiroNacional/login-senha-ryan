@@ -33,3 +33,14 @@ def test_http_response_response_as_bytes_headers(response_example):
                                b"Date: Mon, 23 May 2005 22:38:34 GMT",
                                b"Content-length: 38"
                                }
+
+
+def test_json_response():
+    response = http_response.json_response({"ceremony": "abc"}, 409)
+
+    assert response.get_status() == 409
+    assert response.get_headers()["Content-Type"] == "application/json"
+    assert response.get_body() == '{"ceremony": "abc"}'
+    assert http_response.response_as_bytes(response).startswith(
+        b"HTTP/1.1 409 Conflict\r\n"
+    )

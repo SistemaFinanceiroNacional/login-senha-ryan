@@ -1,3 +1,5 @@
+import json
+
 from drivers.web.framework.http_response_interface import HttpResponseInterface
 from drivers.web.framework.template import render_template
 
@@ -27,8 +29,11 @@ def response_as_bytes(response):
     mapping_status = {
         200: "OK",
         303: "See Other",
+        400: "Bad Request",
+        401: "Unauthorized",
         404: "Not Found",
-        405: "Method Not Allowed"
+        405: "Method Not Allowed",
+        409: "Conflict"
     }
     status_message = mapping_status.get(status, '')
     complete_status = f"{status} {status_message}"
@@ -57,3 +62,8 @@ def template_response(
 
 def redirect_response(to: str) -> HttpResponse:
     return HttpResponse({"Location": to}, "", 303)
+
+
+def json_response(data, status=200, headers=None) -> HttpResponse:
+    headers = {"Content-Type": "application/json", **(headers or {})}
+    return HttpResponse(headers, json.dumps(data), status)
