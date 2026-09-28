@@ -18,6 +18,9 @@ class Maybe(Generic[T]):
     def run(self, function: Callable[[T], None]) -> Maybe[T]:
         raise NotImplementedError
 
+    def flat_map(self, function: Callable[[T], Maybe[U]]) -> Maybe[U]:
+        raise NotImplementedError
+
 
 class Just(Maybe[T]):
     def __init__(self, value: T):
@@ -36,6 +39,9 @@ class Just(Maybe[T]):
         function(self.value)
         return self
 
+    def flat_map(self, function: Callable[[T], Maybe[U]]) -> Maybe[U]:
+        return function(self.value)
+
 
 class Nothing(Maybe[T]):
     def map(self, function: Callable[[T], U]) -> Maybe[U]:
@@ -49,6 +55,9 @@ class Nothing(Maybe[T]):
 
     def run(self, function: Callable[[T], None]) -> Maybe[T]:
         return self
+
+    def flat_map(self, function: Callable[[T], Maybe[U]]) -> Maybe[U]:
+        return Nothing()
 
 
 def get_first_not_empty(possible_not_empties: Iterable[Maybe[T]]) -> Maybe[T]:
