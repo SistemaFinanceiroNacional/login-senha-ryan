@@ -25,8 +25,6 @@ def allowed_ids(answer: dict) -> list:
             for credential in answer["body"]["publicKey"]["allowCredentials"]]
 
 
-@pytest.mark.xfail(strict=True, raises=(AssertionError, KeyError),
-                   reason="sign-in tells which logins exist (issue #105)")
 def test_starting_to_sign_in_does_not_tell_whether_a_login_exists(new_site):
     alice = new_site()
     alice.sign_up_with_passkey("alice")
