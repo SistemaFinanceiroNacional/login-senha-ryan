@@ -17,6 +17,8 @@ PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 APP_PORT = 8080
 STARTUP_TIMEOUT_SECONDS = 30
 BROWSER_TIMEOUT_MILLISECONDS = 5000
+# Kept short so that tests about stalled connections do not wait long.
+IDLE_TIMEOUT_SECONDS = 2
 
 
 class WebApp:
@@ -76,6 +78,7 @@ def web_app(app_image, database, docker_network) -> Iterator[WebApp]:
     container.with_env("DB_STRING_CONNECTION", database.network_dsn)
     container.with_env("WEBAUTHN_RP_ID", "localhost")
     container.with_env("WEBAUTHN_ORIGIN", origin)
+    container.with_env("HTTP_IDLE_TIMEOUT_SECONDS", str(IDLE_TIMEOUT_SECONDS))
     container.with_bind_ports(APP_PORT, port)
     with container:
         app = WebApp(origin)
