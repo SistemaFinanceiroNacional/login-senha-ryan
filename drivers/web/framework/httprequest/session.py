@@ -35,7 +35,7 @@ class Session:
         date = "Thursday, 1 January 1970 00:00:00 GMT"
         expire = f" Expires={date}" if not self.valid else ""
         user_cookies = json.dumps(self.session_data, separators=(',', ':'))
-        cookies = f"loggedUsername={user_cookies};{expire}"
+        cookies = f"loggedUsername={user_cookies}; Path=/;{expire}"
         return {"Set-Cookie": cookies}
 
 

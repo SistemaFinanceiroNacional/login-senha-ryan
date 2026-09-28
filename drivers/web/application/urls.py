@@ -2,6 +2,12 @@ from drivers.web.application.controllers.deposit import DepositHandler
 from drivers.web.application.controllers.home import HomeHandler
 from drivers.web.application.controllers.logged import LoggedHandler
 from drivers.web.application.controllers.logout import LogoutHandler
+from drivers.web.application.controllers.passkeys import (
+    PasskeyAuthenticationHandler,
+    PasskeyAuthenticationOptionsHandler,
+    PasskeyRegistrationHandler,
+    PasskeyRegistrationOptionsHandler
+)
 from drivers.web.application.controllers.register_client import (
     RegisterClientHandler
 )
@@ -12,5 +18,9 @@ urlpatterns = [
     ("/logout", LogoutHandler),
     ("/register", RegisterClientHandler),
     ("/selectaccount", LoggedHandler),
-    ("/deposit", DepositHandler)
+    ("/deposit", DepositHandler),
+    ("/passkeys/registration/options", PasskeyRegistrationOptionsHandler),
+    ("/passkeys/registration", PasskeyRegistrationHandler),
+    ("/passkeys/authentication/options", PasskeyAuthenticationOptionsHandler),
+    ("/passkeys/authentication", PasskeyAuthenticationHandler)
 ]

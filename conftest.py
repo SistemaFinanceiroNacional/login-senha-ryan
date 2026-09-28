@@ -39,8 +39,12 @@ class Database:
     def rollback_all_migrations(self) -> None:
         self._rollback(lambda applied: applied)
 
-    def rollback_last_migration(self) -> None:
-        self._rollback(lambda applied: applied[:1])
+    def rollback_down_to(self, migration_id: str) -> None:
+        """Rolls back the given migration and every later one."""
+        def down_to(applied):
+            ids = [migration.id for migration in applied]
+            return applied[:ids.index(migration_id) + 1]
+        self._rollback(down_to)
 
     def _rollback(self, choose) -> None:
         backend = get_backend(self._url)

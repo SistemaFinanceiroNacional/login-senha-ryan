@@ -1,4 +1,5 @@
 import os
+import socket
 import time
 import urllib.error
 import urllib.request
@@ -9,6 +10,7 @@ from playwright.sync_api import Browser, Page
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.image import DockerImage
 
+from e2e.authenticators import PLATFORM
 from e2e.bank_site import BankSite
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -53,18 +55,30 @@ def wait_until_serving(url: str) -> None:
             time.sleep(0.2)
 
 
+def free_port() -> int:
+    with socket.socket() as probe:
+        probe.bind(("127.0.0.1", 0))
+        return probe.getsockname()[1]
+
+
 @pytest.fixture
 def web_app(app_image, database, docker_network) -> Iterator[WebApp]:
     """The application running from its image against a freshly migrated
-    database, reachable over HTTP like in production."""
+    database, reachable over HTTP like in production.
+
+    It is served at a fixed http://localhost:<port> origin, known to the
+    application beforehand: WebAuthn binds credentials to the exact
+    origin (localhost is a secure context, so no TLS is needed)."""
+    port = free_port()
+    origin = f"http://localhost:{port}"
     container = DockerContainer(app_image)
     container.with_network(docker_network)
     container.with_env("DB_STRING_CONNECTION", database.network_dsn)
-    container.with_exposed_ports(APP_PORT)
+    container.with_env("WEBAUTHN_RP_ID", "localhost")
+    container.with_env("WEBAUTHN_ORIGIN", origin)
+    container.with_bind_ports(APP_PORT, port)
     with container:
-        host = container.get_container_host_ip()
-        port = container.get_exposed_port(APP_PORT)
-        app = WebApp(f"http://{host}:{port}")
+        app = WebApp(origin)
         wait_until_serving(app.url("/"))
         yield app
 
@@ -76,21 +90,23 @@ def page(page: Page) -> Page:
 
 
 @pytest.fixture
-def new_site(browser: Browser, web_app) -> Iterator[Callable[[], BankSite]]:
+def new_site(browser: Browser,
+             web_app
+             ) -> Iterator[Callable[..., BankSite]]:
     """Opens the bank site in a new, independent browser session (its own
-    cookies), so a test can play several people.
+    cookies and authenticator), so a test can play several people.
 
     The server handles one connection at a time (#96): an idle keep-alive
     connection from one browser blocks every other one. Until that is
     fixed, a person must leave() before the next one acts."""
     contexts = []
 
-    def open_site() -> BankSite:
+    def open_site(authenticator: str = PLATFORM) -> BankSite:
         context = browser.new_context()
         contexts.append(context)
         page = context.new_page()
         page.set_default_timeout(BROWSER_TIMEOUT_MILLISECONDS)
-        return BankSite(page, web_app)
+        return BankSite(page, web_app, authenticator)
 
     yield open_site
     for context in contexts:

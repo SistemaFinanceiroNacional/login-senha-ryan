@@ -3,11 +3,16 @@ import pytest
 
 from domain.amount import Amount
 from domain.money import Money
+from maybe import is_nothing
+from testsupport.authenticator import SoftwareAuthenticator
+from testsupport.bank import ORIGIN
 
 APPLICATION_TABLES = {
     "clients", "accounts", "clients_accounts", "transactions"
 }
 BANK_DEPOSITS_ACCOUNT = 1
+EXACT_AMOUNTS = "20260928_01_exact_transaction_amounts"
+PASSKEYS = "20260928_02_passkeys"
 
 
 @pytest.mark.integration
@@ -67,7 +72,7 @@ def test_rolling_back_and_forward_keeps_every_amount(database, bank):
     for value in ["0.10", "0.10", "0.10", "150.50"]:
         assert bank.deposit.execute(alice.id, alice.account, Amount(value))
 
-    database.rollback_last_migration()
+    database.rollback_down_to(EXACT_AMOUNTS)
     database.apply_all_migrations()
 
     assert balance(bank, alice) == Money("150.80")
@@ -80,6 +85,18 @@ def test_rolling_back_refuses_to_lose_cents(database, bank):
     assert bank.deposit.execute(alice.id, alice.account, large)
 
     with pytest.raises(psycopg2.Error, match="would lose cents"):
-        database.rollback_last_migration()
+        database.rollback_down_to(EXACT_AMOUNTS)
 
     assert balance(bank, alice) == large
+
+
+@pytest.mark.integration
+def test_rolling_back_passkeys_refuses_to_delete_them(database, bank):
+    key = SoftwareAuthenticator(ORIGIN)
+    bank.register_with_passkey("alice", key)\
+        .or_else_throw(AssertionError("could not register"))
+
+    with pytest.raises(psycopg2.Error, match="would delete passkeys"):
+        database.rollback_down_to(PASSKEYS)
+
+    assert not is_nothing(bank.sign_in_with_passkey("alice", key))
