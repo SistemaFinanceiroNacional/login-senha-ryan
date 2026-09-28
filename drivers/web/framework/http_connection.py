@@ -31,6 +31,7 @@ class HttpConnection:
             request = self._next_request()
             if request is None:
                 break
+            request.client_address = self._peer_address()
 
             logger.info(f"Resource: {request.get_resource()};"
                         f" Method: {request.get_method()}")
@@ -66,6 +67,12 @@ class HttpConnection:
         return request.get_headers().get('Connection', '') == "close" \
             or response.get_headers().get('Connection', '') == "close" \
             or self.socket.fileno() == -1
+
+    def _peer_address(self) -> Optional[str]:
+        try:
+            return self.socket.getpeername()[0]
+        except OSError:
+            return None
 
     def _send(self, response) -> None:
         self.socket.sendall(http_response.response_as_bytes(response))

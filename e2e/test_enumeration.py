@@ -40,8 +40,6 @@ def test_starting_to_sign_in_does_not_tell_whether_a_login_exists(new_site):
     assert allowed_ids(unknown) == allowed_ids(unknown_again)
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason="ceremonies can be started without limit (#105)")
 def test_ceremonies_cannot_be_started_without_limit(new_site):
     visitor = new_site()
     visitor.page.goto(visitor.web_app.url("/"))

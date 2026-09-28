@@ -50,6 +50,9 @@ class Config:
         di_container.set_parameter('idle_timeout', timedelta(minutes=30))
         di_container.set_parameter('lifetime', timedelta(hours=12))
         di_container.set_parameter('decoy_key', secrets.token_bytes(32))
+        # Passkey ceremonies a client address may start per minute.
+        di_container.set_parameter('max_events', 10)
+        di_container.set_parameter('window_seconds', 60.0)
         di_container.set_parameter(
             'rp_id', getenv("WEBAUTHN_RP_ID", "localhost")
         )

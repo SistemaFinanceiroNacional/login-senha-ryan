@@ -4,6 +4,7 @@ from drivers.web.framework.http_response import HttpResponse, json_response
 from drivers.web.framework.httprequest.http_request import HttpRequest
 from drivers.web.framework.httprequest.session import session_maker
 from drivers.web.framework.routes import MethodDispatcher
+from drivers.web.application.ratelimit import RateLimiter
 from maybe import Just, Maybe, Nothing
 from usecases.passkeys.authentication import (
     FinishPasskeyAuthentication,
@@ -20,6 +21,7 @@ T = TypeVar("T")
 CANNOT_REGISTER = "This login cannot be registered. Choose another one."
 REGISTRATION_FAILED = "Could not create the passkey."
 SIGN_IN_FAILED = "Could not sign in."
+TOO_MANY = "Too many attempts. Try again in a minute."
 
 
 def of_type(kind: Type[T]) -> Callable[[object], Maybe[T]]:
@@ -74,11 +76,25 @@ def signed_in(request: HttpRequest, client: SignedInClient) -> HttpResponse:
     return json_response({"redirect": "/"})
 
 
+def too_many_attempts() -> HttpResponse:
+    return json_response({"error": TOO_MANY}, 429, {"Retry-After": "60"})
+
+
+def allowed(limiter: RateLimiter, request: HttpRequest) -> bool:
+    return limiter.allow(request.client_address or "unknown")
+
+
 class PasskeyRegistrationOptionsHandler(MethodDispatcher):
-    def __init__(self, start: StartPasskeyRegistration):
+    def __init__(self,
+                 start: StartPasskeyRegistration,
+                 limiter: RateLimiter
+                 ):
         self.start = start
+        self.limiter = limiter
 
     def post(self, request: HttpRequest) -> HttpResponse:
+        if not allowed(self.limiter, request):
+            return too_many_attempts()
         return login_of(request).flat_map(self.start.execute)\
             .map(ceremony_response)\
             .or_else(error(CANNOT_REGISTER, 409))
@@ -97,10 +113,16 @@ class PasskeyRegistrationHandler(MethodDispatcher):
 
 
 class PasskeyAuthenticationOptionsHandler(MethodDispatcher):
-    def __init__(self, start: StartPasskeyAuthentication):
+    def __init__(self,
+                 start: StartPasskeyAuthentication,
+                 limiter: RateLimiter
+                 ):
         self.start = start
+        self.limiter = limiter
 
     def post(self, request: HttpRequest) -> HttpResponse:
+        if not allowed(self.limiter, request):
+            return too_many_attempts()
         return login_of(request).flat_map(self.start.execute)\
             .map(ceremony_response)\
             .or_else(error(SIGN_IN_FAILED, 401))
