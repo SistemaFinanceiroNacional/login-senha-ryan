@@ -1,2 +1,5 @@
 *.pyc
 **/__pycache__
+# Local configuration and secrets: copy .env.example to .env
+.env
+.coverage

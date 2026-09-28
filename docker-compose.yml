@@ -1,16 +1,15 @@
-# Use postgres/example user/password credentials
-version: '3.1'
-
+# Credentials come from the environment (see .env.example); nothing secret
+# is versioned. PostgreSQL is only reachable from this machine.
 services:
   db:
-    image: postgres
+    image: postgres:16-alpine
     restart: always
     environment:
-      POSTGRES_USER: ryanbanco
-      POSTGRES_PASSWORD: abc123
-      POSTGRES_DB: test
+      POSTGRES_USER: ${POSTGRES_USER:?set it in .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set it in .env}
+      POSTGRES_DB: ${POSTGRES_DB:?set it in .env}
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     networks:
       - default
 
@@ -19,11 +18,12 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile.yoyo
-    command: --no-config-file rollback --all --database postgresql://ryanbanco:abc123@db/test /yoyo/sql
+    command: >-
+      --no-config-file rollback --all
+      --database postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db/${POSTGRES_DB}
+      /yoyo/sql
     volumes:
       - ./migrations:/yoyo/sql
-    environment:
-      MIGRATIONS_PATH: ${MIGRATIONS_PATH}
     depends_on:
       - db
     networks:
@@ -34,11 +34,12 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile.yoyo
-    command: --no-config-file apply --database postgresql://ryanbanco:abc123@db/test /yoyo/sql
+    command: >-
+      --no-config-file apply
+      --database postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db/${POSTGRES_DB}
+      /yoyo/sql
     volumes:
       - ./migrations:/yoyo/sql
-    environment:
-      MIGRATIONS_PATH: ${MIGRATIONS_PATH}
     depends_on:
       - db
     networks:
