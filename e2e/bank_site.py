@@ -33,3 +33,17 @@ class BankSite:
     def deposit(self, amount: str) -> None:
         self.page.fill("input[name=amount]", amount)
         self.page.click("form[action='/deposit'] input[type=submit]")
+
+    def deposit_bypassing_form_validation(self, amount: str) -> int:
+        """Turns the amount field into free text, as anyone can do in the
+        browser, submits it and returns the response status."""
+        field = "input[name=amount]"
+        self.page.eval_on_selector(
+            field, "input => { input.type = 'text'; input.required = false; }"
+        )
+        self.page.fill(field, amount)
+        with self.page.expect_response(
+            lambda response: response.request.method == "POST"
+        ) as deposit:
+            self.page.click("form[action='/deposit'] input[type=submit]")
+        return deposit.value.status
