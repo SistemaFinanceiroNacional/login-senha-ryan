@@ -1,7 +1,5 @@
 from typing import NamedTuple
 
-import pytest
-
 from domain.commontypes.types import AccountID, ClientID
 from infrastructure.accountsrepository import AccountsRepository
 from infrastructure.authservicedb import AuthServiceDB
@@ -34,9 +32,9 @@ class Bank:
     def __init__(self):
         pool = PostgresqlConnectionPool(psycopg2_create_connection, 1)
         identity = ThreadIdentity()
-        accounts = AccountsRepository(pool, identity)
+        self.accounts = accounts = AccountsRepository(pool, identity)
         clients = ClientsRepository(pool, identity)
-        context = DBTransactionContext(pool, identity)
+        self.context = context = DBTransactionContext(pool, identity)
 
         self.register_client = RegisterClientUseCase(
             clients, context, Password
@@ -54,8 +52,3 @@ class Bank:
             .or_else_throw(not_logged)
         [account] = self.get_accounts.execute(client_id)
         return Client(client_id, account)
-
-
-@pytest.fixture
-def bank(database) -> Bank:
-    return Bank()

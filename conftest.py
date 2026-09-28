@@ -7,6 +7,8 @@ from testcontainers.community.postgres import PostgresContainer
 from testcontainers.core.network import Network
 from yoyo import get_backend, read_migrations  # type: ignore[import]
 
+from testsupport.bank import Bank
+
 MIGRATIONS_PATH = os.path.join(os.path.dirname(__file__), "migrations")
 POSTGRES_IMAGE = "postgres:16-alpine"
 POSTGRES_ALIAS = "db"
@@ -73,3 +75,9 @@ def database(postgres_container, monkeypatch) -> Iterator[Database]:
     db.apply_all_migrations()
     monkeypatch.setenv("DB_STRING_CONNECTION", db.dsn)
     yield db
+
+
+@pytest.fixture
+def bank(database) -> Bank:
+    """The use cases wired to the real infrastructure and database."""
+    return Bank()
