@@ -53,8 +53,6 @@ def test_signing_in_starts_a_new_session(new_site):
     assert session["value"] != "planted"
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason="session cookie lacks HttpOnly (#102)")
 def test_scripts_cannot_read_the_session_cookie(new_site):
     alice = new_site()
     alice.sign_up_with_passkey("alice")

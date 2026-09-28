@@ -55,12 +55,18 @@ class Session:
         self.data = {}
 
 
+# HttpOnly: page scripts cannot read it. Secure: never sent over plain HTTP
+# (browsers treat http://localhost as secure, so development still works).
+# SameSite=Lax: not sent with cross-site POSTs.
+COOKIE_ATTRIBUTES = "Path=/; HttpOnly; Secure; SameSite=Lax"
+
+
 def session_cookie(token: str) -> str:
-    return f"{COOKIE_NAME}={token}; Path=/"
+    return f"{COOKIE_NAME}={token}; {COOKIE_ATTRIBUTES}"
 
 
 def expired_session_cookie() -> str:
-    return f"{COOKIE_NAME}=; Path=/; Max-Age=0"
+    return f"{COOKIE_NAME}=; {COOKIE_ATTRIBUTES}; Max-Age=0"
 
 
 def session_token(request: HttpRequest) -> Maybe[str]:

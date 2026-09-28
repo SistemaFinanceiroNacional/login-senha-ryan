@@ -19,8 +19,6 @@ def test_the_session_cookie_only_carries_the_token():
     assert attributes(session_cookie("token"))[0] == "session=token"
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason="session cookie lacks security attributes (#102)")
 @pytest.mark.parametrize("cookie", [
     session_cookie("token"), expired_session_cookie()
 ])
