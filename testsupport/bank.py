@@ -14,8 +14,10 @@ from infrastructure.passkeysrepository import PasskeysRepository
 from infrastructure.threadIdentity import ThreadIdentity
 from infrastructure.webauthnrelyingparty import WebAuthnRelyingParty
 from maybe import Maybe
+from testsupport.authenticator import SoftwareAuthenticator
 from password import Password
 from usecases.deposit import DepositUseCase
+from usecases.new_bank_account import NewBankAccountUseCase
 from usecases.transfer import TransferFundsUseCase
 from usecases.get_accounts import GetAccountsUseCase
 from usecases.get_balance import GetBalanceUseCase
@@ -61,6 +63,7 @@ class Bank:
         self.get_transactions = GetTransactionsUseCase(accounts, context)
         self.deposit = DepositUseCase(accounts, context)
         self.transfer = TransferFundsUseCase(accounts, context)
+        self.new_bank_account = NewBankAccountUseCase(accounts, context)
 
         passkeys = PasskeysRepository(pool, identity)
         ceremonies = CeremoniesRepository(pool, identity)
@@ -79,12 +82,12 @@ class Bank:
         )
 
     def open_client(self, login: str) -> Client:
-        assert self.register_client.execute(login, PASSWORD)
-        not_logged = AssertionError(f"{login} could not log in")
-        client_id = self.auth.authenticate(login, PASSWORD)\
-            .or_else_throw(not_logged)
-        [account] = self.get_accounts.execute(client_id)
-        return Client(client_id, account)
+        """A new client, signed up with a passkey as on the web."""
+        key = SoftwareAuthenticator(ORIGIN)
+        client = self.register_with_passkey(login, key)\
+            .or_else_throw(AssertionError(f"{login} could not sign up"))
+        [account] = self.get_accounts.execute(client.id)
+        return Client(client.id, account)
 
     def register_with_passkey(self,
                               login: str,

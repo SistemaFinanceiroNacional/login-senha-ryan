@@ -5,7 +5,7 @@ from domain.amount import Amount
 from domain.money import Money
 from maybe import is_nothing
 from testsupport.authenticator import SoftwareAuthenticator
-from testsupport.bank import ORIGIN
+from testsupport.bank import ORIGIN, Client
 
 APPLICATION_TABLES = {
     "clients", "accounts", "clients_accounts", "transactions"
@@ -35,6 +35,22 @@ def written_by_previous_version(database, account_id, value) -> None:
         "VALUES (gen_random_uuid(), %s, %s, %s, now());",
         (BANK_DEPOSITS_ACCOUNT, account_id, value)
     )
+
+
+def client_created_by_previous_version(database, login: str) -> Client:
+    """Before passkeys (#119), clients signed up with a password."""
+    [(client_id,)] = database.execute(
+        "INSERT INTO clients (login, password) VALUES (%s, 'hash') "
+        "RETURNING id;", (login,)
+    )
+    [(account_id,)] = database.execute(
+        "INSERT INTO accounts VALUES (default) RETURNING id;"
+    )
+    database.execute(
+        "INSERT INTO clients_accounts (client_id, account_id) "
+        "VALUES (%s, %s);", (client_id, account_id)
+    )
+    return Client(client_id, account_id)
 
 
 def balance(bank, client) -> Money:
@@ -68,7 +84,7 @@ def test_rows_written_by_the_previous_version_are_read_exactly(
 
 @pytest.mark.integration
 def test_rolling_back_and_forward_keeps_every_amount(database, bank):
-    alice = bank.open_client("alice")
+    alice = client_created_by_previous_version(database, "alice")
     for value in ["0.10", "0.10", "0.10", "150.50"]:
         assert bank.deposit.execute(alice.id, alice.account, Amount(value))
 
@@ -80,7 +96,7 @@ def test_rolling_back_and_forward_keeps_every_amount(database, bank):
 
 @pytest.mark.integration
 def test_rolling_back_refuses_to_lose_cents(database, bank):
-    alice = bank.open_client("alice")
+    alice = client_created_by_previous_version(database, "alice")
     large = Amount("1234567890123456.78")
     assert bank.deposit.execute(alice.id, alice.account, large)
 
