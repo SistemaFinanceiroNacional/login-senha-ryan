@@ -1,0 +1,30 @@
+import socket
+from typing import Optional
+from urllib.parse import urlparse
+
+TIMEOUT_SECONDS = 5
+
+
+def exchange(base_url: str, raw_request: bytes) -> Optional[int]:
+    """Sends bytes as they are over TCP, as any client (or attacker) can,
+    and returns the status of the response, or None when the connection
+    ends without one."""
+    address = urlparse(base_url)
+    try:
+        with socket.create_connection(
+            (address.hostname, address.port or 80), timeout=TIMEOUT_SECONDS
+        ) as connection:
+            connection.sendall(raw_request)
+            status_line = connection.makefile("rb").readline()
+    except OSError:
+        return None
+    parts = status_line.split()
+    if len(parts) < 2 or not parts[0].startswith(b"HTTP/"):
+        return None
+    return int(parts[1])
+
+
+def is_serving(base_url: str) -> bool:
+    return exchange(
+        base_url, b"GET / HTTP/1.1\r\nHost: x\r\nConnection: close\r\n\r\n"
+    ) == 200

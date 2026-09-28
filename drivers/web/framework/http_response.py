@@ -33,7 +33,8 @@ def response_as_bytes(response):
         401: "Unauthorized",
         404: "Not Found",
         405: "Method Not Allowed",
-        409: "Conflict"
+        409: "Conflict",
+        500: "Internal Server Error"
     }
     status_message = mapping_status.get(status, '')
     complete_status = f"{status} {status_message}"
