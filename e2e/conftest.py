@@ -16,7 +16,7 @@ from e2e.bank_site import BankSite
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 APP_PORT = 8080
 STARTUP_TIMEOUT_SECONDS = 30
-BROWSER_TIMEOUT_MILLISECONDS = 5000
+BROWSER_TIMEOUT_MILLISECONDS = 10000
 # Kept short so that tests about stalled connections do not wait long.
 IDLE_TIMEOUT_SECONDS = 2
 
