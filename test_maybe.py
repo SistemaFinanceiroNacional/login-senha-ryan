@@ -62,3 +62,13 @@ def test_flat_map_on_nothing_does_not_call_the_function():
         raise AssertionError("must not be called")
 
     assert isinstance(Nothing().flat_map(fail), Nothing)
+
+
+@pytest.mark.xfail(strict=True, raises=AssertionError,
+                   reason="Nothing creates a new instance instead of "
+                          "returning itself")
+def test_nothing_is_returned_as_is_by_map_and_flat_map():
+    nothing: Maybe[int] = Nothing()
+
+    assert nothing.map(lambda number: number + 1) is nothing
+    assert nothing.flat_map(half) is nothing
