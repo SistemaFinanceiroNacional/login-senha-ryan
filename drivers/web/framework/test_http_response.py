@@ -39,15 +39,14 @@ def test_json_response():
     response = http_response.json_response({"ceremony": "abc"}, 409)
 
     assert response.get_status() == 409
-    assert response.get_headers()["Content-Type"] == "application/json"
+    assert response.get_headers()["Content-Type"] == \
+        "application/json; charset=utf-8"
     assert response.get_body() == '{"ceremony": "abc"}'
     assert http_response.response_as_bytes(response).startswith(
         b"HTTP/1.1 409 Conflict\r\n"
     )
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason="Content-length counts characters (issue #122)")
 def test_content_length_counts_bytes():
     body = "Você está logado(a)!"
     response = http_response.HttpResponse({}, body, 200)
