@@ -3,8 +3,6 @@ import pytest
 pytestmark = pytest.mark.integration
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason="requests are logged with their secrets (#98)")
 def test_secrets_are_never_logged(new_site):
     alice = new_site()
     alice.sign_up_with_passkey("alice")

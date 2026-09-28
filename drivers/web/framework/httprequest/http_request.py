@@ -55,14 +55,23 @@ def get_next_http_request(socket):
         make_resource,
         url_encoded
     )
-    logger.debug(f"Method: {method}; Resource: {resource}; Version: {version}")
+    logger.debug(f"Method: {method}; Version: {version}")
     headers = Headers(make_headers(socket))
-    logger.debug(f"Headers: {headers}")
+    logger.debug(f"Headers: {redacted(headers)}")
+    # Bodies are never logged: they carry credentials and personal data.
     body = get_body(socket, headers)
-    logger.debug(f"Body: {body.decode('utf-8')}")
     request = HttpRequest(headers, body, method, resource, version)
 
     return request
+
+
+SECRET_HEADERS = {"cookie", "set-cookie", "authorization", "x-csrf-token"}
+
+
+def redacted(headers: Dict[str, str]) -> Dict[str, str]:
+    """Headers fit for logs: values that grant access are hidden."""
+    return {name: "<redacted>" if name.lower() in SECRET_HEADERS else value
+            for name, value in headers.items()}
 
 
 def get_body(socket, headers) -> bytes:
@@ -73,17 +82,9 @@ def get_body(socket, headers) -> bytes:
     body = socket.recv(length)
     body_size = len(body)
 
-    logger.debug(f"GetBody: length = {length}"
-                 f" & actual body = {body}"
-                 f" & actual body's size = {body_size}"
-                 )
-
     while body_size < length:
         difference = length - body_size
         rest = socket.recv(difference)
-        logger.debug(f"GetBody: While statement: actual rest = {rest}"
-                     f" & actual difference = {difference}"
-                     )
         if rest == b'':
             raise incomplete_http_request_error.IncompleteHttpRequestError()
 

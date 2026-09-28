@@ -2,6 +2,7 @@ from drivers.web import config as web_config
 from drivers.cli import config as cli_config
 import argparse
 import logging
+import os
 
 
 def main():
@@ -24,7 +25,7 @@ def main():
         '--log',
         nargs='+',
         default=[],
-        help='Use this to activate a log.'
+        help='Names of loggers to set to DEBUG.'
     )
 
     args = parser.parse_args()
@@ -43,23 +44,12 @@ def main():
         print("No option has been passed.")
 
 
-def initlog(logs):
-    logging.basicConfig(level=logging.DEBUG)
-    all_logs = [
-        "drivers.Web.server",
-        "drivers.Web.httpRequest",
-        "drivers.Web.httpConnection",
-        "drivers.Web.HttpRequest.Headers",
-        "drivers.Web.HttpRequest.FirstLine"
-    ]
-
-    for log in all_logs:
-        logger = logging.getLogger(log)
-        logger.disabled = True
-
-    for log in logs:
-        logger = logging.getLogger(log)
-        logger.disabled = False
+def initlog(debug_loggers):
+    """INFO by default (LOG_LEVEL overrides it); the loggers named with
+    --log are set to DEBUG."""
+    logging.basicConfig(level=os.getenv("LOG_LEVEL", "INFO").upper())
+    for name in debug_loggers:
+        logging.getLogger(name).setLevel(logging.DEBUG)
 
 
 if __name__ == "__main__":
