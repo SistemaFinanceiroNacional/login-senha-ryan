@@ -7,12 +7,17 @@ from usecases.contexterrors.businesserror import BusinessError
 
 
 class DBTransactionContext(TransactionContextInterface):
+    """One database transaction per `with` block. get_errors() reports the
+    errors of the last block run by the calling thread only: the context
+    is shared by every use case and every thread."""
+
     def __init__(self, connection_pool: CPool, identifier: IdentityInterface):
         self.connection_pool = connection_pool
         self.identifier = identifier
-        self.errors: list[BusinessError] = []
+        self._errors: dict[int, list[BusinessError]] = {}
 
     def __enter__(self):
+        self._errors[self.identifier.value()] = []
         self.connection_pool.get_connection(self.identifier)
         return self
 
@@ -23,9 +28,9 @@ class DBTransactionContext(TransactionContextInterface):
 
         else:
             connection.rollback()
-            self.errors.append(exc_val)
+            self._errors[self.identifier.value()].append(exc_val)
 
         self.connection_pool.refund(self.identifier)
 
     def get_errors(self) -> list[BusinessError]:
-        return self.errors
+        return self._errors.get(self.identifier.value(), [])

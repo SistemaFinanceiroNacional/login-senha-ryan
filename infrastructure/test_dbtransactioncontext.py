@@ -7,8 +7,6 @@ from testsupport.bank import PASSWORD
 pytestmark = pytest.mark.integration
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason="the context keeps every error forever (#113)")
 def test_a_failed_operation_does_not_taint_the_following_ones(bank):
     alice = bank.open_client("alice")
     bob = bank.open_client("bob")
