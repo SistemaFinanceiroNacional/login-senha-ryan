@@ -22,8 +22,14 @@ IDLE_TIMEOUT_SECONDS = 2
 
 
 class WebApp:
-    def __init__(self, base_url: str):
+    def __init__(self, base_url: str, container=None):
         self.base_url = base_url
+        self._container = container
+
+    def logs(self) -> str:
+        """Everything the application wrote to its standard streams."""
+        stdout, stderr = self._container.get_logs()
+        return (stdout + stderr).decode("utf-8", errors="replace")
 
     def url(self, path: str) -> str:
         return f"{self.base_url}{path}"
@@ -79,9 +85,11 @@ def web_app(app_image, database, docker_network) -> Iterator[WebApp]:
     container.with_env("WEBAUTHN_RP_ID", "localhost")
     container.with_env("WEBAUTHN_ORIGIN", origin)
     container.with_env("HTTP_IDLE_TIMEOUT_SECONDS", str(IDLE_TIMEOUT_SECONDS))
+    # The most verbose logging: nothing secret may show up even then.
+    container.with_env("LOG_LEVEL", "DEBUG")
     container.with_bind_ports(APP_PORT, port)
     with container:
-        app = WebApp(origin)
+        app = WebApp(origin, container)
         wait_until_serving(app.url("/"))
         yield app
 
