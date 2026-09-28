@@ -1,6 +1,11 @@
 import logging
 from typing import NamedTuple, Callable, Tuple, Dict
 from drivers.web.framework.httprequest import incomplete_http_request_error
+from drivers.web.framework.httprequest.http_error import (
+    MAX_HEADERS,
+    MAX_HEADERS_BYTES,
+    too_large_headers
+)
 
 logger = logging.getLogger("drivers.Web.HttpRequest.Headers")
 
@@ -86,8 +91,12 @@ def make_headers(socket) -> Dict[str, str]:
         MAYBE_FINAL_STATE: maybe_final_state,
     }
 
+    read = 0
     while state != FINAL_STATE:
         nxt_byte = socket.recv(1)
+        read += 1
+        if read > MAX_HEADERS_BYTES or len(headers) > MAX_HEADERS:
+            raise too_large_headers()
         logger.debug(f"GetHeaders: state = {state} & actual byte = {nxt_byte}")
 
         if nxt_byte == b'':
@@ -97,7 +106,7 @@ def make_headers(socket) -> Dict[str, str]:
             h_bytes = HeaderBytes(nxt_byte, h_name, h_value)
             state, new_values = transition_states[state](h_bytes)
             h_name, h_value, new_headers = new_values
-            headers = dict(**headers, **new_headers)
+            headers.update(new_headers)
     if state != FINAL_STATE:
         raise incomplete_http_request_error.IncompleteHttpRequestError()
 
