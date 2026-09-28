@@ -55,5 +55,6 @@ def test_compose_takes_the_credentials_from_the_environment():
                             "POSTGRES_DB": "d"})
 
     assert missing.returncode != 0
-    assert "POSTGRES_USER" in missing.stderr
+    assert re.search(r"required variable POSTGRES_(USER|PASSWORD|DB)",
+                     missing.stderr)
     assert given.returncode == 0, given.stderr
