@@ -97,7 +97,6 @@ def make_headers(socket) -> Dict[str, str]:
         read += 1
         if read > MAX_HEADERS_BYTES or len(headers) > MAX_HEADERS:
             raise too_large_headers()
-        logger.debug(f"GetHeaders: state = {state} & actual byte = {nxt_byte}")
 
         if nxt_byte == b'':
             break

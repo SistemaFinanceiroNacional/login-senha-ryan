@@ -66,9 +66,6 @@ def get_first_line(socket, resource_mkr: ResourceMaker, query_mkr: QueryMaker):
         read += 1
         if read > MAX_REQUEST_LINE_BYTES:
             raise too_long_request_line()
-        logger.debug(
-            f"GetFirstLine: state = {state} & actual byte = {next_byte}"
-        )
 
         if next_byte == b'':
             break
