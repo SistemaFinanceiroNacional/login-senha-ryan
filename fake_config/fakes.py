@@ -7,8 +7,6 @@ from usecases.repositories.accountsrepositoryinterface import (
     AccountID,
     ClientID
 )
-from domain.amount import Amount
-from domain.transaction import create_transaction
 from usecases.repositories.transactioncontextinterface import (
     TransactionContextInterface
 )
@@ -17,12 +15,6 @@ from infrastructure.connectionInterface import (
     Connection,
     Cursor
 )
-from usecases.repositories.clientsrepositoryinterface import (
-    ClientsRepositoryInterface
-)
-from infrastructure.authserviceinterface import AuthServiceInterface
-from inputio.input_io import InputIO
-from password import Password as passW
 from maybe import Maybe, Just, Nothing
 
 
@@ -87,32 +79,6 @@ class FakeContext(TransactionContextInterface):
         return self.errors
 
 
-class InputFake(InputIO):
-    def __init__(self, lista):
-        self.inputlist = lista
-        self.outputlist = []
-
-    def input(self, prompt):
-        return self.inputlist.pop()
-
-    def inputoccult(self, prompt):
-        return self.inputlist.pop()
-
-    def print(self, prompt):
-        self.outputlist.append(prompt)
-
-
-class ClientsFake(ClientsRepositoryInterface):
-    def __init__(self, clients: dict):
-        self.clients = clients
-
-    def add_client(self, login: str, password: passW) -> bool:
-        if login in self.clients:
-            return False
-        self.clients[login] = password
-        return True
-
-
 class ContasFake(AccountsRepositoryInterface):
     def __init__(self, actual_accounts, new_accounts):
         self.actual_accounts: AccountsByClient = actual_accounts
@@ -150,15 +116,6 @@ class ContasFake(AccountsRepositoryInterface):
         return accounts_id
 
 
-def existing_pedros_account():
-    t = create_transaction(2, 3, Amount(400))
-    return ContasFake({"pedro": ("abc123", [t])}, {})
-
-
-def waiting_pedro_account():
-    return ContasFake({}, {"pedro": "abc123"})
-
-
 class FakeSocket:
     def __init__(self, content):
         self.content = content
@@ -167,14 +124,3 @@ class FakeSocket:
         required_content = self.content[0:bufsize]
         self.content = self.content[bufsize:]
         return required_content
-
-
-class FakeAuthService(AuthServiceInterface):
-    def __init__(self, accounts: dict):
-        self.accounts = accounts
-
-    def authenticate(self, username: str, password: str) -> Maybe[int]:
-        if username in self.accounts:
-            return Just(self.accounts[username][1])
-        else:
-            return Nothing()
