@@ -1,0 +1,23 @@
+.git
+.github
+.env
+.coverage
+.coveragerc
+**/__pycache__
+**/*.pyc
+.mypy_cache
+.pytest_cache
+
+# Tests and test support
+**/test_*.py
+**/conftest.py
+e2e
+fake_config
+pytest.ini
+requirements-dev.txt
+
+# Database tooling, not part of the web application
+migrations
+fake_data
+Dockerfile*
+docker-compose.yml
