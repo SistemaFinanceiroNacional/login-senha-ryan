@@ -1,87 +1,19 @@
 {% extends "base.html" %}
-{% block style %}
-    .area-register{
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .register{
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        background-color: #181920;
-        border-radius: 10px;
-        width: 355px;
-        min-height: 250px;
-        padding: 35px;
-    }
-
-    .register form{
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-    }
-
-    .register input{
-        margin-top: 10px;
-        background-color: #252A34;
-        color: #CBD0F7;
-        border: none;
-        height: 45px;
-        outline: none;
-        border-radius: 5px;
-        padding-left: 15px;
-    }
-
-    .register img{
-        width: 45px;
-        height: auto;
-    }
-
-    .register input:focus{
-        background-color: #e8f1ff;
-        color: #000000;
-    }
-
-    form [type="submit"]{
-        display: block;
-        background-color: #446bd5;
-        font-weight: bold;
-        cursor: pointer;
-    }
-
-    form [type="submit"]:hover{
-        background-color: #2648a7;
-    }
-
-    .register p{
-        color: #CBD0F7;
-        text-align: center;
-    }
-{% endblock %}
+{% block page %}page-register{% endblock %}
 {% block content %}
     <section class="area-register">
         <div class="register">
             <div>
-                <img src="https://avatars.githubusercontent.com/u/96090524?s=200&v=4">
+                <img src="/static/logo.png" alt="">
             </div>
-            <form id="sign-up">
+            <form id="sign-up" data-passkey="sign-up">
                 <input type="text" name="login" placeholder="Username" autocomplete="username"
-                       autofocus required aria-required="true" maxlength="64"
-                       oninvalid="this.setCustomValidity('Please, enter a username here.')"
-                       oninput="this.setCustomValidity('')"/>
+                       autofocus required aria-required="true" maxlength="64"/>
                 <input type="submit" value="Open account with a passkey"/>
             </form>
             <p id="message" role="alert"></p>
             <p>Your passkey can be this device (fingerprint, face, PIN) or a security key.</p>
         </div>
     </section>
-    <script>
-{% include "passkeys.js" %}
-onSubmit("sign-up", signUp);
-    </script>
+    <script src="/static/passkeys.js" defer></script>
 {% endblock %}

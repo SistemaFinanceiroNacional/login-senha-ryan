@@ -1,10 +1,12 @@
 import importlib
 import os
 from functools import reduce
-from typing import Protocol
+from typing import List, Protocol
 from drivers.web.framework import settings
+from drivers.web.framework.route_interface import Route
 from drivers.web.framework.router import Router
-from drivers.web.framework.routes import FixedRoute
+from drivers.web.framework.routes import EndPointRoute, FixedRoute
+from drivers.web.framework.staticfiles import StaticFiles
 
 
 class ClassResolver(Protocol):
@@ -30,6 +32,12 @@ def get_application(di: ClassResolver):
         lambda x: x
     )
 
-    fixed_routes = [FixedRoute(path, di[clazz]) for path, clazz in urlpatterns]
-    router = Router(*fixed_routes)
+    routes: List[Route] = [
+        FixedRoute(path, di[clazz]) for path, clazz in urlpatterns
+    ]
+    static_dir = getattr(settings.app_settings, "STATIC_DIR", None)
+    if static_dir is not None:
+        prefix = settings.app_settings.STATIC_URL
+        routes.append(EndPointRoute(prefix, StaticFiles(static_dir, prefix)))
+    router = Router(*routes)
     return combined_middleware(router)

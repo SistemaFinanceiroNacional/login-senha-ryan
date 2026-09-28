@@ -40,9 +40,9 @@ def test_another_site_cannot_log_the_client_out(new_site):
     alice.sign_up_with_passkey("alice")
     bank = alice.web_app.base_url
 
-    # A page on another site (127.0.0.1 is not the same site as
-    # localhost) posts a form to the bank.
-    alice.page.goto(bank.replace("localhost", "127.0.0.1") + "/register")
+    # A page that is not the bank's (served by anyone, anywhere) posts a
+    # form to the bank.
+    alice.page.goto("about:blank")
     status = alice.submit_hand_made_form(
         bank + "/logout", {}, with_csrf_token=False
     )
