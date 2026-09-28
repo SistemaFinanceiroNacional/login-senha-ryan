@@ -3,7 +3,7 @@ from typing import List
 from domain.transaction import Transaction, create_transaction
 from domain.commontypes.types import AccountID
 
-Amount = float
+Money = float
 
 # Created by the first migration; money deposited in the bank is debited
 # from it.
@@ -18,7 +18,7 @@ class BankAccount:
         self._id = account_id
         self._transactions = transactions
 
-    def get_balance(self) -> Amount:
+    def get_balance(self) -> Money:
         balance = 0.0
         for t in self._transactions:
             if t.d_acc == self._id:
@@ -27,7 +27,7 @@ class BankAccount:
                 balance += t.value
         return balance
 
-    def transfer(self, destiny_id: AccountID, value: Amount) -> None:
+    def transfer(self, destiny_id: AccountID, value: Money) -> None:
         if value <= 0:
             raise InvalidValueToTransfer(value)
 
@@ -38,7 +38,7 @@ class BankAccount:
             transaction = create_transaction(self._id, destiny_id, value)
             self._transactions.insert(0, transaction)
 
-    def deposit(self, value: Amount) -> None:
+    def deposit(self, value: Money) -> None:
         if not is_valid_deposit(value):
             raise InvalidValueToDeposit(value)
         transaction = create_transaction(
@@ -53,20 +53,20 @@ class BankAccount:
         return self._transactions
 
 
-def is_valid_deposit(value: Amount) -> bool:
+def is_valid_deposit(value: Money) -> bool:
     return math.isfinite(value) and value > 0
 
 
 class InsufficientFundsException(Exception):
-    def __init__(self, balance: Amount, value: Amount):
+    def __init__(self, balance: Money, value: Money):
         super().__init__(f"{balance} is insufficient to get {value}")
 
 
 class InvalidValueToTransfer(Exception):
-    def __init__(self, value: Amount):
+    def __init__(self, value: Money):
         super().__init__(f"{value} is a non-positive value to transfer.")
 
 
 class InvalidValueToDeposit(Exception):
-    def __init__(self, value: Amount):
+    def __init__(self, value: Money):
         super().__init__(f"{value} is not a valid value to deposit.")

@@ -5,7 +5,7 @@ from usecases.get_transactions import TransactionData
 from domain.bankaccount import (
     InsufficientFundsException,
     InvalidValueToTransfer,
-    Amount
+    Money
 )
 from inputio.input_io import InputIO
 from usecases.unlogged_cases import UnloggedUseCases
@@ -56,7 +56,7 @@ def accounts_repl(io: InputIO, acc_id: AccountID, l_cases: LoggedUseCases):
         maybe_balance = balance_case.execute(acc_id)
         default_message = "Error on trying to show your balance"
 
-        def balance_message(balance: Amount) -> str:
+        def balance_message(balance: Money) -> str:
             return f"R${balance:.2f}"
 
         io.print(maybe_balance.map(balance_message).or_else(default_message))

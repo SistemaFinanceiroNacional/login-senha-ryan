@@ -8,7 +8,7 @@ from usecases.repositories.accountsrepositoryinterface import (
 from usecases.contexterrors.accountdoesnotexistserror import (
     AccountDoesNotExistsError
 )
-from domain.bankaccount import Amount
+from domain.bankaccount import Money
 from domain.commontypes.types import AccountID
 
 
@@ -23,7 +23,7 @@ class TransferFundsUseCase:
     def execute(self,
                 acc_id: AccountID,
                 dest_id: AccountID,
-                amount: Amount
+                amount: Money
                 ) -> bool:
         with self.transactional_context:
             get_existence = self.acc_repository.exists

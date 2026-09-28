@@ -1,4 +1,4 @@
-from domain.bankaccount import Amount, BankAccount, is_valid_deposit
+from domain.bankaccount import Money, BankAccount, is_valid_deposit
 from domain.commontypes.types import AccountID, ClientID
 from usecases.repositories.accountsrepositoryinterface import (
     AccountsRepositoryInterface as AccRepo
@@ -19,7 +19,7 @@ class DepositUseCase:
     def execute(self,
                 client_id: ClientID,
                 account_id: AccountID,
-                amount: Amount
+                amount: Money
                 ) -> bool:
         # Validated before opening the transaction: an exception inside
         # the transactional context is recorded in its error list, which
@@ -37,7 +37,7 @@ class DepositUseCase:
             )
             return deposited.or_else(lambda: False)
 
-    def _deposit(self, account: BankAccount, amount: Amount) -> bool:
+    def _deposit(self, account: BankAccount, amount: Money) -> bool:
         account.deposit(amount)
         self._acc_repository.update(account)
         return True

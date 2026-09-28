@@ -4,7 +4,7 @@ from usecases.repositories.accountsrepositoryinterface import (
 from usecases.repositories.transactioncontextinterface import (
     TransactionContextInterface as Cntx
 )
-from domain.bankaccount import Amount
+from domain.bankaccount import Money
 from domain.commontypes.types import AccountID
 from maybe import Maybe
 
@@ -14,7 +14,7 @@ class GetBalanceUseCase:
         self._acc_repository = acc_repository
         self._db_context = db_context
 
-    def execute(self, acc_id: AccountID) -> Maybe[Amount]:
+    def execute(self, acc_id: AccountID) -> Maybe[Money]:
         with self._db_context:
             maybe_acc = self._acc_repository.get_by_id(acc_id)
 
