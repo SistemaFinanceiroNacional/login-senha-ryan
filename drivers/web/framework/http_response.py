@@ -20,32 +20,28 @@ class HttpResponse(HttpResponseInterface):
         return self.status
 
 
+STATUS_MESSAGES = {
+    200: "OK",
+    303: "See Other",
+    400: "Bad Request",
+    401: "Unauthorized",
+    403: "Forbidden",
+    404: "Not Found",
+    405: "Method Not Allowed",
+    409: "Conflict",
+    500: "Internal Server Error"
+}
+
+
 def response_as_bytes(response):
-    headers = response.get_headers()
-    body = response.get_body()
-    headers["Content-length"] = len(body)
+    body = str(response.get_body()).encode("utf-8")
+    # The length of what is sent: bytes, not characters.
+    headers = {**response.get_headers(), "Content-length": len(body)}
     status = response.get_status()
-    version = "1.1"
-    mapping_status = {
-        200: "OK",
-        303: "See Other",
-        400: "Bad Request",
-        401: "Unauthorized",
-        403: "Forbidden",
-        404: "Not Found",
-        405: "Method Not Allowed",
-        409: "Conflict",
-        500: "Internal Server Error"
-    }
-    status_message = mapping_status.get(status, '')
-    complete_status = f"{status} {status_message}"
-    response_to_bytes = f"HTTP/{version} {complete_status}\r\n"
-    for key in headers:
-        response_to_bytes += f"{key}: {headers[key]}\r\n"
-
-    response_to_bytes += "\r\n"+f"{body}"
-
-    return response_to_bytes.encode("utf-8")
+    status_line = f"HTTP/1.1 {status} {STATUS_MESSAGES.get(status, '')}"
+    head = [status_line] + [f"{key}: {value}"
+                            for key, value in headers.items()]
+    return ("\r\n".join(head) + "\r\n\r\n").encode("utf-8") + body
 
 
 def template_response(
@@ -57,7 +53,7 @@ def template_response(
     context = context or {}
     headers = headers or {}
     html_content = render_template(template_name, context)
-    headers = {"Content-Type": "text/html", **headers}
+    headers = {"Content-Type": "text/html; charset=utf-8", **headers}
     response = HttpResponse(headers, html_content, status)
     return response
 
@@ -67,5 +63,6 @@ def redirect_response(to: str) -> HttpResponse:
 
 
 def json_response(data, status=200, headers=None) -> HttpResponse:
-    headers = {"Content-Type": "application/json", **(headers or {})}
+    headers = {"Content-Type": "application/json; charset=utf-8",
+               **(headers or {})}
     return HttpResponse(headers, json.dumps(data), status)

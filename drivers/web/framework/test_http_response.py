@@ -39,8 +39,20 @@ def test_json_response():
     response = http_response.json_response({"ceremony": "abc"}, 409)
 
     assert response.get_status() == 409
-    assert response.get_headers()["Content-Type"] == "application/json"
+    assert response.get_headers()["Content-Type"] == \
+        "application/json; charset=utf-8"
     assert response.get_body() == '{"ceremony": "abc"}'
     assert http_response.response_as_bytes(response).startswith(
         b"HTTP/1.1 409 Conflict\r\n"
     )
+
+
+def test_content_length_counts_bytes():
+    body = "Você está logado(a)!"
+    response = http_response.HttpResponse({}, body, 200)
+
+    raw = http_response.response_as_bytes(response)
+
+    head, sent_body = raw.split(b"\r\n\r\n", 1)
+    assert f"Content-length: {len(sent_body)}".encode() in head.split(b"\r\n")
+    assert sent_body.decode("utf-8") == body
