@@ -29,6 +29,9 @@ STATUS_MESSAGES = {
     404: "Not Found",
     405: "Method Not Allowed",
     409: "Conflict",
+    413: "Content Too Large",
+    414: "URI Too Long",
+    431: "Request Header Fields Too Large",
     500: "Internal Server Error"
 }
 

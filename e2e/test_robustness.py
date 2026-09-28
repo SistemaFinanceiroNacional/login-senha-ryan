@@ -82,10 +82,6 @@ def test_a_failing_handler_answers_500_and_the_server_survives(new_site):
     assert is_serving(alice.web_app.base_url)
 
 
-LIMITS = "no size limits or timeouts (issue #103)"
-
-
-@pytest.mark.xfail(strict=True, reason=LIMITS, raises=AssertionError)
 @pytest.mark.parametrize("request_bytes, expected", [
     (b"POST /logout HTTP/1.1\r\nHost: x\r\n"
      b"Content-Length: 10000000000\r\n\r\n", 413),
@@ -105,7 +101,6 @@ def test_a_negative_content_length_is_refused(web_app):
     )
 
 
-@pytest.mark.xfail(strict=True, reason=LIMITS, raises=AssertionError)
 def test_a_stalled_connection_is_closed(web_app):
     address = urlparse(web_app.base_url)
     stalled = socket.create_connection((address.hostname, address.port or 80))

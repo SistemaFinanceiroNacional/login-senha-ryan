@@ -2,6 +2,10 @@ import logging
 from typing import Callable, Tuple, Dict
 from drivers.web.framework.httprequest import incomplete_http_request_error
 from drivers.web.framework.httprequest.resource import HttpResource
+from drivers.web.framework.httprequest.http_error import (
+    MAX_REQUEST_LINE_BYTES,
+    too_long_request_line
+)
 
 logger = logging.getLogger("drivers.Web.HttpRequest.FirstLine")
 
@@ -56,8 +60,12 @@ def get_first_line(socket, resource_mkr: ResourceMaker, query_mkr: QueryMaker):
         CARRIAGE_RETURN_STATE: carriage_return_state
     }
 
+    read = 0
     while state != LINE_FINAL_STATE:
         next_byte = socket.recv(1)
+        read += 1
+        if read > MAX_REQUEST_LINE_BYTES:
+            raise too_long_request_line()
         logger.debug(
             f"GetFirstLine: state = {state} & actual byte = {next_byte}"
         )

@@ -6,6 +6,10 @@ from drivers.web.framework.encodings import url_encoded
 from drivers.web.framework.httprequest import incomplete_http_request_error
 from drivers.web.framework.httprequest.headers import make_headers
 from drivers.web.framework.httprequest.headers_map import Headers
+from drivers.web.framework.httprequest.http_error import (
+    MAX_BODY_BYTES,
+    too_large_body
+)
 from drivers.web.framework.httprequest.resource import make_resource
 from drivers.web.framework.httprequest.first_line import get_first_line
 
@@ -64,6 +68,8 @@ def get_next_http_request(socket):
 def get_body(socket, headers) -> bytes:
     default_length = '0'
     length = int(headers.get('Content-Length', default_length))
+    if length > MAX_BODY_BYTES:
+        raise too_large_body()
     body = socket.recv(length)
     body_size = len(body)
 
