@@ -13,5 +13,10 @@
             <li>{{ t }}</li>
         {% endfor %}
     </ol>
+    <form action="/deposit" method="post">
+        <input type="number" name="amount" min="0.01" step="0.01"
+               placeholder="Amount" required aria-required="true">
+        <input type="submit" value="Deposit">
+    </form>
 </section>
 {% endblock %}
