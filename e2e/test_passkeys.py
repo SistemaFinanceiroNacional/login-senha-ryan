@@ -1,18 +1,11 @@
 import json
 
 import pytest
-from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 from playwright.sync_api import expect
 
 from e2e.authenticators import PLATFORM, SECURITY_KEY
 
-NOT_IMPLEMENTED = "passkeys not implemented yet (issue #119)"
-
-pytestmark = [
-    pytest.mark.integration,
-    pytest.mark.xfail(strict=True, reason=NOT_IMPLEMENTED,
-                      raises=PlaywrightTimeoutError),
-]
+pytestmark = pytest.mark.integration
 
 
 @pytest.mark.parametrize("authenticator", [PLATFORM, SECURITY_KEY])

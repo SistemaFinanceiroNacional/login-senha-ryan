@@ -1,3 +1,5 @@
+from os import getenv
+
 from drivers.web.application.entrypoint import get_application
 from drivers.web.server import main
 from infrastructure.authserviceinterface import AuthServiceInterface
@@ -13,6 +15,16 @@ from infrastructure.connection_pool import (
 from infrastructure.threadIdentity import ThreadIdentity
 from infrastructure.dbtransactioncontext import DBTransactionContext
 from infrastructure.authservicedb import AuthServiceDB
+from infrastructure.ceremoniesrepository import CeremoniesRepository
+from infrastructure.passkeysrepository import PasskeysRepository
+from infrastructure.webauthnrelyingparty import WebAuthnRelyingParty
+from usecases.passkeys.relyingpartyinterface import RelyingPartyInterface
+from usecases.repositories.ceremoniesrepositoryinterface import (
+    CeremoniesRepositoryInterface
+)
+from usecases.repositories.passkeysrepositoryinterface import (
+    PasskeysRepositoryInterface
+)
 from usecases.register_client import PasswordMaker
 from usecases.repositories.accountsrepositoryinterface import (
     AccountsRepositoryInterface
@@ -34,6 +46,13 @@ class Config:
         di_container[PasswordMaker] = Password
 
         di_container.set_parameter('max_connections', 1)
+        di_container.set_parameter(
+            'rp_id', getenv("WEBAUTHN_RP_ID", "localhost")
+        )
+        di_container.set_parameter('rp_name', "Sistema Financeiro Nacional")
+        di_container.set_parameter(
+            'origin', getenv("WEBAUTHN_ORIGIN", "http://localhost:8080")
+        )
 
         di_container.provide(ConnectionPool, PostgresqlConnectionPool)
         di_container.provide(IdentityInterface, ThreadIdentity)
@@ -41,6 +60,11 @@ class Config:
         di_container.provide(AccountsRepositoryInterface, AccountsRepository)
         di_container.provide(ClientsRepositoryInterface, ClientsRepository)
         di_container.provide(AuthServiceInterface, AuthServiceDB)
+        di_container.provide(PasskeysRepositoryInterface, PasskeysRepository)
+        di_container.provide(
+            CeremoniesRepositoryInterface, CeremoniesRepository
+        )
+        di_container.provide(RelyingPartyInterface, WebAuthnRelyingParty)
 
         user_interface = get_application(di_container)
         main(user_interface)

@@ -2,7 +2,6 @@ from playwright.sync_api import Page, expect
 
 from e2e.authenticators import PLATFORM, VirtualAuthenticator
 
-PASSWORD = "secret"
 SIGNED_IN = "Você está logado(a)!"
 
 
@@ -15,21 +14,9 @@ class BankSite:
         self.web_app = web_app
         self.authenticator = VirtualAuthenticator(page, authenticator)
 
-    def sign_up(self, login: str) -> None:
-        self.page.goto(self.web_app.url("/register"))
-        self.page.fill("input[name=newUsername]", login)
-        self.page.fill("input[name=newPassword]", PASSWORD)
-        self.page.click("input[type=submit]")
-
-    def log_in(self, login: str) -> None:
-        self.page.goto(self.web_app.url("/"))
-        self.page.fill("input[name=login]", login)
-        self.page.fill("input[name=password]", PASSWORD)
-        self.page.click("input[type=submit]")
-
     def sign_up_and_log_in(self, login: str) -> None:
-        self.sign_up(login)
-        self.log_in(login)
+        """Signing up with a passkey leaves the new client signed in."""
+        self.sign_up_with_passkey(login)
 
     def sign_up_with_passkey(self, login: str) -> None:
         self.page.goto(self.web_app.url("/register"))
