@@ -3,8 +3,6 @@ import pytest
 from domain.amount import Amount
 from maybe import is_nothing
 
-OWNERSHIP = "use cases do not check account ownership (issue #95)"
-
 
 @pytest.fixture
 def alice(bank):
@@ -21,9 +19,8 @@ def bob(bank):
 
 
 @pytest.mark.integration
-@pytest.mark.xfail(strict=True, reason=OWNERSHIP, raises=TypeError)
 def test_client_gets_balance_of_own_account(bank, alice):
-    balance = bank.get_balance.execute(  # type: ignore[call-arg]
+    balance = bank.get_balance.execute(
         alice.id, alice.account
     )
 
@@ -31,11 +28,10 @@ def test_client_gets_balance_of_own_account(bank, alice):
 
 
 @pytest.mark.integration
-@pytest.mark.xfail(strict=True, reason=OWNERSHIP, raises=TypeError)
 def test_client_does_not_get_balance_of_another_clients_account(
         bank, alice, bob
 ):
-    balance = bank.get_balance.execute(  # type: ignore[call-arg]
+    balance = bank.get_balance.execute(
         alice.id, bob.account
     )
 
@@ -43,9 +39,8 @@ def test_client_does_not_get_balance_of_another_clients_account(
 
 
 @pytest.mark.integration
-@pytest.mark.xfail(strict=True, reason=OWNERSHIP, raises=TypeError)
 def test_client_gets_transactions_of_own_account(bank, alice):
-    transactions = bank.get_transactions.execute(  # type: ignore[call-arg]
+    transactions = bank.get_transactions.execute(
         alice.id, alice.account
     )
 
@@ -53,11 +48,10 @@ def test_client_gets_transactions_of_own_account(bank, alice):
 
 
 @pytest.mark.integration
-@pytest.mark.xfail(strict=True, reason=OWNERSHIP, raises=TypeError)
 def test_client_does_not_get_transactions_of_another_clients_account(
         bank, alice, bob
 ):
-    transactions = bank.get_transactions.execute(  # type: ignore[call-arg]
+    transactions = bank.get_transactions.execute(
         alice.id, bob.account
     )
 

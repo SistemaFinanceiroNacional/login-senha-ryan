@@ -9,7 +9,7 @@ def test_existing_account():
     acc_repo.add_account(1)
 
     use_case = GetTransactionsUseCase(acc_repo, cntx)
-    assert is_just(use_case.execute(1))
+    assert is_just(use_case.execute(1, 1))
 
 
 def test_non_existing_account():
@@ -18,4 +18,4 @@ def test_non_existing_account():
     acc_repo.add_account(1)
 
     use_case = GetTransactionsUseCase(acc_repo, cntx)
-    assert is_nothing(use_case.execute(2))
+    assert is_nothing(use_case.execute(1, 2))

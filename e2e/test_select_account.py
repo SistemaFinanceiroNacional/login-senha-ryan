@@ -37,7 +37,6 @@ def test_client_opens_own_account(alice):
 
 
 @pytest.mark.integration
-@pytest.mark.xfail(strict=True, reason=IDOR, raises=AssertionError)
 def test_anonymous_visitor_cannot_open_an_account(new_site, bob_account):
     visitor = new_site()
     visitor.page.goto(visitor.web_app.url("/"))

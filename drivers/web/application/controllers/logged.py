@@ -21,13 +21,16 @@ class LoggedHandler(MethodDispatcher):
         self.get_balance = get_balance
         self.get_transactions = get_transactions
 
+    @auth_needed("client_id")
     @auth_needed("account_id")
     def get(self, request: HttpRequest) -> HttpResponse:
         session = session_maker(request)
-        account_id = session["account_id"]
-        balance = self.get_balance.execute(account_id).or_else(lambda: 0)
-        transactions_execute = self.get_transactions.execute
-        transactions = transactions_execute(account_id).or_else(lambda: [])
+        client_id = session["client_id"]
+        account_id = int(session["account_id"])
+        balance = self.get_balance.execute(client_id, account_id)\
+            .or_else(lambda: 0)
+        transactions = self.get_transactions.execute(client_id, account_id)\
+            .or_else(lambda: [])
 
         context = {"balance": balance, "transactions": transactions}
         response = template_response("account.html", context)

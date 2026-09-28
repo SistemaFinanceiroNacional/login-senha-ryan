@@ -35,8 +35,12 @@ def transfer_money(io: InputIO, acc_id: AccountID, l_cases: LoggedUseCases):
         io.print("Invalid Account ID.")
 
 
-def show_transactions(io: InputIO, acc_id: AccountID, l_cases: LoggedUseCases):
-    maybe_transactions = l_cases.get_transactions.execute(acc_id)
+def show_transactions(io: InputIO,
+                      c_id: ClientID,
+                      acc_id: AccountID,
+                      l_cases: LoggedUseCases
+                      ):
+    maybe_transactions = l_cases.get_transactions.execute(c_id, acc_id)
 
     def transactions_print(transactions: List[TransactionData]) -> str:
         aux = ""
@@ -49,11 +53,15 @@ def show_transactions(io: InputIO, acc_id: AccountID, l_cases: LoggedUseCases):
     io.print(msg)
 
 
-def accounts_repl(io: InputIO, acc_id: AccountID, l_cases: LoggedUseCases):
+def accounts_repl(io: InputIO,
+                  c_id: ClientID,
+                  acc_id: AccountID,
+                  l_cases: LoggedUseCases
+                  ):
     balance_case = l_cases.get_balance
 
     def balance_print():
-        maybe_balance = balance_case.execute(acc_id)
+        maybe_balance = balance_case.execute(c_id, acc_id)
         default_message = "Error on trying to show your balance"
 
         def balance_message(balance: Money) -> str:
@@ -64,7 +72,7 @@ def accounts_repl(io: InputIO, acc_id: AccountID, l_cases: LoggedUseCases):
     options = {
         "1": balance_print,
         "2": lambda: transfer_money(io, acc_id, l_cases),
-        "3": lambda: show_transactions(io, acc_id, l_cases),
+        "3": lambda: show_transactions(io, c_id, acc_id, l_cases),
         "4": lambda: None
     }
     io.print("""
@@ -95,7 +103,7 @@ def repl(io: InputIO, c_id: ClientID, logged_cases: LoggedUseCases):
                 print(f"Account ID: {acc}")
             select_acc = int(io.input("Choose one ID: "))
             if select_acc in accs:
-                accounts_repl(io, select_acc, logged_cases)
+                accounts_repl(io, c_id, select_acc, logged_cases)
                 io.print("""
             (1) Select account
             (2) Logout

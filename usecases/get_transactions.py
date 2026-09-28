@@ -10,8 +10,8 @@ from usecases.repositories.transactioncontextinterface import (
 )
 from domain.bankaccount import BankAccount
 from domain.transaction import Transaction
-from domain.commontypes.types import AccountID
-from maybe import Maybe
+from domain.commontypes.types import AccountID, ClientID
+from maybe import Maybe, Nothing
 
 
 @dataclass
@@ -40,8 +40,14 @@ class GetTransactionsUseCase:
         self._acc_repository = acc_repository
         self._db_context = db_context
 
-    def execute(self, acc_id: AccountID) -> Maybe[List[TransactionData]]:
+    def execute(self,
+                client_id: ClientID,
+                acc_id: AccountID
+                ) -> Maybe[List[TransactionData]]:
         with self._db_context:
+            client_accounts = self._acc_repository.get_by_client_id(client_id)
+            if acc_id not in client_accounts:
+                return Nothing()
             maybe_acc = self._acc_repository.get_by_id(acc_id)
 
         def transactions_data(acc: BankAccount) -> List[TransactionData]:
