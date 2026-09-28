@@ -15,8 +15,6 @@ def assert_protected(response) -> None:
     assert "no-store" in headers.get("cache-control", "")
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason="no security headers (issue #104)")
 def test_pages_are_served_with_security_headers(new_site):
     alice = new_site()
     assert_protected(alice.page.goto(alice.web_app.url("/")))
