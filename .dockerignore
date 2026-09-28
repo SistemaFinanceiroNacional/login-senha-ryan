@@ -13,6 +13,7 @@
 **/conftest.py
 e2e
 fake_config
+testsupport
 pytest.ini
 requirements-dev.txt
 

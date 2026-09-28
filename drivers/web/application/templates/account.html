@@ -1,11 +1,22 @@
 {% extends "base.html" %}
+{% block style %}
+    .account{
+        padding: 100px 7% 0;
+        color: #F0F0F0;
+    }
+{% endblock %}
 {% block content %}
-<section>
+<section class="account">
     balance: {{ balance }}
     <ol>
         {% for t in transactions %}
             <li>{{ t }}</li>
         {% endfor %}
     </ol>
+    <form action="/deposit" method="post">
+        <input type="number" name="amount" min="0.01" step="0.01"
+               placeholder="Amount" required aria-required="true">
+        <input type="submit" value="Deposit">
+    </form>
 </section>
 {% endblock %}

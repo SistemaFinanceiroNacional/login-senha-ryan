@@ -44,3 +44,28 @@ def test_two_just():
         ]
     )
     assert isinstance(possible, Just) and possible.value == 10
+
+
+def half(number: int) -> Maybe[int]:
+    if number % 2 == 0:
+        return Just(number // 2)
+    return Nothing()
+
+
+def test_flat_map_on_just_returns_the_function_result():
+    assert Just(10).flat_map(half).or_else(lambda: -1) == 5
+    assert isinstance(Just(3).flat_map(half), Nothing)
+
+
+def test_flat_map_on_nothing_does_not_call_the_function():
+    def fail(_):
+        raise AssertionError("must not be called")
+
+    assert isinstance(Nothing().flat_map(fail), Nothing)
+
+
+def test_nothing_is_returned_as_is_by_map_and_flat_map():
+    nothing: Maybe[int] = Nothing()
+
+    assert nothing.map(lambda number: number + 1) is nothing
+    assert nothing.flat_map(half) is nothing

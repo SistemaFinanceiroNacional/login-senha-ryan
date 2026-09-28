@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Generic, TypeVar, Callable, Iterable
+from typing import Generic, TypeVar, Callable, Iterable, cast
 
 T = TypeVar('T')
 U = TypeVar('U')
@@ -16,6 +16,9 @@ class Maybe(Generic[T]):
         raise NotImplementedError
 
     def run(self, function: Callable[[T], None]) -> Maybe[T]:
+        raise NotImplementedError
+
+    def flat_map(self, function: Callable[[T], Maybe[U]]) -> Maybe[U]:
         raise NotImplementedError
 
 
@@ -36,10 +39,13 @@ class Just(Maybe[T]):
         function(self.value)
         return self
 
+    def flat_map(self, function: Callable[[T], Maybe[U]]) -> Maybe[U]:
+        return function(self.value)
+
 
 class Nothing(Maybe[T]):
     def map(self, function: Callable[[T], U]) -> Maybe[U]:
-        return Nothing()
+        return cast(Maybe[U], self)
 
     def or_else(self, default: Callable[[], T]) -> T:
         return default()
@@ -49,6 +55,9 @@ class Nothing(Maybe[T]):
 
     def run(self, function: Callable[[T], None]) -> Maybe[T]:
         return self
+
+    def flat_map(self, function: Callable[[T], Maybe[U]]) -> Maybe[U]:
+        return cast(Maybe[U], self)
 
 
 def get_first_not_empty(possible_not_empties: Iterable[Maybe[T]]) -> Maybe[T]:

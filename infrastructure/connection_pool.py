@@ -1,6 +1,7 @@
 from os import getenv
 from psycopg2._psycopg import connection
 from psycopg2 import connect
+from psycopg2.extras import register_uuid
 from threading import Condition
 from typing import Callable
 from infrastructure.identityinterface import IdentityInterface
@@ -27,7 +28,9 @@ def psycopg2_create_connection() -> Connection:
         def rollback(self):
             self.conn.rollback()
 
-    return ConnectionAdapter(connect(getenv("DB_STRING_CONNECTION")))
+    conn = connect(getenv("DB_STRING_CONNECTION"))
+    register_uuid(conn_or_curs=conn)
+    return ConnectionAdapter(conn)
 
 
 class PostgresqlConnectionPool(ConnectionPool):

@@ -1,3 +1,4 @@
+from drivers.web.application.controllers.deposit import DepositHandler
 from drivers.web.application.controllers.home import HomeHandler
 from drivers.web.application.controllers.logged import LoggedHandler
 from drivers.web.application.controllers.logout import LogoutHandler
@@ -10,5 +11,6 @@ urlpatterns = [
     ("/", HomeHandler),
     ("/logout", LogoutHandler),
     ("/register", RegisterClientHandler),
-    ("/selectaccount", LoggedHandler)
+    ("/selectaccount", LoggedHandler),
+    ("/deposit", DepositHandler)
 ]
