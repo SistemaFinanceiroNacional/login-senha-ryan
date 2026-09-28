@@ -16,6 +16,7 @@ from infrastructure.webauthnrelyingparty import WebAuthnRelyingParty
 from maybe import Maybe
 from password import Password
 from usecases.deposit import DepositUseCase
+from usecases.transfer import TransferFundsUseCase
 from usecases.get_accounts import GetAccountsUseCase
 from usecases.get_balance import GetBalanceUseCase
 from usecases.get_transactions import GetTransactionsUseCase
@@ -59,6 +60,7 @@ class Bank:
         self.get_balance = GetBalanceUseCase(accounts, context)
         self.get_transactions = GetTransactionsUseCase(accounts, context)
         self.deposit = DepositUseCase(accounts, context)
+        self.transfer = TransferFundsUseCase(accounts, context)
 
         passkeys = PasskeysRepository(pool, identity)
         ceremonies = CeremoniesRepository(pool, identity)
