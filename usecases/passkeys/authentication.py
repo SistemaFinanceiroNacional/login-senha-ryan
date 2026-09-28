@@ -1,5 +1,13 @@
-from maybe import Maybe
-from usecases.passkeys.ceremony import CeremonyOptions, SignedInClient
+from domain.commontypes.types import ClientID
+from domain.passkey import Passkey
+from maybe import Just, Maybe, Nothing
+from usecases.passkeys.ceremony import (
+    Ceremony,
+    CeremonyKind,
+    CeremonyOptions,
+    SignedInClient,
+    valid_login
+)
 from usecases.passkeys.relyingpartyinterface import (
     Credential,
     RelyingPartyInterface
@@ -30,7 +38,20 @@ class StartPasskeyAuthentication:
         self._context = context
 
     def execute(self, login: str) -> Maybe[CeremonyOptions]:
-        raise NotImplementedError
+        return valid_login(login).flat_map(self._start)
+
+    def _start(self, login: str) -> Maybe[CeremonyOptions]:
+        with self._context:
+            passkeys = self._passkeys.of_login(login)
+            if not passkeys:
+                return Nothing()
+            ceremony = Ceremony.begin(CeremonyKind.AUTHENTICATION, login)
+            self._ceremonies.start(ceremony)
+
+        options = self._relying_party.authentication_options(
+            ceremony.challenge, passkeys
+        )
+        return Just(CeremonyOptions(ceremony.id, options))
 
 
 class FinishPasskeyAuthentication:
@@ -51,4 +72,31 @@ class FinishPasskeyAuthentication:
                 ceremony_id: str,
                 credential: Credential
                 ) -> Maybe[SignedInClient]:
-        raise NotImplementedError
+        with self._context:
+            return self._ceremonies.consume(
+                ceremony_id, CeremonyKind.AUTHENTICATION
+            ).flat_map(lambda ceremony: self._sign_in(ceremony, credential))
+
+    def _sign_in(self,
+                 ceremony: Ceremony,
+                 credential: Credential
+                 ) -> Maybe[SignedInClient]:
+        return self._relying_party.credential_id(credential).flat_map(
+            lambda credential_id: self._passkeys.find(
+                ceremony.login, credential_id
+            )
+        ).flat_map(
+            lambda found: self._verify(ceremony, credential, *found)
+        )
+
+    def _verify(self,
+                ceremony: Ceremony,
+                credential: Credential,
+                client_id: ClientID,
+                passkey: Passkey
+                ) -> Maybe[SignedInClient]:
+        return self._relying_party.verify_authentication(
+            credential, ceremony.challenge, passkey
+        ).run(self._passkeys.update).map(
+            lambda _: SignedInClient(client_id, ceremony.login)
+        )

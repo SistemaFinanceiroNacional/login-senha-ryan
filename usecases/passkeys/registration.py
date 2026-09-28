@@ -1,5 +1,14 @@
-from maybe import Maybe
-from usecases.passkeys.ceremony import CeremonyOptions, SignedInClient
+import secrets
+
+from domain.passkey import Passkey
+from maybe import Just, Maybe, Nothing
+from usecases.passkeys.ceremony import (
+    Ceremony,
+    CeremonyKind,
+    CeremonyOptions,
+    SignedInClient,
+    valid_login
+)
 from usecases.passkeys.relyingpartyinterface import (
     Credential,
     RelyingPartyInterface
@@ -33,7 +42,21 @@ class StartPasskeyRegistration:
         self._context = context
 
     def execute(self, login: str) -> Maybe[CeremonyOptions]:
-        raise NotImplementedError
+        return valid_login(login).flat_map(self._start)
+
+    def _start(self, login: str) -> Maybe[CeremonyOptions]:
+        with self._context:
+            if self._clients.login_taken(login):
+                return Nothing()
+            ceremony = Ceremony.begin(
+                CeremonyKind.REGISTRATION, login, secrets.token_bytes(32)
+            )
+            self._ceremonies.start(ceremony)
+
+        options = self._relying_party.registration_options(
+            login, ceremony.user_handle or b"", ceremony.challenge
+        )
+        return Just(CeremonyOptions(ceremony.id, options))
 
 
 class FinishPasskeyRegistration:
@@ -57,4 +80,23 @@ class FinishPasskeyRegistration:
                 ceremony_id: str,
                 credential: Credential
                 ) -> Maybe[SignedInClient]:
-        raise NotImplementedError
+        with self._context:
+            return self._ceremonies.consume(
+                ceremony_id, CeremonyKind.REGISTRATION
+            ).flat_map(lambda ceremony: self._register(ceremony, credential))
+
+    def _register(self,
+                  ceremony: Ceremony,
+                  credential: Credential
+                  ) -> Maybe[SignedInClient]:
+        return self._relying_party.verify_registration(
+            credential, ceremony.challenge, ceremony.user_handle or b""
+        ).flat_map(lambda passkey: self._new_client(ceremony.login, passkey))
+
+    def _new_client(self,
+                    login: str,
+                    passkey: Passkey
+                    ) -> Maybe[SignedInClient]:
+        return self._clients.add_passwordless_client(login).run(
+            lambda client_id: self._passkeys.add(client_id, passkey)
+        ).map(lambda client_id: SignedInClient(client_id, login))

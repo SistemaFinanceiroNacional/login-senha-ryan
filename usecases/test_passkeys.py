@@ -4,13 +4,7 @@ from maybe import is_nothing
 from testsupport.authenticator import SoftwareAuthenticator
 from testsupport.bank import ORIGIN
 
-NOT_IMPLEMENTED = "passkeys not implemented yet (issue #119)"
-
-pytestmark = [
-    pytest.mark.integration,
-    pytest.mark.xfail(strict=True, reason=NOT_IMPLEMENTED,
-                      raises=NotImplementedError),
-]
+pytestmark = pytest.mark.integration
 
 
 def authenticator(attachment: str = "cross-platform") -> SoftwareAuthenticator:

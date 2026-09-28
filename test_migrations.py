@@ -91,8 +91,6 @@ def test_rolling_back_refuses_to_lose_cents(database, bank):
 
 
 @pytest.mark.integration
-@pytest.mark.xfail(strict=True, raises=NotImplementedError,
-                   reason="passkeys not implemented yet (issue #119)")
 def test_rolling_back_passkeys_refuses_to_delete_them(database, bank):
     key = SoftwareAuthenticator(ORIGIN)
     bank.register_with_passkey("alice", key)\

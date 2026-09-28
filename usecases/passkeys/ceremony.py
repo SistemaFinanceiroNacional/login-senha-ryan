@@ -6,6 +6,7 @@ from enum import Enum
 from typing import Any, Dict, NamedTuple, Optional
 
 from domain.commontypes.types import ClientID
+from maybe import Just, Maybe, Nothing
 
 CEREMONY_LIFETIME = timedelta(minutes=5)
 
@@ -51,3 +52,15 @@ class CeremonyOptions(NamedTuple):
 class SignedInClient(NamedTuple):
     id: ClientID
     login: str
+
+
+MAX_LOGIN_LENGTH = 64
+
+
+def valid_login(login) -> Maybe[str]:
+    if not isinstance(login, str):
+        return Nothing()
+    login = login.strip()
+    if 0 < len(login) <= MAX_LOGIN_LENGTH:
+        return Just(login)
+    return Nothing()
