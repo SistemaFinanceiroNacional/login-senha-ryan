@@ -23,7 +23,7 @@ def test_update_persists_new_transactions(bank):
     save(bank, account)
 
     reloaded = reload_account(bank, alice.account)
-    assert [t.value for t in reloaded.get_transactions()] == [10.0]
+    assert [t.value for t in reloaded.get_transactions()] == [Amount(10)]
 
 
 @pytest.mark.integration

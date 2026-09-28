@@ -5,7 +5,7 @@ from playwright.sync_api import expect
 
 from e2e.bank_site import BankSite
 
-BOB_BALANCE = "500.0"
+BOB_BALANCE = "500.00"
 
 
 @pytest.fixture
@@ -32,7 +32,7 @@ def test_client_opens_own_account(alice):
     alice.open_account()
     alice.deposit("100")
 
-    expect(alice.page.get_by_text("balance: 100.0")).to_be_visible()
+    expect(alice.page.get_by_text("balance: 100.00")).to_be_visible()
 
 
 @pytest.mark.integration

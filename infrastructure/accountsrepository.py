@@ -1,6 +1,9 @@
+from decimal import Decimal
 from typing import Iterable, List
 from maybe import Maybe, Just, Nothing
-from domain.transaction import Transaction, create_transaction_from_raw
+from domain.amount import Amount
+from domain.money import CENT
+from domain.transaction import Transaction
 from infrastructure.connection_pool import (
     ConnectionPool as CPool,
 )
@@ -57,7 +60,7 @@ class AccountsRepository(AccountsRepositoryInterface):
         query = f"INSERT INTO {table} {columns} {statements} {conflict};"
 
         for t in transactions:
-            data = t.get_transaction_data()
+            data = (t.id, t.d_acc, t.c_acc, t.value.to_decimal(), t.date)
             cursor.execute(query, data)
 
     def get_by_client_id(self, client_id: ClientID) -> Iterable[AccountID]:
@@ -79,7 +82,7 @@ class AccountsRepository(AccountsRepositoryInterface):
     def _get_transactions(self, account_id: int) -> Transactions:
         cursor = self.connection_pool.get_cursor(self.identifier)
         table = "transactions t"
-        columns = "t.*"
+        columns = "t.uuid, t.debit_account, t.credit_account, t.value, t.date"
         condition = "t.debit_account = a.id OR t.credit_account = a.id"
         where = "a.id = %s"
         query = f"SELECT {columns} " \
@@ -88,8 +91,13 @@ class AccountsRepository(AccountsRepositoryInterface):
                 f"WHERE {where};"
         cursor.execute(query, (account_id,))
         raw_transactions = cursor.fetchall()
-        transactions = []
-        for t in raw_transactions:
-            new_t = create_transaction_from_raw(t)
-            transactions.append(new_t)
-        return transactions
+        return [
+            Transaction(t_id, d_acc, c_acc, _amount_from_column(value), date)
+            for t_id, d_acc, c_acc, value, date in raw_transactions
+        ]
+
+
+def _amount_from_column(value) -> Amount:
+    # transactions.value is a FLOAT column: read it back through its
+    # shortest decimal representation, rounded to cents.
+    return Amount(Decimal(str(value)).quantize(CENT))
