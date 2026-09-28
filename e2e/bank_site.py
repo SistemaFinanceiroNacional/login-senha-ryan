@@ -35,6 +35,44 @@ class BankSite:
     def log_out(self) -> None:
         self.page.click("form[action='/logout'] [type=submit]")
 
+    def csrf_token(self) -> str:
+        return self.page.locator('meta[name="csrf-token"]')\
+            .get_attribute("content") or ""
+
+    def submit_hand_made_form(self,
+                              action: str,
+                              fields: dict,
+                              with_csrf_token: bool = True
+                              ) -> int:
+        """Posts a form built in the browser (as anyone can do from the
+        developer tools or from another page) and returns the status.
+        Someone on the bank's own page can copy its anti-CSRF token."""
+        if with_csrf_token:
+            fields = {**fields, "csrf_token": self.csrf_token()}
+        # The form submission is a navigation: wait for it to finish, not
+        # just for the answer to the POST.
+        with self.page.expect_navigation():
+            with self.page.expect_response(
+                lambda response: response.request.method == "POST"
+            ) as answer:
+                self.page.evaluate(
+                    """([action, fields]) => {
+                        const form = document.createElement("form");
+                        form.method = "post";
+                        form.action = action;
+                        for (const [name, value] of Object.entries(fields)) {
+                            const input = document.createElement("input");
+                            input.name = name;
+                            input.value = value;
+                            form.appendChild(input);
+                        }
+                        document.body.appendChild(form);
+                        form.submit();
+                    }""",
+                    [action, fields]
+                )
+        return answer.value.status
+
     def message(self):
         return self.page.locator("#message")
 

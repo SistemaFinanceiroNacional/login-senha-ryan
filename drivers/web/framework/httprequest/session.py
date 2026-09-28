@@ -113,8 +113,9 @@ class SessionMiddleware:
 
     def _persist(self, session: Session) -> Optional[str]:
         if session.invalidated:
-            if session.token is not None:
-                self.store.delete(session.token)
+            if session.token is None:
+                return None
+            self.store.delete(session.token)
             return expired_session_cookie()
 
         if session.token is not None and not session.rotated:

@@ -59,7 +59,11 @@ def test_a_captured_sign_in_cannot_be_replayed(new_site):
     status = alice.page.evaluate(
         """body => fetch("/passkeys/authentication", {
             method: "POST",
-            headers: {"Content-Type": "application/json"},
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-Token": document.querySelector(
+                    'meta[name="csrf-token"]').content,
+            },
             body: body,
         }).then(response => response.status)""",
         captured

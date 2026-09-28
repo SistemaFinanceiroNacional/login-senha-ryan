@@ -68,7 +68,11 @@ function credentialJson(credential) {
 async function postJson(url, data) {
     const response = await fetch(url, {
         method: "POST",
-        headers: {"Content-Type": "application/json"},
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-Token":
+                document.querySelector('meta[name="csrf-token"]').content,
+        },
         body: JSON.stringify(data),
     });
     const body = await response.json().catch(() => ({}));

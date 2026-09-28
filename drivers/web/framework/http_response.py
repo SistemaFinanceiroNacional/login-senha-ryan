@@ -31,6 +31,7 @@ def response_as_bytes(response):
         303: "See Other",
         400: "Bad Request",
         401: "Unauthorized",
+        403: "Forbidden",
         404: "Not Found",
         405: "Method Not Allowed",
         409: "Conflict",
