@@ -1,3 +1,4 @@
+import math
 from typing import List
 from domain.transaction import Transaction, create_transaction
 from domain.commontypes.types import AccountID
@@ -38,13 +39,22 @@ class BankAccount:
             self._transactions.insert(0, transaction)
 
     def deposit(self, value: Amount) -> None:
-        raise NotImplementedError
+        if not is_valid_deposit(value):
+            raise InvalidValueToDeposit(value)
+        transaction = create_transaction(
+            BANK_DEPOSITS_ACCOUNT_ID, self._id, value
+        )
+        self._transactions.insert(0, transaction)
 
     def get_id(self) -> AccountID:
         return self._id
 
     def get_transactions(self) -> List[Transaction]:
         return self._transactions
+
+
+def is_valid_deposit(value: Amount) -> bool:
+    return math.isfinite(value) and value > 0
 
 
 class InsufficientFundsException(Exception):
