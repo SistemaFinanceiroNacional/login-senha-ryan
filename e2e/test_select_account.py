@@ -5,7 +5,6 @@ from playwright.sync_api import expect
 
 from e2e.bank_site import BankSite
 
-IDOR = "IDOR on /selectaccount (issue #95)"
 BOB_BALANCE = "500.0"
 
 
@@ -63,7 +62,6 @@ def test_anonymous_visitor_cannot_open_an_account(new_site, bob_account):
 
 
 @pytest.mark.integration
-@pytest.mark.xfail(strict=True, reason=IDOR, raises=AssertionError)
 def test_client_cannot_open_another_clients_account(bob_account, alice):
     # Alice edits her account button in the browser to point to Bob's.
     alice.page.eval_on_selector(
@@ -82,7 +80,6 @@ def test_client_cannot_open_another_clients_account(bob_account, alice):
 
 
 @pytest.mark.integration
-@pytest.mark.xfail(strict=True, reason=IDOR, raises=AssertionError)
 def test_session_pointing_to_another_clients_account_is_not_disclosed(
         bob_account, alice
 ):
@@ -98,3 +95,18 @@ def test_session_pointing_to_another_clients_account_is_not_disclosed(
 
     assert response is not None and response.status == 404
     assert BOB_BALANCE not in alice.page.content()
+
+
+@pytest.mark.integration
+def test_non_numeric_account_is_not_found(alice):
+    alice.page.eval_on_selector(
+        "form[action='/selectaccount'] button",
+        "button => button.value = 'abc'"
+    )
+
+    with alice.page.expect_response(
+        lambda response: response.request.method == "POST"
+    ) as selection:
+        alice.open_account()
+
+    assert selection.value.status == 404
