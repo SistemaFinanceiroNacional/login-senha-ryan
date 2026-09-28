@@ -51,3 +51,12 @@ def test_signing_in_starts_a_new_session(new_site):
     [session] = [c for c in alice.page.context.cookies()
                  if c["name"] == "session"]
     assert session["value"] != "planted"
+
+
+def test_scripts_cannot_read_the_session_cookie(new_site):
+    alice = new_site()
+    alice.sign_up_with_passkey("alice")
+
+    readable = alice.page.evaluate("document.cookie")
+
+    assert "session=" not in readable
