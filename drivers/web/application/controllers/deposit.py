@@ -1,4 +1,7 @@
-from drivers.web.application.controllers.parsing import parse_float, parse_int
+from drivers.web.application.controllers.parsing import (
+    parse_amount,
+    parse_int
+)
 from drivers.web.framework.http_response import (
     HttpResponse,
     redirect_response
@@ -24,7 +27,7 @@ class DepositHandler(MethodDispatcher):
         form = request.get_body().refine()
 
         deposited = parse_int(session["account_id"]).flat_map(
-            lambda account_id: parse_float(form.get("amount")).map(
+            lambda account_id: parse_amount(form.get("amount")).map(
                 lambda amount: self.deposit.execute(
                     client_id, account_id, amount
                 )

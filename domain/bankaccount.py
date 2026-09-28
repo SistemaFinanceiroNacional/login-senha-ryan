@@ -1,5 +1,5 @@
-import math
 from typing import List
+from domain.amount import Amount
 from domain.transaction import Transaction, create_transaction
 from domain.commontypes.types import AccountID
 
@@ -38,11 +38,9 @@ class BankAccount:
             transaction = create_transaction(self._id, destiny_id, value)
             self._transactions.insert(0, transaction)
 
-    def deposit(self, value: Money) -> None:
-        if not is_valid_deposit(value):
-            raise InvalidValueToDeposit(value)
+    def deposit(self, amount: Amount) -> None:
         transaction = create_transaction(
-            BANK_DEPOSITS_ACCOUNT_ID, self._id, value
+            BANK_DEPOSITS_ACCOUNT_ID, self._id, amount.to_float()
         )
         self._transactions.insert(0, transaction)
 
@@ -53,10 +51,6 @@ class BankAccount:
         return self._transactions
 
 
-def is_valid_deposit(value: Money) -> bool:
-    return math.isfinite(value) and value > 0
-
-
 class InsufficientFundsException(Exception):
     def __init__(self, balance: Money, value: Money):
         super().__init__(f"{balance} is insufficient to get {value}")
@@ -65,8 +59,3 @@ class InsufficientFundsException(Exception):
 class InvalidValueToTransfer(Exception):
     def __init__(self, value: Money):
         super().__init__(f"{value} is a non-positive value to transfer.")
-
-
-class InvalidValueToDeposit(Exception):
-    def __init__(self, value: Money):
-        super().__init__(f"{value} is not a valid value to deposit.")

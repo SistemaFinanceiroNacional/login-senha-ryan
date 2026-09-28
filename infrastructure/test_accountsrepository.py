@@ -1,5 +1,7 @@
 import pytest
 
+from domain.amount import Amount
+
 
 def reload_account(bank, account_id):
     with bank.context:
@@ -17,7 +19,7 @@ def test_update_persists_new_transactions(bank):
     alice = bank.open_client("alice")
     account = reload_account(bank, alice.account)
 
-    account.deposit(10.0)
+    account.deposit(Amount(10))
     save(bank, account)
 
     reloaded = reload_account(bank, alice.account)
@@ -28,7 +30,7 @@ def test_update_persists_new_transactions(bank):
 def test_update_does_not_duplicate_existing_transactions(bank):
     alice = bank.open_client("alice")
     account = reload_account(bank, alice.account)
-    account.deposit(10.0)
+    account.deposit(Amount(10))
     save(bank, account)
 
     save(bank, reload_account(bank, alice.account))
