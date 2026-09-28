@@ -1,8 +1,7 @@
 from domain.commontypes.types import ClientID
 from maybe import Just, Maybe, Nothing
 from usecases.repositories.clientsrepositoryinterface import (
-    ClientsRepositoryInterface,
-    Password as passW
+    ClientsRepositoryInterface
 )
 from infrastructure.identityinterface import (
     IdentityInterface
@@ -16,24 +15,6 @@ class ClientsRepository(ClientsRepositoryInterface):
     def __init__(self, connection_pool: CPool, identifier: IdentityInterface):
         self.connection_pool = connection_pool
         self.identifier = identifier
-
-    def add_client(self, new_login: str, new_password: passW) -> bool:
-        cursor = self.connection_pool.get_cursor(self.identifier)
-        query = "SELECT * FROM clients WHERE login = %s;"
-        cursor.execute(query, (new_login,))
-        account_query_result = cursor.fetchone()
-
-        if not account_query_result:
-            columns = "(login,password)"
-            statements = "VALUES (%s,%s)"
-            return_t = "RETURNING id"
-            query = f"INSERT INTO clients {columns} {statements} {return_t};"
-            cursor.execute(query, (new_login, str(new_password)))
-
-            client_id = cursor.fetchone()
-            self._open_account(client_id)
-
-        return not account_query_result
 
     def login_taken(self, login: str) -> bool:
         cursor = self.connection_pool.get_cursor(self.identifier)

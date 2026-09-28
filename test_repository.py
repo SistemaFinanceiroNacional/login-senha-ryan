@@ -60,8 +60,6 @@ def test_compose_takes_the_credentials_from_the_environment():
     assert given.returncode == 0, given.stderr
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason="passwords hashed with unsalted SHA-512 (#97)")
 def test_no_code_hashes_passwords_with_fast_unsalted_sha512():
     sources = [path for path in tracked_files() if path.endswith(".py")
                and not os.path.basename(path).startswith("test_")]

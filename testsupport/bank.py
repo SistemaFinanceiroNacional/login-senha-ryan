@@ -2,7 +2,6 @@ from typing import NamedTuple
 
 from domain.commontypes.types import AccountID, ClientID
 from infrastructure.accountsrepository import AccountsRepository
-from infrastructure.authservicedb import AuthServiceDB
 from infrastructure.ceremoniesrepository import CeremoniesRepository
 from infrastructure.clientsrepository import ClientsRepository
 from infrastructure.connection_pool import (
@@ -15,7 +14,6 @@ from infrastructure.threadIdentity import ThreadIdentity
 from infrastructure.webauthnrelyingparty import WebAuthnRelyingParty
 from maybe import Maybe
 from testsupport.authenticator import SoftwareAuthenticator
-from password import Password
 from usecases.deposit import DepositUseCase
 from usecases.new_bank_account import NewBankAccountUseCase
 from usecases.transfer import TransferFundsUseCase
@@ -31,9 +29,7 @@ from usecases.passkeys.registration import (
     FinishPasskeyRegistration,
     StartPasskeyRegistration
 )
-from usecases.register_client import RegisterClientUseCase
 
-PASSWORD = "secret"
 RP_ID = "localhost"
 ORIGIN = "http://localhost:8080"
 
@@ -54,10 +50,6 @@ class Bank:
         clients = ClientsRepository(pool, identity)
         self.context = context = DBTransactionContext(pool, identity)
 
-        self.register_client = RegisterClientUseCase(
-            clients, context, Password
-        )
-        self.auth = AuthServiceDB(context, pool, identity)
         self.get_accounts = GetAccountsUseCase(accounts, context)
         self.get_balance = GetBalanceUseCase(accounts, context)
         self.get_transactions = GetTransactionsUseCase(accounts, context)
