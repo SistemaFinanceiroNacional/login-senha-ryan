@@ -2,11 +2,9 @@ import logging
 from typing import List
 
 from usecases.get_transactions import TransactionData
-from domain.bankaccount import (
-    InsufficientFundsException,
-    InvalidValueToTransfer,
-    Money
-)
+from domain.amount import Amount
+from domain.bankaccount import InsufficientFundsException
+from domain.money import InvalidMoney, Money
 from inputio.input_io import InputIO
 from usecases.unlogged_cases import UnloggedUseCases
 from usecases.logged_cases import LoggedUseCases
@@ -23,13 +21,13 @@ def transfer_money(io: InputIO, acc_id: AccountID, l_cases: LoggedUseCases):
     destination_account = int(io.input(
         "Enter the ID of the destination account: "
     ))
-    value = int(io.input("How much do you want to transfer? "))
     try:
-        l_cases.transfer.execute(acc_id, destination_account, value)
+        amount = Amount(io.input("How much do you want to transfer? "))
+        l_cases.transfer.execute(acc_id, destination_account, amount)
         io.print("Successful transaction.")
     except InsufficientFundsException:
         io.print("Insufficient funds.")
-    except InvalidValueToTransfer as e:
+    except InvalidMoney as e:
         io.print(str(e))
     except AccountDoesNotExistsError:
         io.print("Invalid Account ID.")
@@ -65,7 +63,7 @@ def accounts_repl(io: InputIO,
         default_message = "Error on trying to show your balance"
 
         def balance_message(balance: Money) -> str:
-            return f"R${balance:.2f}"
+            return f"R${balance}"
 
         io.print(maybe_balance.map(balance_message).or_else(default_message))
 

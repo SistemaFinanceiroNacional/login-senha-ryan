@@ -1,26 +1,27 @@
-import math
-
 import pytest
 
 from domain.amount import Amount
+from domain.money import Money
 
 
-def balance_of(bank, client) -> float:
+def balance_of(bank, client) -> Money:
     return bank.get_balance.execute(client.id, client.account)\
-        .or_else(lambda: math.nan)
+        .or_else_throw(AssertionError("no balance"))
 
 
 @pytest.mark.integration
 def test_client_deposits_into_own_account(bank):
     alice = bank.open_client("alice")
 
-    assert bank.deposit.execute(alice.id, alice.account, Amount(150.5))
-    assert bank.deposit.execute(alice.id, alice.account, Amount(49.5))
+    assert bank.deposit.execute(alice.id, alice.account, Amount("150.50"))
+    assert bank.deposit.execute(alice.id, alice.account, Amount("49.50"))
 
-    assert balance_of(bank, alice) == 200.0
+    assert balance_of(bank, alice) == Money(200)
     transactions = bank.get_transactions.execute(alice.id, alice.account)\
         .or_else(list)
-    assert sorted(t.value for t in transactions) == [49.5, 150.5]
+    assert sorted(t.value for t in transactions) == [
+        Amount("49.50"), Amount("150.50")
+    ]
 
 
 @pytest.mark.integration
@@ -30,7 +31,7 @@ def test_client_cannot_deposit_into_another_clients_account(bank):
 
     assert not bank.deposit.execute(alice.id, bob.account, Amount(100))
 
-    assert balance_of(bank, bob) == 0.0
+    assert balance_of(bank, bob) == Money(0)
 
 
 @pytest.mark.integration

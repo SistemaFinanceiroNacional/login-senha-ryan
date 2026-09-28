@@ -23,7 +23,7 @@ def test_update_persists_new_transactions(bank):
     save(bank, account)
 
     reloaded = reload_account(bank, alice.account)
-    assert [t.value for t in reloaded.get_transactions()] == [10.0]
+    assert [t.value for t in reloaded.get_transactions()] == [Amount(10)]
 
 
 @pytest.mark.integration
@@ -37,3 +37,14 @@ def test_update_does_not_duplicate_existing_transactions(bank):
 
     reloaded = reload_account(bank, alice.account)
     assert len(reloaded.get_transactions()) == 1
+
+
+@pytest.mark.integration
+def test_large_amounts_are_persisted_exactly(bank):
+    alice = bank.open_client("alice")
+    large = Amount("1234567890123456.78")
+    assert bank.deposit.execute(alice.id, alice.account, large)
+
+    reloaded = reload_account(bank, alice.account)
+
+    assert [t.value for t in reloaded.get_transactions()] == [large]

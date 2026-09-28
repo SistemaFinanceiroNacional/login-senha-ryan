@@ -1,6 +1,7 @@
 import pytest
 
 from domain.amount import Amount
+from domain.money import Money
 from maybe import is_nothing
 
 
@@ -24,7 +25,7 @@ def test_client_gets_balance_of_own_account(bank, alice):
         alice.id, alice.account
     )
 
-    assert balance.or_else(lambda: 0.0) == 100.0
+    assert balance.or_else_throw(AssertionError()) == Money(100)
 
 
 @pytest.mark.integration
@@ -44,7 +45,7 @@ def test_client_gets_transactions_of_own_account(bank, alice):
         alice.id, alice.account
     )
 
-    assert [t.value for t in transactions.or_else(list)] == [100.0]
+    assert [t.value for t in transactions.or_else(list)] == [Amount(100)]
 
 
 @pytest.mark.integration

@@ -4,7 +4,7 @@ from usecases.repositories.accountsrepositoryinterface import (
 from usecases.repositories.transactioncontextinterface import (
     TransactionContextInterface as Cntx
 )
-from domain.bankaccount import Money
+from domain.money import Money
 from domain.commontypes.types import AccountID, ClientID
 from maybe import Maybe, Nothing
 

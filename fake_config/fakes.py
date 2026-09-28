@@ -7,6 +7,7 @@ from usecases.repositories.accountsrepositoryinterface import (
     AccountID,
     ClientID
 )
+from domain.amount import Amount
 from domain.transaction import create_transaction
 from usecases.repositories.transactioncontextinterface import (
     TransactionContextInterface
@@ -150,7 +151,7 @@ class ContasFake(AccountsRepositoryInterface):
 
 
 def existing_pedros_account():
-    t = create_transaction(2, 3, 400)
+    t = create_transaction(2, 3, Amount(400))
     return ContasFake({"pedro": ("abc123", [t])}, {})
 
 
