@@ -4,6 +4,10 @@ from domain.commontypes.types import AccountID
 
 Amount = float
 
+# Created by the first migration; money deposited in the bank is debited
+# from it.
+BANK_DEPOSITS_ACCOUNT_ID: AccountID = 1
+
 
 class BankAccount:
     def __init__(self,
@@ -33,6 +37,9 @@ class BankAccount:
             transaction = create_transaction(self._id, destiny_id, value)
             self._transactions.insert(0, transaction)
 
+    def deposit(self, value: Amount) -> None:
+        raise NotImplementedError
+
     def get_id(self) -> AccountID:
         return self._id
 
@@ -48,3 +55,8 @@ class InsufficientFundsException(Exception):
 class InvalidValueToTransfer(Exception):
     def __init__(self, value: Amount):
         super().__init__(f"{value} is a non-positive value to transfer.")
+
+
+class InvalidValueToDeposit(Exception):
+    def __init__(self, value: Amount):
+        super().__init__(f"{value} is not a valid value to deposit.")
