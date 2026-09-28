@@ -5,11 +5,7 @@ import pytest
 
 from e2e.raw_http import fetch
 
-pytestmark = [
-    pytest.mark.integration,
-    pytest.mark.xfail(strict=True, raises=AssertionError,
-                      reason="header names are case-sensitive (issue #115)"),
-]
+pytestmark = pytest.mark.integration
 
 
 def test_header_names_are_case_insensitive(web_app):
