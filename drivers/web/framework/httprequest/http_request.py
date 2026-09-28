@@ -5,6 +5,7 @@ from drivers.web.framework.body import BodyInterface, Body, EmptyBody
 from drivers.web.framework.encodings import url_encoded
 from drivers.web.framework.httprequest import incomplete_http_request_error
 from drivers.web.framework.httprequest.headers import make_headers
+from drivers.web.framework.httprequest.headers_map import Headers
 from drivers.web.framework.httprequest.resource import make_resource
 from drivers.web.framework.httprequest.first_line import get_first_line
 
@@ -15,8 +16,8 @@ class HttpRequest:
     headers: Dict[str, str]
 
     def __init__(self, headers, body, method, resource, version):
-        self.headers = headers
-        self.body = self._construct_body(body, headers)
+        self.headers = Headers(headers)
+        self.body = self._construct_body(body, self.headers)
         self.method = method
         self.resource = resource
         self.version = version
@@ -51,7 +52,7 @@ def get_next_http_request(socket):
         url_encoded
     )
     logger.debug(f"Method: {method}; Resource: {resource}; Version: {version}")
-    headers = make_headers(socket)
+    headers = Headers(make_headers(socket))
     logger.debug(f"Headers: {headers}")
     body = get_body(socket, headers)
     logger.debug(f"Body: {body.decode('utf-8')}")
