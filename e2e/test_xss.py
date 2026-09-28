@@ -1,12 +1,10 @@
 import pytest
 from playwright.sync_api import expect
 
-AUTOESCAPE_OFF = "Jinja2 renders templates without autoescape (issue #100)"
 PAYLOAD = "<img src=x onerror=\"document.title='pwned'\">"
 
 
 @pytest.mark.integration
-@pytest.mark.xfail(strict=True, reason=AUTOESCAPE_OFF, raises=AssertionError)
 def test_a_login_with_markup_is_shown_as_text(new_site):
     mallory = new_site()
 

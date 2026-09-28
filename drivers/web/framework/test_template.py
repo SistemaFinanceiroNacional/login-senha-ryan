@@ -5,7 +5,6 @@ import pytest
 from drivers.web.framework import settings
 from drivers.web.framework.template import render_template
 
-AUTOESCAPE_OFF = "Jinja2 renders templates without autoescape (issue #100)"
 SCRIPT = "<script>alert('xss')</script>"
 
 
@@ -17,7 +16,6 @@ def application_templates():
     )
 
 
-@pytest.mark.xfail(strict=True, reason=AUTOESCAPE_OFF, raises=AssertionError)
 def test_user_data_is_rendered_as_text_not_markup():
     page = render_template("loggedPage.html", {"user": SCRIPT, "accounts": []})
 
@@ -25,7 +23,6 @@ def test_user_data_is_rendered_as_text_not_markup():
     assert "&lt;script&gt;alert(&#39;xss&#39;)&lt;/script&gt;" in page
 
 
-@pytest.mark.xfail(strict=True, reason=AUTOESCAPE_OFF, raises=AssertionError)
 def test_user_data_cannot_break_out_of_attributes():
     page = render_template(
         "loggedPage.html", {"user": "alice", "accounts": ['1" autofocus x="']}
