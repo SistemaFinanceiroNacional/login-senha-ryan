@@ -35,6 +35,30 @@ class BankSite:
     def log_out(self) -> None:
         self.page.click("form[action='/logout'] [type=submit]")
 
+    def submit_hand_made_form(self, action: str, fields: dict) -> int:
+        """Posts a form built in the browser (as anyone can do from the
+        developer tools or from another page) and returns the status."""
+        with self.page.expect_response(
+            lambda response: response.request.method == "POST"
+        ) as answer:
+            self.page.evaluate(
+                """([action, fields]) => {
+                    const form = document.createElement("form");
+                    form.method = "post";
+                    form.action = action;
+                    for (const [name, value] of Object.entries(fields)) {
+                        const input = document.createElement("input");
+                        input.name = name;
+                        input.value = value;
+                        form.appendChild(input);
+                    }
+                    document.body.appendChild(form);
+                    form.submit();
+                }""",
+                [action, fields]
+            )
+        return answer.value.status
+
     def message(self):
         return self.page.locator("#message")
 
