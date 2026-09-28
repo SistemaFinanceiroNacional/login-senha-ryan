@@ -10,3 +10,5 @@ AUTH_REDIRECT = "index.html"
 MIDDLEWARES = [SessionMiddleware, CsrfMiddleware]
 ROOT_URLCONF = urls
 BASE_DIR = Path(__file__).resolve().parent
+STATIC_URL = "/static/"
+STATIC_DIR = BASE_DIR / "static"

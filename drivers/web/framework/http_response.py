@@ -37,7 +37,9 @@ STATUS_MESSAGES = {
 
 
 def response_as_bytes(response):
-    body = str(response.get_body()).encode("utf-8")
+    body = response.get_body()
+    if not isinstance(body, bytes):
+        body = str(body).encode("utf-8")
     # The length of what is sent: bytes, not characters.
     headers = {**response.get_headers(), "Content-length": len(body)}
     status = response.get_status()

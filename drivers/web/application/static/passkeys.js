@@ -133,9 +133,13 @@ function signIn(login) {
     );
 }
 
-function onSubmit(formId, action) {
-    document.getElementById(formId).addEventListener("submit", event => {
-        event.preventDefault();
-        action(new FormData(event.target).get("login"));
-    });
-}
+// Forms opt in with data-passkey="sign-in" or data-passkey="sign-up".
+document.addEventListener("DOMContentLoaded", () => {
+    const actions = {"sign-in": signIn, "sign-up": signUp};
+    for (const form of document.querySelectorAll("form[data-passkey]")) {
+        form.addEventListener("submit", event => {
+            event.preventDefault();
+            actions[form.dataset.passkey](new FormData(form).get("login"));
+        });
+    }
+});

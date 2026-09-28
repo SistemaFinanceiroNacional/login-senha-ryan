@@ -5,69 +5,9 @@
     <title>Sistema Financeiro Nacional</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <style>
-    body{
-        margin: 0;
-        padding: 0;
-        background-color: #1B1F27;
-        font-family: Arial, Helvetica, sans-serif;
-        overflow: hidden;
-    }
-
-    header{
-        position: fixed;
-        top: 0; left: 0; right: 0;
-        box-shadow: 0 5px 10px rgba(0,0,0,.1);
-        padding: 0px 7%;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        z-index: 1000;
-    }
-
-    header .logo{
-        font-weight: bolder;
-        font-size: 25px;
-        color: #ffffff;
-    }
-
-    header .navbar ul{
-        list-style: none;
-        margin: 0;
-        padding: 0;
-    }
-
-    header .navbar ul li{
-        position: relative;
-        float: left;
-    }
-
-    header .navbar ul li a{
-        font-size: 18px;
-        padding: 20px;
-        color: #ffffff;
-        display: block;
-    }
-
-    header .navbar ul li a:hover{
-        background-color: #446bd5;
-        color: #ffffff;
-
-    }
-
-    .active{
-        background-color: #4041ED;
-    }
-
-    a{
-        color: #446bd5;
-        text-decoration: none;
-        margin-left: 5px;
-    }
-    {% block style %}{% endblock %}
-    </style>
+    <link rel="stylesheet" href="/static/site.css">
 </head>
-<body>
+<body class="{% block page %}{% endblock %}">
 
 <header>
     <a href="#" class="logo">National Financial System</a>
