@@ -68,6 +68,7 @@ def error(message: str, status: int) -> Callable[[], HttpResponse]:
 
 def signed_in(request: HttpRequest, client: SignedInClient) -> HttpResponse:
     session = session_maker(request)
+    session.rotate()
     session["client_id"] = client.id
     session["login"] = client.login
     return json_response({"redirect": "/"})

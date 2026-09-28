@@ -1,6 +1,11 @@
+from datetime import timedelta
 from os import getenv
 
 from drivers.web.application.entrypoint import get_application
+from drivers.web.application.sessionstore import DBSessionStore
+from drivers.web.framework.httprequest.sessionstore import (
+    SessionStoreInterface
+)
 from drivers.web.server import main
 from infrastructure.connectionInterface import ConnectionPool
 from infrastructure.dicontainer import DiContainer
@@ -41,6 +46,8 @@ class Config:
         di_container[ConnMaker] = psycopg2_create_connection
 
         di_container.set_parameter('max_connections', 1)
+        di_container.set_parameter('idle_timeout', timedelta(minutes=30))
+        di_container.set_parameter('lifetime', timedelta(hours=12))
         di_container.set_parameter(
             'rp_id', getenv("WEBAUTHN_RP_ID", "localhost")
         )
@@ -59,6 +66,7 @@ class Config:
             CeremoniesRepositoryInterface, CeremoniesRepository
         )
         di_container.provide(RelyingPartyInterface, WebAuthnRelyingParty)
+        di_container.provide(SessionStoreInterface, DBSessionStore)
 
         user_interface = get_application(di_container)
         main(user_interface)

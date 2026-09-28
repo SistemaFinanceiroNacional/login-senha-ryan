@@ -16,7 +16,12 @@ def get_application(di: ClassResolver):
     module_path = os.getenv('FRAMEWORK_SETTINGS_MODULE', '')
     settings_app = importlib.import_module(module_path)
     settings.app_settings = settings_app
-    middlewares = settings.app_settings.MIDDLEWARES
+    # A middleware given as a class is built by the DI container, so it
+    # can depend on application services (e.g. a session store).
+    middlewares = [
+        di[middleware] if isinstance(middleware, type) else middleware
+        for middleware in settings.app_settings.MIDDLEWARES
+    ]
     urlpatterns = settings.app_settings.ROOT_URLCONF.urlpatterns
 
     combined_middleware = reduce(

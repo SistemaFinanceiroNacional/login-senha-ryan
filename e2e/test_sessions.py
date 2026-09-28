@@ -3,13 +3,7 @@ from playwright.sync_api import expect
 
 from e2e.bank_site import SIGNED_IN, BankSite
 
-NOT_SERVER_SIDE = "the session is kept in a forgeable cookie (issue #94)"
-
-pytestmark = [
-    pytest.mark.integration,
-    pytest.mark.xfail(strict=True, reason=NOT_SERVER_SIDE,
-                      raises=AssertionError),
-]
+pytestmark = pytest.mark.integration
 
 
 def cookie(name: str, value: str, site: BankSite) -> dict:
@@ -23,7 +17,8 @@ def test_a_forged_session_cookie_gives_no_access(new_site):
 
     mallory = new_site()
     mallory.page.context.add_cookies([
-        cookie("loggedUsername", '{"client_id":1,"login":"alice"}', mallory)
+        cookie("loggedUsername", '{"client_id":1,"login":"alice"}', mallory),
+        cookie("session", "a-guessed-token", mallory),
     ])
     mallory.page.goto(mallory.web_app.url("/"))
 
