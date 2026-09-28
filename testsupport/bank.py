@@ -72,7 +72,7 @@ class Bank:
             clients, passkeys, ceremonies, relying_party, context
         )
         self.start_authentication = StartPasskeyAuthentication(
-            passkeys, ceremonies, relying_party, context
+            passkeys, ceremonies, relying_party, context, b"decoy key"
         )
         self.finish_authentication = FinishPasskeyAuthentication(
             passkeys, ceremonies, relying_party, context

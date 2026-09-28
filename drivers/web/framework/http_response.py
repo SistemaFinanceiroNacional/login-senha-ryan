@@ -30,6 +30,7 @@ STATUS_MESSAGES = {
     405: "Method Not Allowed",
     409: "Conflict",
     413: "Content Too Large",
+    429: "Too Many Requests",
     414: "URI Too Long",
     431: "Request Header Fields Too Large",
     500: "Internal Server Error"

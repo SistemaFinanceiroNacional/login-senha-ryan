@@ -87,3 +87,18 @@ def test_provide_d_interface_equals_di_object():
     obj1 = di[D]
     obj2 = di[DInterface]
     assert obj1 == obj2
+
+
+class E:
+    def __init__(self, a: A, size: int = 7):
+        self.a = a
+        self.size = size
+
+
+def test_parameters_with_defaults_keep_them_unless_set():
+    di = DiContainer()
+    assert di[E].size == 7
+
+    other = DiContainer()
+    other.set_parameter('size', 3)
+    assert other[E].size == 3

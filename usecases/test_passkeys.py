@@ -45,7 +45,19 @@ def test_invalid_logins_cannot_be_registered(bank, login):
 
 
 def test_an_unknown_login_cannot_sign_in(bank):
-    assert is_nothing(bank.start_authentication.execute("nobody"))
+    key = authenticator()
+    registered(bank, "alice", key)
+    [alice_credential] = key.credential_ids()
+
+    # The ceremony starts (whether a login exists is not revealed)...
+    ceremony = bank.start_authentication.execute("nobody")\
+        .or_else_throw(AssertionError("no ceremony"))
+    assertion = key.get(ceremony.public_key, alice_credential)
+
+    # ...but nothing can finish it.
+    assert is_nothing(bank.finish_authentication.execute(
+        ceremony.ceremony_id, assertion
+    ))
 
 
 def test_someone_elses_passkey_does_not_sign_in(bank):

@@ -28,6 +28,8 @@ class DiContainer:
         for param_name, param in params.items():
             if param_name in self.parameters:
                 dict_params[param_name] = self.parameters[param_name]
+            elif param.default is not inspect.Parameter.empty:
+                continue
             else:
                 dict_params[param_name] = self[param.annotation]
 
