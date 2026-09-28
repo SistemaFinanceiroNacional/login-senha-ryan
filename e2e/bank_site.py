@@ -49,27 +49,28 @@ class BankSite:
         Someone on the bank's own page can copy its anti-CSRF token."""
         if with_csrf_token:
             fields = {**fields, "csrf_token": self.csrf_token()}
-        with self.page.expect_response(
-            lambda response: response.request.method == "POST"
-        ) as answer:
-            self.page.evaluate(
-                """([action, fields]) => {
-                    const form = document.createElement("form");
-                    form.method = "post";
-                    form.action = action;
-                    for (const [name, value] of Object.entries(fields)) {
-                        const input = document.createElement("input");
-                        input.name = name;
-                        input.value = value;
-                        form.appendChild(input);
-                    }
-                    document.body.appendChild(form);
-                    form.submit();
-                }""",
-                [action, fields]
-            )
-        # The form submission is a navigation: let it finish.
-        self.page.wait_for_load_state()
+        # The form submission is a navigation: wait for it to finish, not
+        # just for the answer to the POST.
+        with self.page.expect_navigation():
+            with self.page.expect_response(
+                lambda response: response.request.method == "POST"
+            ) as answer:
+                self.page.evaluate(
+                    """([action, fields]) => {
+                        const form = document.createElement("form");
+                        form.method = "post";
+                        form.action = action;
+                        for (const [name, value] of Object.entries(fields)) {
+                            const input = document.createElement("input");
+                            input.name = name;
+                            input.value = value;
+                            form.appendChild(input);
+                        }
+                        document.body.appendChild(form);
+                        form.submit();
+                    }""",
+                    [action, fields]
+                )
         return answer.value.status
 
     def message(self):
