@@ -8,6 +8,7 @@ APPLICATION_TABLES = {
     "clients", "accounts", "clients_accounts", "transactions"
 }
 BANK_DEPOSITS_ACCOUNT = 1
+EXACT_AMOUNTS = "20260928_01_exact_transaction_amounts"
 
 
 @pytest.mark.integration
@@ -67,7 +68,7 @@ def test_rolling_back_and_forward_keeps_every_amount(database, bank):
     for value in ["0.10", "0.10", "0.10", "150.50"]:
         assert bank.deposit.execute(alice.id, alice.account, Amount(value))
 
-    database.rollback_last_migration()
+    database.rollback_down_to(EXACT_AMOUNTS)
     database.apply_all_migrations()
 
     assert balance(bank, alice) == Money("150.80")
@@ -80,6 +81,6 @@ def test_rolling_back_refuses_to_lose_cents(database, bank):
     assert bank.deposit.execute(alice.id, alice.account, large)
 
     with pytest.raises(psycopg2.Error, match="would lose cents"):
-        database.rollback_last_migration()
+        database.rollback_down_to(EXACT_AMOUNTS)
 
     assert balance(bank, alice) == large
