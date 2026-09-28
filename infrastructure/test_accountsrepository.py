@@ -40,8 +40,6 @@ def test_update_does_not_duplicate_existing_transactions(bank):
 
 
 @pytest.mark.integration
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason="transactions.value is a FLOAT column (issue #116)")
 def test_large_amounts_are_persisted_exactly(bank):
     alice = bank.open_client("alice")
     large = Amount("1234567890123456.78")

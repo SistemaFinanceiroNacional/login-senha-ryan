@@ -1,8 +1,6 @@
-from decimal import Decimal
 from typing import Iterable, List
 from maybe import Maybe, Just, Nothing
 from domain.amount import Amount
-from domain.money import CENT
 from domain.transaction import Transaction
 from infrastructure.connection_pool import (
     ConnectionPool as CPool,
@@ -51,17 +49,22 @@ class AccountsRepository(AccountsRepositoryInterface):
 
     def update(self, acc: BankAccount):
         cursor = self.connection_pool.get_cursor(self.identifier)
-        transactions = acc.get_transactions()
+        # The FLOAT column is still written so that a previous version of
+        # the application, which only reads it, keeps working (#116).
+        insert_transaction = \
+            "INSERT INTO transactions " \
+            "(uuid, debit_account, credit_account, value, date) " \
+            "VALUES (%s, %s, %s, %s, %s) ON CONFLICT (uuid) DO NOTHING;"
+        insert_amount = \
+            "INSERT INTO transaction_amounts (transaction_uuid, amount) " \
+            "VALUES (%s, %s) ON CONFLICT (transaction_uuid) DO NOTHING;"
 
-        table = "transactions"
-        columns = "(uuid, debit_account, credit_account, value, date)"
-        statements = "VALUES (%s, %s, %s, %s, %s)"
-        conflict = "ON CONFLICT (uuid) DO NOTHING"
-        query = f"INSERT INTO {table} {columns} {statements} {conflict};"
-
-        for t in transactions:
-            data = (t.id, t.d_acc, t.c_acc, t.value.to_decimal(), t.date)
-            cursor.execute(query, data)
+        for t in acc.get_transactions():
+            amount = t.value.to_decimal()
+            cursor.execute(
+                insert_transaction, (t.id, t.d_acc, t.c_acc, amount, t.date)
+            )
+            cursor.execute(insert_amount, (t.id, amount))
 
     def get_by_client_id(self, client_id: ClientID) -> Iterable[AccountID]:
         cursor = self.connection_pool.get_cursor(self.identifier)
@@ -81,23 +84,17 @@ class AccountsRepository(AccountsRepositoryInterface):
 
     def _get_transactions(self, account_id: int) -> Transactions:
         cursor = self.connection_pool.get_cursor(self.identifier)
-        table = "transactions t"
-        columns = "t.uuid, t.debit_account, t.credit_account, t.value, t.date"
-        condition = "t.debit_account = a.id OR t.credit_account = a.id"
-        where = "a.id = %s"
-        query = f"SELECT {columns} " \
-                f"FROM {table} " \
-                f"JOIN accounts a ON {condition} " \
-                f"WHERE {where};"
-        cursor.execute(query, (account_id,))
-        raw_transactions = cursor.fetchall()
+        # Rows written by a previous version have no exact amount yet: fall
+        # back to the FLOAT column rounded to cents.
+        query = \
+            "SELECT t.uuid, t.debit_account, t.credit_account, " \
+            "COALESCE(ta.amount, round(t.value::numeric, 2)), t.date " \
+            "FROM transactions t " \
+            "LEFT JOIN transaction_amounts ta " \
+            "ON ta.transaction_uuid = t.uuid " \
+            "WHERE t.debit_account = %s OR t.credit_account = %s;"
+        cursor.execute(query, (account_id, account_id))
         return [
-            Transaction(t_id, d_acc, c_acc, _amount_from_column(value), date)
-            for t_id, d_acc, c_acc, value, date in raw_transactions
+            Transaction(t_id, d_acc, c_acc, Amount(amount), date)
+            for t_id, d_acc, c_acc, amount, date in cursor.fetchall()
         ]
-
-
-def _amount_from_column(value) -> Amount:
-    # transactions.value is a FLOAT column: read it back through its
-    # shortest decimal representation, rounded to cents.
-    return Amount(Decimal(str(value)).quantize(CENT))
