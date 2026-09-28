@@ -69,3 +69,22 @@ def test_nothing_is_returned_as_is_by_map_and_flat_map():
 
     assert nothing.map(lambda number: number + 1) is nothing
     assert nothing.flat_map(half) is nothing
+
+
+def is_even(number: int) -> bool:
+    return number % 2 == 0
+
+
+def test_filter_keeps_just_when_predicate_holds():
+    assert Just(4).filter(is_even).or_else(lambda: -1) == 4
+
+
+def test_filter_discards_just_when_predicate_fails():
+    assert isinstance(Just(3).filter(is_even), Nothing)
+
+
+def test_filter_on_nothing_does_not_call_the_predicate():
+    def fail(_) -> bool:
+        raise AssertionError("must not be called")
+
+    assert isinstance(Nothing().filter(fail), Nothing)

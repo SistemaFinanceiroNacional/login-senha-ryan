@@ -2,12 +2,14 @@ import os
 import time
 import urllib.error
 import urllib.request
-from typing import Iterator
+from typing import Callable, Iterator
 
 import pytest
-from playwright.sync_api import Page
+from playwright.sync_api import Browser, Page
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.image import DockerImage
+
+from e2e.bank_site import BankSite
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 APP_PORT = 8080
@@ -71,3 +73,25 @@ def web_app(app_image, database, docker_network) -> Iterator[WebApp]:
 def page(page: Page) -> Page:
     page.set_default_timeout(BROWSER_TIMEOUT_MILLISECONDS)
     return page
+
+
+@pytest.fixture
+def new_site(browser: Browser, web_app) -> Iterator[Callable[[], BankSite]]:
+    """Opens the bank site in a new, independent browser session (its own
+    cookies), so a test can play several people.
+
+    The server handles one connection at a time (#96): an idle keep-alive
+    connection from one browser blocks every other one. Until that is
+    fixed, a person must leave() before the next one acts."""
+    contexts = []
+
+    def open_site() -> BankSite:
+        context = browser.new_context()
+        contexts.append(context)
+        page = context.new_page()
+        page.set_default_timeout(BROWSER_TIMEOUT_MILLISECONDS)
+        return BankSite(page, web_app)
+
+    yield open_site
+    for context in contexts:
+        context.close()

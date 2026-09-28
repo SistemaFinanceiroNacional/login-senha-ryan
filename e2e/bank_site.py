@@ -27,8 +27,16 @@ class BankSite:
         self.sign_up(login)
         self.log_in(login)
 
+    def account_ids(self) -> list[int]:
+        buttons = self.page.locator("form[action='/selectaccount'] button")
+        values = buttons.evaluate_all("buttons => buttons.map(b => b.value)")
+        return [int(value) for value in values]
+
     def open_account(self) -> None:
         self.page.click("form[action='/selectaccount'] button")
+
+    def leave(self) -> None:
+        self.page.context.close()
 
     def deposit(self, amount: str) -> None:
         self.page.fill("input[name=amount]", amount)
