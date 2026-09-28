@@ -11,13 +11,7 @@ from infrastructure.dbtransactioncontext import DBTransactionContext
 from infrastructure.threadIdentity import ThreadIdentity
 from maybe import is_nothing
 
-NOT_IMPLEMENTED = "server-side sessions not implemented yet (issue #94)"
-
-pytestmark = [
-    pytest.mark.integration,
-    pytest.mark.xfail(strict=True, reason=NOT_IMPLEMENTED,
-                      raises=NotImplementedError),
-]
+pytestmark = pytest.mark.integration
 
 TOKEN = "a-random-token"
 
