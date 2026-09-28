@@ -1,4 +1,5 @@
 import os
+import socket
 import time
 import urllib.error
 import urllib.request
@@ -53,18 +54,30 @@ def wait_until_serving(url: str) -> None:
             time.sleep(0.2)
 
 
+def free_port() -> int:
+    with socket.socket() as probe:
+        probe.bind(("127.0.0.1", 0))
+        return probe.getsockname()[1]
+
+
 @pytest.fixture
 def web_app(app_image, database, docker_network) -> Iterator[WebApp]:
     """The application running from its image against a freshly migrated
-    database, reachable over HTTP like in production."""
+    database, reachable over HTTP like in production.
+
+    It is served at a fixed http://localhost:<port> origin, known to the
+    application beforehand: WebAuthn binds credentials to the exact
+    origin (localhost is a secure context, so no TLS is needed)."""
+    port = free_port()
+    origin = f"http://localhost:{port}"
     container = DockerContainer(app_image)
     container.with_network(docker_network)
     container.with_env("DB_STRING_CONNECTION", database.network_dsn)
-    container.with_exposed_ports(APP_PORT)
+    container.with_env("WEBAUTHN_RP_ID", "localhost")
+    container.with_env("WEBAUTHN_ORIGIN", origin)
+    container.with_bind_ports(APP_PORT, port)
     with container:
-        host = container.get_container_host_ip()
-        port = container.get_exposed_port(APP_PORT)
-        app = WebApp(f"http://{host}:{port}")
+        app = WebApp(origin)
         wait_until_serving(app.url("/"))
         yield app
 
