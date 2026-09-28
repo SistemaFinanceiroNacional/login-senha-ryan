@@ -1,7 +1,4 @@
-import psycopg2
 import pytest
-
-UUID_NOT_ADAPTED = "psycopg2 cannot adapt uuid.UUID (issue #112)"
 
 
 def reload_account(bank, account_id):
@@ -16,8 +13,6 @@ def save(bank, account) -> None:
 
 
 @pytest.mark.integration
-@pytest.mark.xfail(strict=True, reason=UUID_NOT_ADAPTED,
-                   raises=psycopg2.ProgrammingError)
 def test_update_persists_new_transactions(bank):
     alice = bank.open_client("alice")
     account = reload_account(bank, alice.account)
@@ -30,8 +25,6 @@ def test_update_persists_new_transactions(bank):
 
 
 @pytest.mark.integration
-@pytest.mark.xfail(strict=True, reason=UUID_NOT_ADAPTED,
-                   raises=psycopg2.ProgrammingError)
 def test_update_does_not_duplicate_existing_transactions(bank):
     alice = bank.open_client("alice")
     account = reload_account(bank, alice.account)
